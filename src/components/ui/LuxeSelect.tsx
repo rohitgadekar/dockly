@@ -71,7 +71,7 @@ export const LuxeSelect = ({ options, value, onChange, placeholder = "Select opt
                         transition={{ duration: 0.2 }}
                         className="absolute top-full left-0 w-full mt-2 bg-[#0F0F0F] border border-white/10 rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-3xl z-[100]"
                     >
-                        <div className="max-h-64 overflow-y-auto custom-scrollbar p-2">
+                        <div className="max-h-64 overflow-y-auto custom-scrollbar p-2" data-lenis-prevent>
                             {options.map((option) => (
                                 <button
                                     key={option.value}

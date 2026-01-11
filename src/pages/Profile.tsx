@@ -1,9 +1,9 @@
 import { useParams } from "react-router-dom";
 import { useProfile, useTrackClick } from "@/hooks/useProfile";
-import { Loader2, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { ProfileView } from "@/components/profile/ProfileView";
-import { motion } from "framer-motion";
+import { ProfileLoading } from "@/components/profile/ProfileLoading";
 import { useTitle } from "@/hooks/useTitle";
 
 const Profile = () => {
@@ -25,21 +25,7 @@ const Profile = () => {
     };
 
     if (isLoading) {
-        return (
-            <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center gap-6">
-                <div className="relative">
-                    <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                        className="w-24 h-24 border-t-2 border-luxury-gold/40 rounded-full"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                        <Loader2 className="animate-spin text-luxury-gold" size={32} />
-                    </div>
-                </div>
-                <p className="text-white/20 font-syncopate uppercase tracking-[0.5em] text-[10px] animate-pulse">Materializing Persona...</p>
-            </div>
-        );
+        return <ProfileLoading title="CITADEL" />;
     }
 
     if (error || !user) {

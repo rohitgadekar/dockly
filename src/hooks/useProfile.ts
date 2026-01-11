@@ -9,47 +9,50 @@ export const useProfile = (username: string | undefined) => {
     queryFn: async () => {
       if (!username) return null;
 
+      // Primary Point Lookup (Super fast with unique username index)
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("*")
         .eq("username", username)
-        .single();
+        .maybeSingle(); // maybeSingle returns null instead of throwing PGRST116 error
 
       if (profileError) throw profileError;
+      if (!profile) return null;
 
+      // Concurrent fetching of all content sections
       const [ventures, socials, products, stories] = await Promise.all([
-        supabase
-          .from("ventures")
-          .select("*")
-          .eq("profile_id", profile.id)
-          .order("order_index", { ascending: true }),
-        supabase
-          .from("social_links")
-          .select("*")
-          .eq("profile_id", profile.id)
-          .order("order_index", { ascending: true }),
-        supabase
-          .from("curated_products")
-          .select("*")
-          .eq("profile_id", profile.id)
-          .order("order_index", { ascending: true }),
-        supabase
-          .from("stories")
-          .select("*")
-          .eq("profile_id", profile.id)
-          .gt("expires_at", new Date().toISOString())
-          .order("created_at", { ascending: false })
+        supabase.from("ventures").select("*").eq("profile_id", profile.id).order("order_index", { ascending: true }),
+        supabase.from("social_links").select("*").eq("profile_id", profile.id).order("order_index", { ascending: true }),
+        supabase.from("curated_products").select("*").eq("profile_id", profile.id).order("order_index", { ascending: true }),
+        supabase.from("stories").select("*").eq("profile_id", profile.id).gt("expires_at", new Date().toISOString()).order("created_at", { ascending: false })
+      ]);
+
+      // Helper to generate temporary signed URLs for private content
+      const resolveSecureUrl = async (url: string, bucket: string) => {
+        if (!url || url.startsWith('http')) return url;
+        const { data } = await supabase.storage.from(bucket).createSignedUrl(url, 60); // 60s expiry
+        return data?.signedUrl || url;
+      };
+
+      const [avatarUrl, resolvedVentures, resolvedStories, resolvedProducts] = await Promise.all([
+        resolveSecureUrl(profile.avatar_url, 'avatars'),
+        Promise.all((ventures.data || []).map(async v => ({ ...v, logo_url: await resolveSecureUrl(v.logo_url, 'ventures') }))),
+        Promise.all((stories.data || []).map(async s => ({ ...s, media_url: await resolveSecureUrl(s.media_url, 'story-media') }))),
+        Promise.all((products.data || []).map(async p => ({ ...p, image_url: await resolveSecureUrl(p.image_url, 'products') })))
       ]);
 
       return {
         ...profile,
-        ventures: ventures.data || [],
+        avatar_url: avatarUrl,
+        ventures: resolvedVentures,
         socials: socials.data || [],
-        products: products.data || [],
-        stories: stories.data || [],
+        products: resolvedProducts,
+        stories: resolvedStories,
       };
     },
     enabled: !!username,
+    retry: false, // Disable retries for faster "Not Found" state
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
 
   // Analytics: Track Profile View
