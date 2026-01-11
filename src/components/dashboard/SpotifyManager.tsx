@@ -1,21 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import {
-    Search,
-    Plus,
-    X,
     Loader2,
-    Save,
-    Music,
+    X,
+    Search,
     Play,
-    Pause
+    Pause,
+    Plus,
+    Check,
+    Music,
+    Save
 } from "lucide-react";
-import { SiSpotify } from "react-icons/si";
 import { supabase } from "@/lib/supabase";
 import { useDashboard } from "@/hooks/useDashboard";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { LuxuryModal } from "@/components/ui/LuxuryModal";
 
 interface Track {
     id: string;
@@ -42,6 +43,17 @@ export const SpotifyManager = ({ isOpen, onClose }: SpotifyManagerProps) => {
 
     // Mock audio element for preview
     const [audio] = useState(new Audio());
+
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isOpen]);
 
     const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -129,164 +141,172 @@ export const SpotifyManager = ({ isOpen, onClose }: SpotifyManagerProps) => {
         onClose();
     };
 
+    if (!isOpen) return null;
+
     return (
-        <AnimatePresence>
-            {isOpen && (
-                <>
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        onClick={handleClose}
-                        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100]"
-                    />
-                    <div className="fixed inset-0 flex items-center justify-center z-[101] pointer-events-none p-4">
-                        <motion.div
-                            initial={{ scale: 0.95, opacity: 0, y: 20 }}
-                            animate={{ scale: 1, opacity: 1, y: 0 }}
-                            exit={{ scale: 0.95, opacity: 0, y: 20 }}
-                            className="w-full max-w-2xl bg-[#080808] border border-[#1DB954]/20 rounded-[2rem] overflow-hidden pointer-events-auto relative shadow-[0_0_50px_rgba(29,185,84,0.1)] flex flex-col max-h-[85vh]"
-                        >
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-[#1DB954]/5 blur-[80px] -mr-32 -mt-32 pointer-events-none" />
+        <LuxuryModal isOpen={isOpen} onClose={handleClose}>
+            {/* Ambient Glow */}
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#1DB954]/5 blur-[120px] -mr-32 -mt-32 pointer-events-none" />
 
-                            {/* Header */}
-                            <div className="p-8 border-b border-white/5 flex items-center justify-between relative z-10 shrink-0">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-2xl bg-[#1DB954]/10 flex items-center justify-center border border-[#1DB954]/20 text-[#1DB954]">
-                                        <SiSpotify size={24} />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-xl font-syncopate font-bold uppercase tracking-tight text-white">Sonic Matrix</h2>
-                                        <p className="text-xs text-white/40 font-syncopate uppercase tracking-widest mt-1">Curate your top tracks</p>
-                                    </div>
-                                </div>
-                                <button onClick={handleClose} className="text-white/20 hover:text-white transition-colors">
-                                    <X size={24} />
-                                </button>
-                            </div>
-
-                            <div className="flex-1 overflow-y-auto custom-scrollbar p-8 space-y-8">
-                                {/* Search Section */}
-                                <div className="space-y-4">
-                                    <form onSubmit={handleSearch} className="relative">
-                                        <input
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                            placeholder="Search for tracks..."
-                                            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-[#1DB954]/40 focus:bg-white/[0.05] transition-all text-white font-plus"
-                                            autoFocus
-                                        />
-                                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
-                                        <Button
-                                            type="submit"
-                                            disabled={searching}
-                                            className="absolute right-2 top-2 bottom-2 px-4 rounded-xl bg-[#1DB954]/10 hover:bg-[#1DB954]/20 text-[#1DB954] text-xs font-syncopate uppercase tracking-wider"
-                                        >
-                                            {searching ? <Loader2 className="animate-spin" size={14} /> : "Search"}
-                                        </Button>
-                                    </form>
-
-                                    <AnimatePresence>
-                                        {searchResults.length > 0 && (
-                                            <motion.div
-                                                initial={{ opacity: 0, height: 0 }}
-                                                animate={{ opacity: 1, height: 'auto' }}
-                                                exit={{ opacity: 0, height: 0 }}
-                                                className="space-y-2 overflow-hidden"
-                                            >
-                                                <p className="text-[10px] font-syncopate uppercase tracking-widest text-[#1DB954]/60 pl-2">Search Results</p>
-                                                {searchResults.map((track) => (
-                                                    <motion.div
-                                                        key={track.id}
-                                                        initial={{ opacity: 0, x: -10 }}
-                                                        animate={{ opacity: 1, x: 0 }}
-                                                        className="flex items-center gap-4 p-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-transparent hover:border-white/5 group cursor-pointer transition-all"
-                                                        onClick={() => handleAddTrack(track)}
-                                                    >
-                                                        <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0">
-                                                            <img src={track.cover} alt={track.title} className="w-full h-full object-cover" />
-                                                            {track.previewUrl && (
-                                                                <button
-                                                                    onClick={(e) => { e.stopPropagation(); togglePreview(track.previewUrl); }}
-                                                                    className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                                                                >
-                                                                    {playingPreview === track.previewUrl ? <Pause size={12} className="fill-white text-white" /> : <Play size={12} className="fill-white text-white" />}
-                                                                </button>
-                                                            )}
-                                                        </div>
-                                                        <div className="flex-1 min-w-0">
-                                                            <h4 className="text-sm font-bold text-white truncate">{track.title}</h4>
-                                                            <p className="text-xs text-white/40 truncate">{track.artist}</p>
-                                                        </div>
-                                                        <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/40 group-hover:bg-[#1DB954] group-hover:text-black transition-all">
-                                                            <Plus size={16} />
-                                                        </div>
-                                                    </motion.div>
-                                                ))}
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </div>
-
-                                {/* Selected Tracks */}
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <p className="text-[10px] font-syncopate uppercase tracking-widest text-white/40 pl-2">Authenticated Tracks ({selectedTracks.length}/5)</p>
-                                    </div>
-
-                                    {selectedTracks.length === 0 ? (
-                                        <div className="py-12 text-center border border-dashed border-white/10 rounded-2xl">
-                                            <Music className="w-8 h-8 text-white/10 mx-auto mb-4" />
-                                            <p className="text-xs text-white/20 font-syncopate uppercase tracking-wider">No tracks linked</p>
-                                        </div>
-                                    ) : (
-                                        <div className="space-y-2">
-                                            {selectedTracks.map((track) => (
-                                                <motion.div
-                                                    key={track.id}
-                                                    layout
-                                                    initial={{ opacity: 0, scale: 0.95 }}
-                                                    animate={{ opacity: 1, scale: 1 }}
-                                                    className="flex items-center gap-4 p-3 rounded-xl bg-[#1DB954]/[0.05] border border-[#1DB954]/20 group"
-                                                >
-                                                    <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0">
-                                                        <img src={track.cover} alt={track.title} className="w-full h-full object-cover" />
-                                                    </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <h4 className="text-sm font-bold text-white truncate">{track.title}</h4>
-                                                        <p className="text-xs text-white/40 truncate">{track.artist}</p>
-                                                    </div>
-                                                    <button
-                                                        onClick={() => handleRemoveTrack(track.id)}
-                                                        className="w-8 h-8 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"
-                                                    >
-                                                        <X size={14} />
-                                                    </button>
-                                                </motion.div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="p-8 border-t border-white/5 shrink-0 flex gap-4">
-                                <Button variant="ghost" className="flex-1 h-12 rounded-xl text-xs font-syncopate uppercase tracking-widest" onClick={handleClose}>
-                                    Cancel
-                                </Button>
-                                <Button
-                                    variant="luxury"
-                                    className="flex-[2] h-12 rounded-xl text-xs font-syncopate uppercase tracking-widest bg-[#1DB954] hover:bg-[#1efc6e] text-black border-none"
-                                    onClick={handleSave}
-                                    disabled={loading}
-                                >
-                                    {loading ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
-                                    Sync to Profile
-                                </Button>
-                            </div>
-                        </motion.div>
+            {/* Header */}
+            <div className="p-10 border-b border-white/5 flex items-center justify-between shrink-0 bg-white/[0.01]">
+                <div className="flex items-center gap-6">
+                    <div className="w-16 h-16 rounded-[1.5rem] bg-[#1DB954]/10 border border-[#1DB954]/20 flex items-center justify-center text-[#1DB954]">
+                        <Music size={32} />
                     </div>
-                </>
-            )}
-        </AnimatePresence>
+                    <div>
+                        <h2 className="text-3xl font-syncopate font-bold uppercase tracking-tight text-white">Sonic Matrix</h2>
+                        <div className="flex items-center gap-3 mt-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#1DB954] shadow-[0_0_10px_#1DB954]" />
+                            <p className="text-xs text-white/40 font-syncopate uppercase tracking-[0.2em]">
+                                Live Synchronization
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <button
+                    onClick={handleClose}
+                    className="group w-12 h-12 rounded-full border border-white/5 hover:border-white/20 flex items-center justify-center transition-colors bg-white/[0.02]"
+                >
+                    <X size={20} className="text-white/40 group-hover:text-white transition-colors" />
+                </button>
+            </div>
+
+            <div className="flex-1 overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-0">
+                {/* Left Panel: Search */}
+                <div className="lg:col-span-7 border-r border-white/5 flex flex-col min-h-0 bg-white/[0.01]">
+                    <div className="p-8 pb-4 shrink-0">
+                        <p className="text-[10px] font-syncopate uppercase tracking-[0.3em] text-white/30 mb-6 font-bold">Signal Acquisition</p>
+                        <form onSubmit={handleSearch} className="relative group">
+                            <input
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search global frequency..."
+                                className="w-full h-16 bg-[#0A0A0A] border border-white/10 rounded-[1.5rem] pl-14 pr-6 outline-none focus:border-[#1DB954]/40 focus:bg-white/[0.02] transition-all text-white font-plus text-sm group-hover:border-white/20"
+                                autoFocus
+                            />
+                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-hover:text-white/40 transition-colors" size={20} />
+                            <Button
+                                type="submit"
+                                disabled={searching}
+                                className="absolute right-3 top-3 bottom-3 px-6 rounded-xl bg-[#1DB954]/10 hover:bg-[#1DB954]/20 text-[#1DB954] text-[10px] font-syncopate uppercase tracking-widest border border-[#1DB954]/20"
+                            >
+                                {searching ? <Loader2 className="animate-spin" size={14} /> : "Scan"}
+                            </Button>
+                        </form>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto custom-scrollbar p-8 pt-0 space-y-4" data-lenis-prevent>
+                        <AnimatePresence mode="popLayout">
+                            {searchResults.length > 0 && (
+                                <div className="space-y-3 pb-8">
+                                    {searchResults.map((track, idx) => (
+                                        <motion.div
+                                            key={track.id}
+                                            initial={{ opacity: 0, x: -10 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: idx * 0.05 }}
+                                            className="flex items-center gap-4 p-4 rounded-[1.5rem] bg-[#0A0A0A] hover:bg-white/[0.03] border border-transparent hover:border-white/5 group cursor-pointer transition-all"
+                                            onClick={() => handleAddTrack(track)}
+                                        >
+                                            <div className="relative w-16 h-16 rounded-2xl overflow-hidden shrink-0 border border-white/5 shadow-2xl">
+                                                <img src={track.cover} alt={track.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
+                                                {track.previewUrl && (
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); togglePreview(track.previewUrl); }}
+                                                        className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm"
+                                                    >
+                                                        {playingPreview === track.previewUrl ? <Pause size={20} className="fill-white text-white" /> : <Play size={20} className="fill-white text-white" />}
+                                                    </button>
+                                                )}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="text-sm font-bold text-white truncate font-plus mb-1 group-hover:text-[#1DB954] transition-colors">{track.title}</h4>
+                                                <p className="text-xs text-white/40 truncate font-syncopate uppercase tracking-wider">{track.artist}</p>
+                                            </div>
+                                            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/20 group-hover:bg-[#1DB954] group-hover:text-black transition-all border border-white/5 group-hover:border-[#1DB954]">
+                                                <Plus size={18} />
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            )}
+                        </AnimatePresence>
+
+                        {searchResults.length === 0 && !searching && (
+                            <div className="h-full flex flex-col items-center justify-center text-center opacity-30 mt-10">
+                                <Search size={48} className="mb-4" />
+                                <p className="font-syncopate uppercase tracking-widest text-xs">Awaiting Input Signal</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Right Panel: Selected */}
+                <div className="lg:col-span-5 bg-[#080808]/50 flex flex-col min-h-0">
+                    <div className="p-8 border-b border-white/5 shrink-0">
+                        <div className="flex items-center justify-between mb-4">
+                            <p className="text-[10px] font-syncopate uppercase tracking-[0.3em] text-white/30 font-bold">Active Nodes</p>
+                            <span className="text-[10px] font-mono text-[#1DB954] bg-[#1DB954]/10 px-3 py-1 rounded-full border border-[#1DB954]/20">{selectedTracks.length}/5</span>
+                        </div>
+                        <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div
+                                className="h-full bg-[#1DB954] transition-all duration-500"
+                                style={{ width: `${(selectedTracks.length / 5) * 100}%` }}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto custom-scrollbar p-8 space-y-4" data-lenis-prevent>
+                        <AnimatePresence mode="popLayout">
+                            {selectedTracks.length === 0 ? (
+                                <div className="h-48 flex flex-col items-center justify-center text-center border border-dashed border-white/10 rounded-[2rem] bg-white/[0.01]">
+                                    <Music className="w-10 h-10 text-white/10 mx-auto mb-4" />
+                                    <p className="text-[10px] text-white/20 font-syncopate uppercase tracking-[0.2em]">Matrix Empty</p>
+                                </div>
+                            ) : (
+                                selectedTracks.map((track) => (
+                                    <motion.div
+                                        key={track.id}
+                                        layout
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.95 }}
+                                        className="group flex items-center gap-4 p-3 rounded-[1.2rem] bg-[#1DB954]/[0.05] border border-[#1DB954]/20 hover:bg-[#1DB954]/10 transition-colors relative pr-12"
+                                    >
+                                        <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-1 h-8 bg-[#1DB954] rounded-r-full" />
+                                        <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-white/10">
+                                            <img src={track.cover} alt={track.title} className="w-full h-full object-cover" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <h4 className="text-xs font-bold text-white truncate font-plus mb-1">{track.title}</h4>
+                                            <p className="text-[10px] text-white/50 truncate font-syncopate uppercase tracking-wider">{track.artist}</p>
+                                        </div>
+                                        <button
+                                            onClick={() => handleRemoveTrack(track.id)}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all border border-red-500/20"
+                                        >
+                                            <X size={14} />
+                                        </button>
+                                    </motion.div>
+                                ))
+                            )}
+                        </AnimatePresence>
+                    </div>
+
+                    <div className="p-8 mt-auto bg-[#0A0A0A] border-t border-white/5 shrink-0">
+                        <Button
+                            variant="luxury"
+                            className="w-full h-16 rounded-[1.5rem] gap-3 text-xs font-syncopate uppercase tracking-[0.2em] bg-[#1DB954] hover:bg-[#1efc6e] text-black border-none shadow-[0_0_30px_rgba(29,185,84,0.2)] font-bold transition-all hover:scale-[1.02]"
+                            onClick={handleSave}
+                            disabled={loading}
+                        >
+                            {loading ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
+                            Synchronize Matrix
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        </LuxuryModal>
     );
 };

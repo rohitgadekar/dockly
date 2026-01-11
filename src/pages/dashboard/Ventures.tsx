@@ -230,7 +230,7 @@ const Ventures = () => {
                             </div>
                             <h3 className="text-2xl font-syncopate font-bold text-white/40 mb-4 uppercase tracking-tighter">No Active Protocols</h3>
                             <p className="text-white/20 font-plus text-lg mb-10 max-w-sm mx-auto uppercase tracking-widest text-[10px]">Your modular infrastructure is currently offline.</p>
-                            <Button variant="luxury" onClick={() => setIsAdding(true)} className="px-12 py-6 rounded-[2rem] shadow-2xl font-syncopate uppercase tracking-[0.2em] text-xs">Establish Primary Venture</Button>
+
                         </div>
                     </motion.div>
                 ) : (

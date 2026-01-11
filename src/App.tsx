@@ -5,6 +5,7 @@ import Landing from "@/pages/Landing";
 import Dashboard from "@/pages/Dashboard";
 import Profile from "@/pages/Profile";
 import Auth from "@/pages/Auth";
+import UpdatePassword from "@/pages/UpdatePassword";
 import NotFound from "@/pages/NotFound";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { PreviewRedirect } from "@/components/dashboard/PreviewRedirect";
@@ -56,6 +57,7 @@ function App() {
                         <Routes>
                             <Route path="/" element={<Landing />} />
                             <Route path="/auth" element={<Auth />} />
+                            <Route path="/auth/update-password" element={<UpdatePassword />} />
                             <Route path="/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>}>
                                 <Route index element={<CommandDeck />} />
                                 <Route path="ventures" element={<Ventures />} />

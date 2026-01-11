@@ -30,11 +30,34 @@ const CommandDeck = () => {
     useTitle("Command Deck");
     const { data } = useDashboard();
 
+    const isNewUser =
+        (data?.analytics?.profileViews?.length || 0) === 0 &&
+        (data?.ventures?.length || 0) === 0 &&
+        (data?.products?.length || 0) === 0 &&
+        (data?.socials?.length || 0) === 0;
+
     // Realtime simulation
     const [realtimeData, setRealtimeData] = useState<any[]>([]);
     const [pulseData, setPulseData] = useState<any[]>([]);
 
     useEffect(() => {
+        if (isNewUser) {
+            // Static flatline for new users
+            const initialData = Array.from({ length: 24 }).map((_, i) => ({
+                time: `${i}:00`,
+                traffic: 0,
+                engagement: 0
+            }));
+            setRealtimeData(initialData);
+
+            const initialPulse = Array.from({ length: 12 }).map((_, i) => ({
+                name: `P${i}`,
+                value: 0
+            }));
+            setPulseData(initialPulse);
+            return;
+        }
+
         const initialData = Array.from({ length: 24 }).map((_, i) => ({
             time: `${i}:00`,
             traffic: Math.floor(Math.random() * 50) + 30,
@@ -68,20 +91,22 @@ const CommandDeck = () => {
         }, 3000);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [isNewUser]);
+
+
 
     const stats = [
         {
             label: "Total Views",
             value: data?.analytics?.profileViews?.length || 0,
-            change: "+12.5%",
+            change: isNewUser ? "Initial State" : "+12.5%",
             icon: Users,
             color: "#D4AF37"
         },
         {
             label: "Active Ventures",
             value: data?.ventures?.length || 0,
-            change: "+2",
+            change: isNewUser ? "Initial State" : "+2",
             icon: Zap,
             color: "#3B82F6"
         },
@@ -160,7 +185,7 @@ const CommandDeck = () => {
                                 </div>
                                 <div className="flex items-center gap-1 text-[10px] bg-white/5 px-2 py-1 rounded-full text-white/40">
                                     <span>{stat.change}</span>
-                                    <ArrowUpRight size={10} />
+                                    {stat.change !== "Initial State" && <ArrowUpRight size={10} />}
                                 </div>
                             </div>
 

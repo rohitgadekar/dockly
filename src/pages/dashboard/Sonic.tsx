@@ -14,7 +14,8 @@ import {
     BarChart3,
     Music,
     Globe,
-    ExternalLink
+    ExternalLink,
+    X
 } from "lucide-react";
 
 import { useTitle } from "@/hooks/useTitle";
@@ -70,10 +71,11 @@ const Sonic = () => {
                     </Button>
                     <Button
                         variant="luxury"
-                        onClick={() => setIsManagerOpen(true)}
-                        className="gap-3 px-10 py-6 rounded-[2rem] shadow-[0_0_30px_rgba(29,185,84,0.2)] text-sm tracking-widest font-syncopate uppercase bg-[#1DB954] text-black hover:bg-[#1efc6e] border-none"
+                        onClick={() => setIsManagerOpen(!isManagerOpen)}
+                        className={`gap-3 px-10 py-6 rounded-[2rem] shadow-[0_0_30px_rgba(29,185,84,0.2)] text-sm tracking-widest font-syncopate uppercase transition-all ${isManagerOpen ? 'bg-white/10 text-white' : 'bg-[#1DB954] text-black hover:bg-[#1efc6e]'} border-none`}
                     >
-                        <Plus size={20} /> Manage Matrix
+                        {isManagerOpen ? <X size={20} /> : <Plus size={20} />}
+                        {isManagerOpen ? "Close Matrix" : "Manage Matrix"}
                     </Button>
                 </div>
             </header>
@@ -234,6 +236,7 @@ const Sonic = () => {
                 </div>
             </div>
 
+            {/* Modal Manager - Renders via Portal */}
             <SpotifyManager isOpen={isManagerOpen} onClose={() => setIsManagerOpen(false)} />
         </div>
     );

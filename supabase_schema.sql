@@ -194,3 +194,30 @@ BEGIN
     ALTER PUBLICATION supabase_realtime ADD TABLE link_clicks;
   END IF;
 END $$;
+
+-- WELCOME EMAIL HOOK
+-- Enable pg_net extension to allow making HTTP requests
+CREATE EXTENSION IF NOT EXISTS "pg_net" WITH SCHEMA "extensions";
+
+-- Create a function to call the edge function
+CREATE OR REPLACE FUNCTION public.trigger_welcome_email()
+RETURNS TRIGGER AS $$
+BEGIN
+  PERFORM
+    net.http_post(
+      url := 'https://arysrcdpzlaswrlrbmhl.supabase.co/functions/v1/send-welcome-email',
+      headers := '{"Content-Type": "application/json", "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyeXNyY2Rwemxhc3dybHJibWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwMTI4NTYsImV4cCI6MjA4MzU4ODg1Nn0.6290b0zQmshkukUuX0DlxztX0sGsE6YOmSrZN5VF9g8"}'::jsonb,
+      body := jsonb_build_object(
+        'email', new.email,
+        'name', new.raw_user_meta_data->>'full_name'
+      )
+    );
+  RETURN new;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Trigger the function every time a user is created
+DROP TRIGGER IF EXISTS on_auth_user_created_email ON auth.users;
+CREATE TRIGGER on_auth_user_created_email
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.trigger_welcome_email();

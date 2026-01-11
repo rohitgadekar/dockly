@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useTitle } from "@/hooks/useTitle";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { LuxeSelect } from "@/components/ui/LuxeSelect";
@@ -29,6 +29,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { AvatarUpload } from "@/components/dashboard/AvatarUpload";
 import { DeleteDialog } from "@/components/ui/DeleteDialog";
+import { LuxuryModal } from "@/components/ui/LuxuryModal";
+import { formatDistanceToNow } from "date-fns";
 
 const currencyOptions = [
     { value: "USD", label: "US Dollar ($)", icon: <Coins size={18} /> },
@@ -585,67 +587,75 @@ const Settings = () => {
             />
 
             {/* Story Preview Overlay */}
-            <AnimatePresence>
-                {previewStory && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-2xl flex items-center justify-center p-4"
-                        onClick={() => setPreviewStory(null)}
-                    >
-                        <div className="absolute top-10 right-10 z-50">
-                            <button
-                                onClick={() => setPreviewStory(null)}
-                                className="p-4 bg-white/5 hover:bg-white/10 rounded-full text-white/40 hover:text-white transition-all border border-white/5"
-                            >
-                                <X size={24} />
-                            </button>
-                        </div>
+            <LuxuryModal
+                isOpen={!!previewStory}
+                onClose={() => setPreviewStory(null)}
+                className="!w-auto !h-auto !max-h-[85vh] aspect-[9/16] !bg-black !p-0 !border-white/10 !overflow-hidden"
+            >
+                <div className="relative w-full h-full flex items-center justify-center bg-[#050505]">
+                    <div className="absolute inset-0 z-10 pointer-events-none opacity-[0.03]" style={{ backgroundImage: `url('https://grainy-gradients.vercel.app/noise.svg')` }} />
 
-                        <div
-                            className="relative w-full max-w-lg aspect-[9/16] bg-black rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(212,175,55,0.15)] border border-white/10"
-                            onClick={(e) => e.stopPropagation()}
+                    <div className="absolute top-6 right-6 z-50">
+                        <button
+                            onClick={() => setPreviewStory(null)}
+                            className="p-3 bg-black/40 backdrop-blur-xl rounded-full text-white/60 hover:text-white transition-all border border-white/10 hover:border-white/20"
                         >
-                            <div className="h-full w-full relative flex items-center justify-center bg-[#050505]">
-                                <div className="absolute inset-0 z-10 pointer-events-none opacity-[0.03]" style={{ backgroundImage: `url('https://grainy-gradients.vercel.app/noise.svg')` }} />
+                            <X size={20} />
+                        </button>
+                    </div>
 
-                                {previewStory.media_type === 'video' ? (
-                                    <video
-                                        ref={previewVideoRef}
-                                        src={previewStory.media_url}
-                                        className="max-h-full max-w-full object-contain"
-                                        autoPlay
-                                        loop
-                                        playsInline
-                                    />
-                                ) : (
-                                    <img
-                                        src={previewStory.media_url}
-                                        alt="Preview"
-                                        className="max-h-full max-w-full object-contain"
-                                    />
-                                )}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+                    {previewStory && (
+                        <>
+                            {previewStory.media_type === 'video' ? (
+                                <video
+                                    ref={previewVideoRef}
+                                    src={previewStory.media_url}
+                                    className="w-full h-full object-cover"
+                                    autoPlay
+                                    loop
+                                    playsInline
+                                />
+                            ) : (
+                                <img
+                                    src={previewStory.media_url}
+                                    alt="Preview"
+                                    className="w-full h-full object-cover"
+                                />
+                            )}
 
-                                {previewStory.media_type === 'video' && (
-                                    <div className="absolute bottom-10 right-10 z-50">
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setIsMuted(!isMuted);
-                                            }}
-                                            className="w-12 h-12 bg-black/40 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/10 text-white/60 hover:text-luxury-gold transition-colors"
-                                        >
-                                            {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-                                        </button>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none" />
+
+                            {previewStory.media_type === 'video' && (
+                                <div className="absolute bottom-8 right-8 z-50">
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setIsMuted(!isMuted);
+                                        }}
+                                        className="w-12 h-12 bg-black/40 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/10 text-white/60 hover:text-luxury-gold transition-colors"
+                                    >
+                                        {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+                                    </button>
+                                </div>
+                            )}
+
+                            <div className="absolute bottom-8 left-8 z-40">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-luxury-gold/10 border border-luxury-gold/20 flex items-center justify-center">
+                                        <img src={avatarUrl || `https://ui-avatars.com/api/?name=${fullName}&background=random`} alt="User" className="w-full h-full object-cover rounded-full" />
                                     </div>
-                                )}
+                                    <div>
+                                        <p className="text-white text-sm font-plus font-bold shadow-black drop-shadow-md">{fullName}</p>
+                                        <p className="text-white/60 text-[10px] font-syncopate uppercase tracking-widest shadow-black drop-shadow-md">
+                                            {previewStory.created_at ? formatDistanceToNow(new Date(previewStory.created_at), { addSuffix: true }) : 'Just now'}
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                        </>
+                    )}
+                </div>
+            </LuxuryModal>
         </div>
     );
 };

@@ -215,7 +215,7 @@ const Identity = () => {
                                 <div className="relative w-40 h-40 rounded-[2.2rem] overflow-hidden border border-white/10 p-1 bg-black shadow-2xl">
                                     <div className="w-full h-full rounded-[1.8rem] overflow-hidden">
                                         <img
-                                            src={data.profile.avatar_url || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400"}
+                                            src={data.profile.avatar_url || "/dp.png"}
                                             alt="Avatar"
                                             crossOrigin="anonymous"
                                             className="w-full h-full object-cover mix-blend-luminosity grayscale contrast-[1.1] brightness-[1.1]"

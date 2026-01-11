@@ -236,6 +236,40 @@ const Auth = () => {
                                 </div>
                             </div>
 
+                            {/* Forgot Password Link */}
+                            {isLogin && (
+                                <div className="flex justify-end -mt-4 mb-6">
+                                    <button
+                                        type="button"
+                                        onClick={async () => {
+                                            if (!email) {
+                                                toast.error("Please enter your Registry Email to recover access.");
+                                                return;
+                                            }
+                                            setLoading(true);
+                                            try {
+                                                const { error } = await supabase.functions.invoke('send-password-reset', {
+                                                    body: {
+                                                        email,
+                                                        redirectTo: window.location.origin + '/auth/update-password'
+                                                    }
+                                                });
+                                                if (error) throw error;
+                                                toast.success("Recovery protocol initiated. Check your secure inbox.");
+                                            } catch (error: any) {
+                                                console.error(error);
+                                                toast.error("Failed to initiate recovery.");
+                                            } finally {
+                                                setLoading(false);
+                                            }
+                                        }}
+                                        className="text-[8px] font-syncopate uppercase tracking-[0.2em] text-white/30 hover:text-luxury-gold transition-colors"
+                                    >
+                                        Forgot Access Key?
+                                    </button>
+                                </div>
+                            )}
+
                             <Button
                                 type="submit"
                                 variant="luxury"

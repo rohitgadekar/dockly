@@ -48,10 +48,27 @@ const Insights = () => {
         ];
     }, [data?.analytics]);
 
+    const isNewUser =
+        (data?.analytics?.profileViews?.length || 0) === 0 &&
+        (data?.ventures?.length || 0) === 0 &&
+        (data?.products?.length || 0) === 0 &&
+        (data?.socials?.length || 0) === 0;
+
     // Realtime Simulation State
     const [realtimeData, setRealtimeData] = useState<any[]>([]);
 
     useEffect(() => {
+        if (isNewUser) {
+            // Static flatline
+            const initialData = Array.from({ length: 24 }).map((_, i) => ({
+                time: `${i}:00`,
+                velocity: 0,
+                intensity: 0
+            }));
+            setRealtimeData(initialData);
+            return;
+        }
+
         // Generate initial data
         const initialData = Array.from({ length: 24 }).map((_, i) => ({
             time: `${i}:00`,
@@ -77,7 +94,7 @@ const Insights = () => {
         }, 5000);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [isNewUser]);
 
     if (isLoading) {
         return (

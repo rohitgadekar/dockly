@@ -97,7 +97,7 @@ export const DashboardSidebar = () => {
                         <div className="relative">
                             <div className="w-12 h-12 rounded-[1.5rem] overflow-hidden border border-white/10 group-hover:border-luxury-gold/40 transition-colors">
                                 <img
-                                    src={data.profile.avatar_url || "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=100"}
+                                    src={data.profile.avatar_url || "/dp.png"}
                                     className="w-full h-full object-cover mix-blend-luminosity group-hover:mix-blend-normal transition-all duration-700"
                                     alt="Profile"
                                 />

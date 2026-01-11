@@ -1,6 +1,7 @@
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
+import { formatDistanceToNow } from "date-fns";
 import {
     ShoppingBag,
     Zap,
@@ -71,7 +72,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
     const [activeStoryIndex, setActiveStoryIndex] = useState<number | null>(null);
     const [isStoryViewerOpen, setIsStoryViewerOpen] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
-    const [currentDuration, setCurrentDuration] = useState(5000);
+    const [currentDuration, setCurrentDuration] = useState<number | null>(null);
 
     const handleNextStory = () => {
         setActiveStoryIndex((prev) => {
@@ -133,10 +134,14 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
         }
 
         const currentStory = user.stories[activeStoryIndex];
+        // Reset duration when story changes to prevent stale timing
         if (currentStory?.media_type === 'image') {
             setCurrentDuration(5000);
             const timer = setTimeout(handleNextStory, 5000);
             return () => clearTimeout(timer);
+        } else {
+            // For video, wait for metadata loaded to set duration
+            setCurrentDuration(null);
         }
     }, [isStoryViewerOpen, activeStoryIndex, user.stories]);
 
@@ -240,7 +245,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
 
                         <div
                             className={cn(
-                                "relative w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden p-1.5 transition-all duration-1000",
+                                "relative w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden p-1.5 ",
                                 user.stories?.length > 0 ? " ring-4 ring-luxury-gold/20" : ""
                             )}
                             style={{
@@ -249,9 +254,9 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                             }}
                         >
                             <img
-                                src={user.avatar_url || "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=400"}
+                                src={user.avatar_url || "/dp.png"}
                                 alt={user.full_name}
-                                className="w-full h-full object-cover rounded-full grayscale hover:grayscale-0 transition-all duration-1000 scale-100 hover:scale-110"
+                                className="w-full h-full object-cover rounded-full grayscale hover:grayscale-0  scale-100 hover:scale-110"
                             />
                         </div>
 
@@ -545,7 +550,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                             <img
                                                 src={product.image_url || "https://images.unsplash.com/photo-1510511459019-5dee99c4ff5d?auto=format&fit=crop&q=80&w=400"}
                                                 alt={product.title}
-                                                className="w-full h-full object-cover grayscale transition-all duration-1000 group-hover:grayscale-0 group-hover:scale-110"
+                                                className="w-full h-full object-cover grayscale  group-hover:grayscale-0 group-hover:scale-110"
                                             />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 transition-opacity group-hover:opacity-40" />
 
@@ -668,10 +673,12 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                         <motion.div
                                             initial={{ width: "0%" }}
                                             animate={{
-                                                width: idx === (activeStoryIndex || 0) ? "100%" : idx < (activeStoryIndex || 0) ? "100%" : "0%"
+                                                width: idx === (activeStoryIndex || 0)
+                                                    ? (currentDuration ? "100%" : "0%")
+                                                    : idx < (activeStoryIndex || 0) ? "100%" : "0%"
                                             }}
                                             transition={{
-                                                duration: idx === (activeStoryIndex || 0) ? currentDuration / 1000 : 0,
+                                                duration: (idx === (activeStoryIndex || 0) && currentDuration) ? currentDuration / 1000 : 0,
                                                 ease: "linear"
                                             }}
                                             className="h-full bg-luxury-gold"
@@ -756,7 +763,11 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                             <div className="text-[10px] font-syncopate font-bold text-white uppercase tracking-tight">{user.full_name}</div>
                                             <div className="flex items-center gap-2 text-white/40">
                                                 <Clock size={10} className="text-luxury-gold" />
-                                                <span className="text-[8px] font-syncopate uppercase tracking-widest">Active Instance</span>
+                                                <span className="text-[8px] font-syncopate uppercase tracking-widest">
+                                                    {user.stories[activeStoryIndex || 0].created_at
+                                                        ? formatDistanceToNow(new Date(user.stories[activeStoryIndex || 0].created_at), { addSuffix: true })
+                                                        : "Active Instance"}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
