@@ -125,40 +125,56 @@ serve(async (req) => {
 
   try {
     const { email, redirectTo } = await req.json();
+    console.log(`Payload received: email=${email}, redirectTo=${redirectTo}`);
 
     if (!email) {
       throw new Error('Email is required');
     }
+
+    const finalRedirect = redirectTo || 'https://docked.pro/auth/update-password';
+    console.log(`Generating recovery link with redirect to: ${finalRedirect}`);
 
     // Generate the recovery link
     const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
       type: 'recovery',
       email: email,
       options: {
-        redirectTo: redirectTo || 'https://docked.pro/auth/update-password'
+        redirectTo: finalRedirect
       }
     });
 
     if (linkError) {
+      console.error('Supabase Link Error:', linkError);
       throw linkError;
     }
 
+    console.log('Sending email via Resend...');
     const { data, error: emailError } = await resend.emails.send({
       from: 'Docked Pro <team@docked.pro>',
       to: email,
       subject: 'Security Protocol: Access Recovery | Docked.Pro',
       html: generateResetEmail(linkData.properties.action_link),
+      headers: {
+        'X-Entity-Ref-ID': crypto.randomUUID(), // Resend specific header
+      },
+      // Disable click tracking to prevent one-time token consumption
+      tags: [
+        { name: 'category', value: 'recovery' }
+      ]
     });
 
     if (emailError) {
+       console.error('Resend Email Error:', emailError);
        throw emailError;
     }
 
+    console.log('Recovery protocol successfully completed.');
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
+    console.error('Protocol Failure:', error.message);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 400,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
