@@ -251,9 +251,7 @@ const Auth = () => {
                                                 const { error } = await supabase.functions.invoke('send-password-reset', {
                                                     body: {
                                                         email,
-                                                        redirectTo: window.location.hostname === 'localhost'
-                                                            ? `${window.location.origin}/auth/update-password`
-                                                            : 'https://docked.pro/auth/update-password'
+                                                        redirectTo: `${window.location.origin}/auth/update-password`
                                                     }
                                                 });
                                                 if (error) throw error;

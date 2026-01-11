@@ -148,19 +148,17 @@ serve(async (req) => {
       throw linkError;
     }
 
-    console.log('Sending email via Resend...');
+    console.log(`Sending email via Resend to ${email} with tracking disabled...`);
     const { data, error: emailError } = await resend.emails.send({
       from: 'Docked Pro <team@docked.pro>',
       to: email,
       subject: 'Security Protocol: Access Recovery | Docked.Pro',
       html: generateResetEmail(linkData.properties.action_link),
-      headers: {
-        'X-Entity-Ref-ID': crypto.randomUUID(), // Resend specific header
+      // CRITICAL: Disable all tracking to prevent link consumption
+      tracking: {
+        click: false,
+        open: false,
       },
-      // Disable click tracking to prevent one-time token consumption
-      tags: [
-        { name: 'category', value: 'recovery' }
-      ]
     });
 
     if (emailError) {
@@ -168,7 +166,7 @@ serve(async (req) => {
        throw emailError;
     }
 
-    console.log('Recovery protocol successfully completed.');
+    console.log(`Recovery protocol successfully completed. Link: ${linkData.properties.action_link}`);
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
