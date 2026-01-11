@@ -251,14 +251,16 @@ const Auth = () => {
                                                 const { error } = await supabase.functions.invoke('send-password-reset', {
                                                     body: {
                                                         email,
-                                                        redirectTo: window.location.origin + '/auth/update-password'
+                                                        redirectTo: window.location.hostname === 'localhost'
+                                                            ? `${window.location.origin}/auth/update-password`
+                                                            : 'https://docked.pro/auth/update-password'
                                                     }
                                                 });
                                                 if (error) throw error;
-                                                toast.success("Recovery protocol initiated. Check your secure inbox.");
+                                                toast.success("Security protocol initiated. Check your secure node inbox.");
                                             } catch (error: any) {
-                                                console.error(error);
-                                                toast.error("Failed to initiate recovery.");
+                                                console.error("Recovery Error:", error);
+                                                toast.error(error.message || "Failed to initiate identity recovery.");
                                             } finally {
                                                 setLoading(false);
                                             }
