@@ -21,12 +21,29 @@ export function useDashboard() {
                 supabase.from("link_clicks").select("*").eq("profile_id", user.id)
             ]);
 
+            // Helper to generate temporary signed URLs for private content
+            const resolveSecureUrl = async (url: string, bucket: string) => {
+                if (!url || url.startsWith('http')) return url;
+                const { data } = await supabase.storage.from(bucket).createSignedUrl(url, 3600); // 1h expiry for dashboard
+                return data?.signedUrl || url;
+            };
+
+            const [avatarUrl, resolvedVentures, resolvedProducts, resolvedStories] = await Promise.all([
+                resolveSecureUrl(profile.data?.avatar_url, 'avatars'),
+                Promise.all((ventures.data || []).map(async v => ({ ...v, logo_url: await resolveSecureUrl(v.logo_url, 'ventures') }))),
+                Promise.all((products.data || []).map(async p => ({ ...p, image_url: await resolveSecureUrl(p.image_url, 'products') }))),
+                Promise.all((stories.data || []).map(async s => ({ ...s, media_url: await resolveSecureUrl(s.media_url, 'story-media') })))
+            ]);
+
             return {
-                profile: profile.data,
-                ventures: ventures.data || [],
+                profile: {
+                    ...(profile.data || {}),
+                    avatar_url: avatarUrl
+                },
+                ventures: resolvedVentures,
                 socials: socials.data || [],
-                products: products.data || [],
-                stories: stories.data || [],
+                products: resolvedProducts,
+                stories: resolvedStories,
                 analytics: {
                     profileViews: profileViews.data || [],
                     linkClicks: linkClicks.data || [],

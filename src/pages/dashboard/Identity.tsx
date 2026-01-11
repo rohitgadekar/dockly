@@ -109,8 +109,11 @@ const Identity = () => {
             const dataUrl = await toPng(cardRef.current, {
                 quality: 1,
                 pixelRatio: 2,
-                cacheBust: true,
-                skipFonts: true, // Speeds up rendering and avoids font loading issues
+                cacheBust: false, // Signed URLs are already unique
+                skipFonts: true,
+                style: {
+                    transform: 'none', // Remove any 3D tilt before capture
+                }
             });
             const link = document.createElement("a");
             link.download = `${data?.profile?.username || 'user'}-identity-card.png`;
