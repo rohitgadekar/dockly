@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useTitle } from "@/hooks/useTitle";
 
 const Landing = () => {
-    useTitle("High Performance Digital Estate");
+    useTitle("Premium Creator Presence | Docked");
     const navigate = useNavigate();
 
     return (
@@ -22,9 +22,9 @@ const Landing = () => {
                         DOCKED<span className="text-luxury-gold">.</span>PRO
                     </div>
                     <div className="hidden md:flex items-center gap-8 font-plus text-sm uppercase tracking-widest text-white/60">
-                        <a href="#matrix" className="hover:text-white transition-colors">The Matrix</a>
-                        <a href="#command" className="hover:text-white transition-colors">Command</a>
-                        <a href="#citadel" className="hover:text-white transition-colors">Citadel</a>
+                        <a href="#studio" className="hover:text-white transition-colors">The Studio</a>
+                        <a href="#insights" className="hover:text-white transition-colors">Insights</a>
+                        <a href="#vault" className="hover:text-white transition-colors">The Vault</a>
                     </div>
                     <Button
                         variant="luxury"
@@ -49,7 +49,7 @@ const Landing = () => {
                     className="mb-6 inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass border-luxury-gold/20 text-luxury-gold text-xs font-syncopate uppercase tracking-[0.2em]"
                 >
                     <Sparkles size={14} />
-                    The Executive Link-in-Bio
+                    The Elite Creator Link-in-Bio
                 </motion.div>
 
                 <motion.h1
@@ -58,8 +58,8 @@ const Landing = () => {
                     transition={{ duration: 0.8, delay: 0.2 }}
                     className="text-4xl sm:text-6xl md:text-8xl font-syncopate font-bold tracking-tighter mb-8 max-w-5xl leading-[1.1] px-4"
                 >
-                    ELEVATE YOUR <br />
-                    <span className="text-gradient">DIGITAL ESTATE</span>
+                    CURATE YOUR <br />
+                    <span className="text-gradient">DIGITAL LEGACY</span>
                 </motion.h1>
 
                 <motion.p
@@ -68,9 +68,9 @@ const Landing = () => {
                     transition={{ duration: 0.8, delay: 0.4 }}
                     className="text-lg md:text-2xl text-white/40 font-plus max-w-3xl mb-12 px-4"
                 >
-                    The definitive high performance engine for your digital presence.
-                    Lightning fast delivery meets tactical intelligence.
-                    Managed with absolute precision. Guaranteed 100% uptime.
+                    The definitive luxury home for your online influence.
+                    Stunning aesthetics meet effortless performance.
+                    Showcase your work with the precision it deserves.
                 </motion.p>
 
                 <motion.div
@@ -80,10 +80,10 @@ const Landing = () => {
                     className="flex flex-col md:flex-row gap-4"
                 >
                     <Button variant="luxury" size="lg" className="group" onClick={() => navigate('/auth')}>
-                        Claim Your Username <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+                        Claim Your Handle <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                     </Button>
-                    <Button variant="outline" size="lg" onClick={() => document.getElementById('matrix')?.scrollIntoView({ behavior: 'smooth' })}>
-                        Explore The Ecosystem
+                    <Button variant="outline" size="lg" onClick={() => document.getElementById('studio')?.scrollIntoView({ behavior: 'smooth' })}>
+                        Explore The Features
                     </Button>
                 </motion.div>
 
@@ -109,24 +109,24 @@ const Landing = () => {
             {/* Deep Feature Breakdown */}
             <section className="py-20 md:py-32 px-6 max-w-7xl mx-auto space-y-24 md:space-y-32">
                 {/* Performance Matrix Detail */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+                <div id="studio" className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
                     <div className="order-2 lg:order-1">
                         <div className="inline-flex items-center gap-3 px-4 py-2 bg-luxury-gold/10 border border-luxury-gold/20 rounded-full mb-8">
                             <Zap size={16} className="text-luxury-gold" />
-                            <span className="text-[10px] font-syncopate uppercase tracking-[0.2em] text-luxury-gold">The Performance Matrix</span>
+                            <span className="text-[10px] font-syncopate uppercase tracking-[0.2em] text-luxury-gold">Elite Performance</span>
                         </div>
                         <h3 className="text-3xl sm:text-4xl md:text-5xl font-syncopate font-bold uppercase tracking-tighter mb-8 leading-tight">
-                            FLASH CORE<br /><span className="text-gradient">ARCHITECTURE</span>
+                            INSTANT<br /><span className="text-gradient">EXPERIENCE</span>
                         </h3>
                         <p className="text-xl text-white/40 font-plus mb-10 leading-relaxed">
-                            Engineered for zero latency. Docked utilizes a lightning fast global edge network to deliver your digital estate
-                            to visitors instantly. No loaders, no delays just pure high fidelity performance.
+                            Never let a slow site lose a fan. Docked ensures your profile loads instantly across the globe.
+                            Showcase your content in high-fidelity without the wait.
                         </p>
                         <div className="space-y-6">
                             {[
-                                { title: "Zero Latency", desc: "Global edge delivery for sub 100ms response times worldwide." },
-                                { title: "100% Uptime", desc: "Sovereign infrastructure guarantees your presence is never offline." },
-                                { title: "Kinetic UI", desc: "High performance animations that move at the speed of thought." }
+                                { title: "Global Speed", desc: "Your page loads in milliseconds, no matter where your fans are." },
+                                { title: "Zero Lag", desc: "Smooth transitions that match the premium feel of your brand." },
+                                { title: "Uptime Guaranteed", desc: "Your digital home is always open for business and discovery." }
                             ].map((item, i) => (
                                 <div key={i} className="flex items-start gap-4">
                                     <div className="w-1 h-1 rounded-full bg-luxury-gold mt-2 shrink-0 shadow-[0_0_8px_#D4AF37]" />
@@ -141,14 +141,13 @@ const Landing = () => {
                     <div className="order-1 lg:order-2 relative aspect-square">
                         <div className="absolute inset-0 bg-luxury-gold/5 blur-[120px] rounded-full" />
                         <Card className="h-full aspect-square border-white/10 bg-black/40 flex items-center justify-center p-0 overflow-hidden group">
-                            <div className="text-6xl text-luxury-gold/10 font-syncopate animate-pulse tracking-tighter">SPEED NODE</div>
-
+                            <div className="text-6xl text-luxury-gold/10 font-syncopate animate-pulse tracking-tighter uppercase text-center">Pure<br />Speed</div>
                         </Card>
                     </div>
                 </div>
 
                 {/* Command Deck Detail */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+                <div id="insights" className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
                     <div className="relative aspect-square">
                         <div className="absolute inset-0 bg-emerald-500/5 blur-[120px] rounded-full" />
                         <Card className="h-full border-white/10 bg-black/40 flex items-center justify-center p-0 overflow-hidden group">
@@ -158,20 +157,20 @@ const Landing = () => {
                     <div>
                         <div className="inline-flex items-center gap-3 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full mb-8">
                             <Activity size={16} className="text-emerald-500" />
-                            <span className="text-[10px] font-syncopate uppercase tracking-[0.2em] text-emerald-500">The Command Deck</span>
+                            <span className="text-[10px] font-syncopate uppercase tracking-[0.2em] text-emerald-500">Creative Control</span>
                         </div>
                         <h3 className="text-3xl sm:text-4xl md:text-5xl font-syncopate font-bold uppercase tracking-tighter mb-8 leading-tight">
-                            TACTICAL<br /><span className="text-[#10B981]">INTELLIGENCE</span>
+                            AUDIENCE<br /><span className="text-[#10B981]">INSIGHTS</span>
                         </h3>
                         <p className="text-xl text-white/40 font-plus mb-10 leading-relaxed">
-                            Monitor your digital estate with a high fidelity command interface. Real time telemetry,
-                            engagement velocity charts, and node integrity diagnostics provide surgical insight into your global presence.
+                            Understand your fans like never before. Track engagement, link clicks, and
+                            visitor growth through an elegant dashboard designed for creators.
                         </p>
                         <div className="space-y-6">
                             {[
-                                { title: "Neural Trajectory", desc: "Live updating area charts tracking engagement vectors." },
-                                { title: "Pulse Stream", desc: "Kinetic bar graphs visualizing network saturation." },
-                                { title: "Node Diagnostics", desc: "Real time latency and sovereignty monitoring." }
+                                { title: "Growth Tracking", desc: "Watch your audience grow with beautiful, easy-to-read charts." },
+                                { title: "Click Analytics", desc: "Know exactly which projects and links your fans love most." },
+                                { title: "Real-time Feed", desc: "Stay connected with live updates on your profile's performance." }
                             ].map((item, i) => (
                                 <div key={i} className="flex items-start gap-4">
                                     <div className="w-1 h-1 rounded-full bg-emerald-500 mt-2 shrink-0 shadow-[0_0_8px_#10B981]" />
@@ -238,21 +237,21 @@ const Landing = () => {
                     <div className="order-1 lg:order-2">
                         <div className="inline-flex items-center gap-3 px-4 py-2 bg-luxury-gold/10 border border-luxury-gold/20 rounded-full mb-8 font-syncopate">
                             <Radio size={16} className="text-luxury-gold" />
-                            <span className="text-[10px] uppercase tracking-[0.2em] text-luxury-gold">Temporal Protocols</span>
+                            <span className="text-[10px] uppercase tracking-[0.2em] text-luxury-gold">Behind the Scenes</span>
                         </div>
                         <h3 className="text-3xl sm:text-4xl md:text-5xl font-syncopate font-bold uppercase tracking-tighter mb-8 leading-tight">
-                            TEMPORAL<br /><span className="text-white">CHRONICLES</span>
+                            CREATOR<br /><span className="text-white">STORIES</span>
                         </h3>
                         <p className="text-xl text-white/40 font-plus mb-10 leading-relaxed">
-                            Broadcast ephemeral instances of your professional journey. Share high fidelity
-                            visual narratives that exist for 24 hours before dissolving into the digital void.
+                            Share ephemeral moments of your day. Post high-quality updates and vertical
+                            video content that lives for 24 hours on your premium profile.
                         </p>
                         <div className="space-y-6">
                             {[
-                                { title: "24-Hour Persistence", desc: "Instances automatically expire after 24 hours of terrestrial time." },
-                                { title: "High Fidelity Media", desc: "Support for ultra-dense imagery and 30-second cinematic video captures." },
-                                { title: "Immersive Playback", desc: "Auto-progressing holographic viewer with unmuted auditory resonance." },
-                                { title: "Sovereign Control", desc: "Directly manage and purge instances from your tactical settings vault." }
+                                { title: "24-Hour Moments", desc: "Keep your fans engaged with daily, disappearable updates." },
+                                { title: "Stunning Visuals", desc: "Optimized for both high-resolution photos and vertical videos." },
+                                { title: "Immersive View", desc: "A cinematic viewing experience for your audience to dive into your world." },
+                                { title: "Easy Management", desc: "Upload and manage your stories directly from your phone." }
                             ].map((item, i) => (
                                 <div key={i} className="flex items-start gap-4">
                                     <div className="w-1 h-1 rounded-full bg-luxury-gold mt-2 shrink-0 shadow-[0_0_8px_#D4AF37]" />
@@ -268,13 +267,13 @@ const Landing = () => {
             </section>
 
             {/* Why we standout Section */}
-            <section id="citadel" className="py-32 px-6 bg-white/[0.02] border-y border-white/5 relative overflow-hidden">
+            <section id="vault" className="py-32 px-6 bg-white/[0.02] border-y border-white/5 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-luxury-gold/5 blur-[150px] rounded-full -z-10" />
 
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-24">
                         <h2 className="text-xs font-syncopate text-luxury-gold uppercase tracking-[0.5em] mb-4">The Differentiator</h2>
-                        <h3 className="text-3xl sm:text-4xl md:text-5xl font-syncopate font-bold uppercase tracking-tighter">BEYOND THE LINK LIST</h3>
+                        <h3 className="text-3xl sm:text-4xl md:text-5xl font-syncopate font-bold uppercase tracking-tighter">BEYOND THE BASIC LINK</h3>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
@@ -284,12 +283,12 @@ const Landing = () => {
                                     <div className="w-14 h-14 rounded-[1.5rem] bg-luxury-gold/10 flex items-center justify-center text-luxury-gold border border-luxury-gold/20 group-hover:scale-110 transition-all duration-500 shadow-[0_0_20px_rgba(212,175,55,0.1)]">
                                         <Zap size={24} />
                                     </div>
-                                    <h4 className="text-2xl font-syncopate font-bold uppercase tracking-tight text-white">High Frequency Core</h4>
+                                    <h4 className="text-2xl font-syncopate font-bold uppercase tracking-tight text-white">Elite Brand Speed</h4>
                                 </div>
                                 <p className="text-lg text-white/30 font-plus leading-relaxed">
-                                    While others provide bloated templates, we deliver a high frequency performance layer.
-                                    Your digital estate loads with sub 100ms precision globally, ensuring your first
-                                    impression is as instantaneous as your ambition.
+                                    While others provide basic templates, we offer an elite experience.
+                                    Your page loads with absolute precision, ensuring that first impression
+                                    is as powerful as your content.
                                 </p>
                             </div>
 
@@ -298,12 +297,12 @@ const Landing = () => {
                                     <div className="w-14 h-14 rounded-[1.5rem] bg-white/5 flex items-center justify-center text-white border border-white/5 group-hover:scale-110 transition-all duration-500 group-hover:text-[#1DB954] group-hover:border-[#1DB954]/20">
                                         <Music size={24} />
                                     </div>
-                                    <h4 className="text-2xl font-syncopate font-bold uppercase tracking-tight text-white">Sonic Signatures</h4>
+                                    <h4 className="text-2xl font-syncopate font-bold uppercase tracking-tight text-white">Signature Sound</h4>
                                 </div>
                                 <p className="text-lg text-white/30 font-plus leading-relaxed">
-                                    Curate your auditory brand with the "Top 5 Identity Matrix." Broadcast your
-                                    definitive musical signature through high fidelity Spotify integration,
-                                    synchronizing your professional aesthetic with curated auditory resonance.
+                                    Sync your vibe with our Spotify integration.
+                                    Showcase your top 5 tracks and let your fans listen to your brand's
+                                    auditory signature in high-fidelity.
                                 </p>
                             </div>
 
@@ -312,12 +311,12 @@ const Landing = () => {
                                     <div className="w-14 h-14 rounded-[1.5rem] bg-white/5 flex items-center justify-center text-white border border-white/5 group-hover:scale-110 transition-all duration-500 group-hover:text-luxury-gold group-hover:border-luxury-gold/20">
                                         <Shield size={24} />
                                     </div>
-                                    <h4 className="text-2xl font-syncopate font-bold uppercase tracking-tight text-white">Sovereign Vault</h4>
+                                    <h4 className="text-2xl font-syncopate font-bold uppercase tracking-tight text-white">Private & Secure</h4>
                                 </div>
                                 <p className="text-lg text-white/30 font-plus leading-relaxed">
-                                    Your identity is an archival asset, not a data point. Utilizing "Citadel"
-                                    protocols, your estate is siloed within an encrypted holographic node,
-                                    managed through a high precision tactical Command Deck.
+                                    Your personal data is your own asset.
+                                    Managed through a beautifully designed Creator Deck, your information
+                                    and content are stored in a secure, private vault.
                                 </p>
                             </div>
                         </div>
@@ -338,8 +337,8 @@ const Landing = () => {
                                     <div className="w-32 h-32 mx-auto mb-8 bg-luxury-gold/10 rounded-[3rem] border border-luxury-gold/30 flex items-center justify-center">
                                         <Zap size={64} className="text-luxury-gold animate-pulse" />
                                     </div>
-                                    <div className="text-[10px] font-syncopate text-luxury-gold uppercase tracking-[0.5em] mb-4">Authenticated</div>
-                                    <div className="text-4xl font-syncopate font-bold text-white tracking-tighter">CITADEL V4.2</div>
+                                    <div className="text-[10px] font-syncopate text-luxury-gold uppercase tracking-[0.5em] mb-4">Private Vault</div>
+                                    <div className="text-4xl font-syncopate font-bold text-white tracking-tighter">BRAND STUDIO</div>
                                 </div>
                             </Card>
                         </div>
@@ -433,25 +432,25 @@ const Landing = () => {
                     <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-luxury-gold/5 to-transparent pointer-events-none" />
                     <div className="flex flex-col md:flex-row gap-16 items-center">
                         <div className="flex-1 text-left">
-                            <h2 className="text-xs font-syncopate text-luxury-gold uppercase tracking-[0.5em] mb-6">Surgical Precision</h2>
-                            <h3 className="text-3xl sm:text-4xl md:text-5xl font-syncopate font-bold uppercase mb-8 leading-tight">SHARE YOUR<br />SOVEREIGN</h3>
+                            <h2 className="text-xs font-syncopate text-luxury-gold uppercase tracking-[0.5em] mb-6">Elegance in Design</h2>
+                            <h3 className="text-3xl sm:text-4xl md:text-5xl font-syncopate font-bold uppercase mb-8 leading-tight">YOUR SIGNATURE<br />PRESENCE</h3>
                             <p className="text-xl text-white/40 font-plus mb-10 leading-relaxed">
-                                Broadcast your digital presence through an ultra premium, 3D holographic identity node.
-                                Securely share your coded profile with absolute authority, utilizing high fidelity
-                                archival aesthetics that command attention.
+                                Share your world through a stunning, boutique link-in-bio experience.
+                                Securely curate your best work on a platform that looks as premium as you do,
+                                with high-end aesthetics that command attention from every visitor.
                             </p>
                             <div className="flex flex-col gap-6">
                                 <div className="flex items-center gap-4 group cursor-default">
                                     <div className="w-2 h-2 rounded-full bg-luxury-gold group-hover:scale-150 transition-transform shadow-[0_0_8px_#D4AF37]" />
-                                    <span className="text-sm font-syncopate uppercase tracking-widest text-white/60">Instant Sovereign Transmission</span>
+                                    <span className="text-sm font-syncopate uppercase tracking-widest text-white/60">Boutique Brand Transmission</span>
                                 </div>
                                 <div className="flex items-center gap-4 group cursor-default">
                                     <div className="w-2 h-2 rounded-full bg-luxury-gold group-hover:scale-150 transition-transform shadow-[0_0_8px_#D4AF37]" />
-                                    <span className="text-sm font-syncopate uppercase tracking-widest text-white/60">Secure Coded Profile Vault</span>
+                                    <span className="text-sm font-syncopate uppercase tracking-widest text-white/60">Secure Content Archive</span>
                                 </div>
                                 <div className="flex items-center gap-4 group cursor-default">
                                     <div className="w-2 h-2 rounded-full bg-luxury-gold group-hover:scale-150 transition-transform shadow-[0_0_8px_#D4AF37]" />
-                                    <span className="text-sm font-syncopate uppercase tracking-widest text-white/60">High Fidelity Archival Asset</span>
+                                    <span className="text-sm font-syncopate uppercase tracking-widest text-white/60">High-End Digital Identity</span>
                                 </div>
                             </div>
                         </div>
@@ -484,11 +483,11 @@ const Landing = () => {
                                 DOCKED<span className="text-luxury-gold">.</span>PRO
                             </div>
                             <p className="text-white/30 font-plus text-sm max-w-sm leading-relaxed uppercase tracking-wider">
-                                The definitive high performance digital estate for individuals of distinction.
-                                Managed by surgical precision, broadcasted via sovereign nodes.
+                                The ultimate premium link for creators and influencers of distinction.
+                                Designed with elegance, shared with personality.
                             </p>
                             <div className="pt-4 flex flex-col gap-2">
-                                <span className="text-[10px] font-syncopate text-white/10 uppercase tracking-[0.4em]">Propulsion Systems</span>
+                                <span className="text-[10px] font-syncopate text-white/10 uppercase tracking-[0.4em]">The Creative Ecosystem</span>
                                 <a href="https://eagles.rohitgadekar.dev" target="_blank" rel="noopener noreferrer" className="group inline-flex items-center gap-2">
                                     <span className="text-[11px] font-syncopate text-white/40 group-hover:text-luxury-gold transition-colors uppercase tracking-[0.2em]">A Product by EAGLES LABS</span>
                                     <ArrowRight size={12} className="text-white/20 group-hover:text-luxury-gold group-hover:translate-x-1 transition-all" />
