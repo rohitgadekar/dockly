@@ -34,8 +34,10 @@ const AuthHashHandler = () => {
             const params = new URLSearchParams(hash.substring(1));
             const type = params.get("type");
             const accessToken = params.get("access_token");
+            const errorCode = params.get("error_code");
 
-            if ((type === "invite" || type === "recovery") && accessToken) {
+            // Redirect if we have a valid token OR an error from an invite/recovery attempt
+            if ((type === "invite" || type === "recovery") && (accessToken || errorCode)) {
                 // Tactical redirect to credential update matrix
                 navigate(`/auth/update-password${hash}`, { replace: true });
             }
