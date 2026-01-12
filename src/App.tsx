@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { Toaster } from "sonner";
 import Landing from "@/pages/Landing";
 import Dashboard from "@/pages/Dashboard";
@@ -24,11 +25,32 @@ import Protocol from "@/pages/Protocol";
 
 const queryClient = new QueryClient();
 
+const AuthHashHandler = () => {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const hash = window.location.hash;
+        if (hash) {
+            const params = new URLSearchParams(hash.substring(1));
+            const type = params.get("type");
+            const accessToken = params.get("access_token");
+
+            if ((type === "invite" || type === "recovery") && accessToken) {
+                // Tactical redirect to credential update matrix
+                navigate(`/auth/update-password${hash}`, { replace: true });
+            }
+        }
+    }, [navigate]);
+
+    return null;
+};
+
 function App() {
     return (
         <QueryClientProvider client={queryClient}>
             <ReactLenis root>
                 <BrowserRouter>
+                    <AuthHashHandler />
                     <div className="relative min-h-screen">
                         <div className="noise" />
                         <Toaster

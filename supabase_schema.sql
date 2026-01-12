@@ -88,12 +88,27 @@ CREATE POLICY "Users can manage their own curated products." ON curated_products
 -- Create a function to handle new user creation
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger AS $$
+DECLARE
+  temp_username TEXT;
 BEGIN
+  -- Generate a temporary username if none provided (e.g., during dashboard invites)
+  temp_username := COALESCE(
+    lower(new.raw_user_meta_data->>'username'),
+    split_part(new.email, '@', 1),
+    'user_' || substr(md5(random()::text), 1, 8)
+  );
+
+  -- Ensure uniqueness (append a short random string if needed)
+  -- This is a simple safe-guard
+  IF EXISTS (SELECT 1 FROM public.profiles WHERE username = temp_username) THEN
+    temp_username := temp_username || '_' || substr(md5(random()::text), 1, 4);
+  END IF;
+
   INSERT INTO public.profiles (id, full_name, username, avatar_url, role)
   VALUES (
     new.id,
     new.raw_user_meta_data->>'full_name',
-    lower(new.raw_user_meta_data->>'username'),
+    temp_username,
     new.raw_user_meta_data->>'avatar_url',
     COALESCE(new.raw_user_meta_data->>'role', 'Creator')
   );

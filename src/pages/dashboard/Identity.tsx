@@ -109,10 +109,15 @@ const Identity = () => {
             const dataUrl = await toPng(cardRef.current, {
                 quality: 1,
                 pixelRatio: 2,
-                cacheBust: false, // Signed URLs are already unique
+                cacheBust: false,
                 skipFonts: true,
+                backgroundColor: 'rgba(0,0,0,0)', // Ensure transparency for rounded corners
                 style: {
-                    transform: 'none', // Remove any 3D tilt before capture
+                    transform: 'none',
+                    borderRadius: '2.5rem',
+                    boxShadow: 'none', // Prevent shadow bleeding into square corners
+                    margin: '0',
+                    padding: '0'
                 }
             });
             const link = document.createElement("a");
