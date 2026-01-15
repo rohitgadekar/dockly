@@ -68,7 +68,7 @@ const PremiumQR = ({ url }: { url: string }) => {
 };
 
 const Identity = () => {
-    useTitle("Sovereign Identity");
+    useTitle("Brand Identity");
     const { data } = useDashboard();
     const cardRef = useRef<HTMLDivElement>(null);
     const [isDownloading, setIsDownloading] = useState(false);
@@ -124,10 +124,10 @@ const Identity = () => {
             link.download = `${data?.profile?.username || 'user'}-identity-card.png`;
             link.href = dataUrl;
             link.click();
-            toast.success("Identity Card Archive created.");
+            toast.success("Premium Identity Card downloaded.");
         } catch (err) {
             console.error(err);
-            toast.error("Archive extraction failed.");
+            toast.error("Download failed.");
         } finally {
             setIsDownloading(false);
         }
@@ -136,7 +136,7 @@ const Identity = () => {
     const copyHologramLink = () => {
         const url = `${window.location.origin}/${data?.profile?.username}`;
         navigator.clipboard.writeText(url);
-        toast.success("Identity vector copied to clipboard.");
+        toast.success("Profile link copied.");
     };
 
     if (!data?.profile) return null;
@@ -152,13 +152,13 @@ const Identity = () => {
                         <div className="p-2 bg-luxury-gold/10 rounded-lg border border-luxury-gold/20">
                             <Fingerprint size={18} className="text-luxury-gold" />
                         </div>
-                        <span className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/40">Sovereign Registry</span>
+                        <span className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/40">Creator Profile</span>
                     </div>
                     <h1 className="text-5xl font-syncopate font-bold uppercase tracking-tighter text-white">
-                        IDENTITY <span className="text-luxury-gold">NODE</span>
+                        BRAND <span className="text-luxury-gold">IDENTITY</span>
                     </h1>
                     <p className="text-white/40 font-plus italic mt-4">
-                        Download your cryptographic identity card for global transmission.
+                        Download your premium brand card to share with the world.
                     </p>
                 </div>
 
@@ -209,15 +209,15 @@ const Identity = () => {
                             {/* Header Architecture */}
                             <div className="flex justify-between items-start mb-6">
                                 <div className="space-y-1">
-                                    <div className="text-[9px] font-syncopate font-bold text-luxury-gold uppercase tracking-[0.4em] drop-shadow-[0_0_8px_rgba(212,175,55,0.4)]">Sovereign Node</div>
-                                    <div className="text-[7px] font-syncopate text-white/20 uppercase tracking-[0.2em]">Registry v4.2.1-ARCHIVE</div>
+                                    <div className="text-[9px] font-syncopate font-bold text-luxury-gold uppercase tracking-[0.4em] drop-shadow-[0_0_8px_rgba(212,175,55,0.4)]">Brand Card</div>
+                                    <div className="text-[7px] font-syncopate text-white/20 uppercase tracking-[0.2em]">Digital ID v4.2</div>
                                 </div>
                                 <div className="w-10 h-10 rounded-xl bg-luxury-gold/5 border border-luxury-gold/20 flex items-center justify-center">
                                     <Zap size={16} className="text-luxury-gold opacity-40 shadow-[0_0_10px_rgba(212,175,55,0.2)]" />
                                 </div>
                             </div>
 
-                            {/* Biometric Portal (Avatar) */}
+                            {/* Profile Visual (Avatar) */}
                             <div className="relative mb-6 self-center">
                                 <div className="absolute -inset-1 bg-gradient-to-tr from-luxury-gold/30 via-transparent to-luxury-gold/30 rounded-[2.5rem] blur-sm opacity-50" />
                                 <div className="relative w-40 h-40 rounded-[2.2rem] overflow-hidden border border-white/10 p-1 bg-black shadow-2xl">
@@ -235,7 +235,7 @@ const Identity = () => {
                                 <div className="absolute -bottom-2 -right-2 w-8 h-8 border-b border-r border-luxury-gold rounded-br-[2.5rem]" />
                             </div>
 
-                            {/* Persona Matrix */}
+                            {/* Brand Persona */}
                             <div className="text-center space-y-3 mb-6 flex-1 flex flex-col justify-center">
                                 <h2 className="text-3xl font-syncopate font-bold text-white tracking-tighter uppercase leading-none">
                                     {data.profile.full_name}
@@ -258,7 +258,7 @@ const Identity = () => {
                                 <div className="flex items-center gap-6">
                                     <PremiumQR url={profileUrl} />
                                     <div className="space-y-1">
-                                        <div className="text-[8px] font-syncopate text-luxury-gold uppercase tracking-[0.4em] font-bold">Vector Scan</div>
+                                        <div className="text-[8px] font-syncopate text-luxury-gold uppercase tracking-[0.4em] font-bold">Scan to View</div>
                                         <div className="text-[6px] font-mono text-white/20 tracking-[0.3em] uppercase">Auth: {data.profile.username?.toUpperCase()}</div>
                                     </div>
                                 </div>
@@ -275,7 +275,7 @@ const Identity = () => {
                                             />
                                         ))}
                                     </div>
-                                    <div className="text-[6px] font-syncopate text-white/20 uppercase tracking-[0.5em]">Identity Token</div>
+                                    <div className="text-[6px] font-syncopate text-white/20 uppercase tracking-[0.5em]">Signature ID</div>
                                 </div>
                             </div>
 
@@ -293,17 +293,17 @@ const Identity = () => {
                     </motion.div>
                 </div>
 
-                {/* Technical Information Architecture */}
+                {/* Identity Features Information */}
                 <div className="space-y-12 py-12 flex flex-col h-full justify-center">
                     <div className="space-y-4 mb-2">
                         <div className="flex items-center gap-4">
                             <div className="w-10 h-[1px] bg-luxury-gold/30" />
                             <h3 className="text-[11px] font-syncopate font-bold text-luxury-gold uppercase tracking-[0.5em]">
-                                Technical Manifest
+                                Premium Features
                             </h3>
                         </div>
                         <p className="text-white/20 font-plus text-xs italic ml-14">
-                            Advanced hardware-accelerated identity rendering protocols.
+                            Elegant and high-fidelity brand presentation.
                         </p>
                     </div>
 
@@ -317,11 +317,11 @@ const Identity = () => {
                                 </div>
                                 <div className="space-y-4">
                                     <h4 className="text-[10px] font-syncopate font-bold text-white uppercase tracking-[0.3em] leading-none">
-                                        Cryptographic Root
+                                        Verified Identity
                                     </h4>
                                     <p className="text-[11px] text-white/30 font-plus leading-relaxed">
-                                        Your identity node is cross-referenced with your secure Citadel registry.
-                                        The embedded luxury barcode contains an encrypted vector to your digital estate.
+                                        Your identity is verified and linked to your personal brand studio.
+                                        The QR code provides a direct link for fans to explore your world.
                                     </p>
                                 </div>
                             </div>
@@ -336,11 +336,11 @@ const Identity = () => {
                                 </div>
                                 <div className="space-y-4">
                                     <h4 className="text-[10px] font-syncopate font-bold text-white uppercase tracking-[0.3em] leading-none">
-                                        Kinetic Response
+                                        Fluid Motion
                                     </h4>
                                     <p className="text-[11px] text-white/30 font-plus leading-relaxed">
-                                        The card interface utilizes 120Hz kinetic interpolation for real-time 3D tilt tracking,
-                                        creating a tangible architectural feel on any device.
+                                        Experience a premium, responsive interface with smooth 3D motion
+                                        that makes your identity feel alive on any device.
                                     </p>
                                 </div>
                             </div>
@@ -355,11 +355,11 @@ const Identity = () => {
                                 </div>
                                 <div className="space-y-4">
                                     <h4 className="text-[10px] font-syncopate font-bold text-white uppercase tracking-[0.3em] leading-none">
-                                        Prismatic Optics
+                                        Elegant Aesthetics
                                     </h4>
                                     <p className="text-[11px] text-white/30 font-plus leading-relaxed">
-                                        Integrated light-sweep shaders and rim-refraction layers simulate
-                                        physical material properties under varying local light sources.
+                                        Beautifully crafted visuals and lighting effects ensure your brand card
+                                        looks stunning in any digital environment.
                                     </p>
                                 </div>
                             </div>
@@ -374,11 +374,11 @@ const Identity = () => {
                                 </div>
                                 <div className="space-y-4">
                                     <h4 className="text-[10px] font-syncopate font-bold text-white uppercase tracking-[0.3em] leading-none">
-                                        Transmission Ready
+                                        Global Sharing
                                     </h4>
                                     <p className="text-[11px] text-white/30 font-plus leading-relaxed">
-                                        Export your identity node as a high-fidelity high-density PNG
-                                        for seamless transmission across all known social networks.
+                                        Download your brand identity in high resolution to share across
+                                        all your social platforms seamlessly.
                                     </p>
                                 </div>
                             </div>
@@ -394,9 +394,9 @@ const Identity = () => {
                             <Fingerprint size={32} strokeWidth={1} />
                         </div>
                         <div className="space-y-2">
-                            <div className="text-[10px] font-syncopate font-bold text-luxury-gold uppercase tracking-[0.3em]">Authenticated Identity</div>
+                            <div className="text-[10px] font-syncopate font-bold text-luxury-gold uppercase tracking-[0.3em]">Verified Brand</div>
                             <p className="text-[9px] text-white/30 font-syncopate uppercase tracking-widest leading-relaxed">
-                                Your digital estate protocol version: <span className="text-white/60">4.2.1-ARCHIVE</span>. Sovereign encryption verified.
+                                Your premium brand profile is active. Professional identity verified.
                             </p>
                         </div>
                         <div className="ml-auto w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />

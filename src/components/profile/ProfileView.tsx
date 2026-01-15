@@ -73,6 +73,14 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
     const [isStoryViewerOpen, setIsStoryViewerOpen] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
     const [currentDuration, setCurrentDuration] = useState<number | null>(null);
+    const [imageLoaded, setImageLoaded] = useState(false);
+
+    const getInitials = (name: string) => {
+        if (!name) return "??";
+        const parts = name.trim().split(/\s+/);
+        if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    };
 
     const handleNextStory = () => {
         setActiveStoryIndex((prev) => {
@@ -266,11 +274,33 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                     boxShadow: `0 30px 60px -12px rgba(0,0,0,0.5), 0 0 0 1px ${theme.primary}20`
                                 }}
                             >
-                                <img
-                                    src={user.avatar_url || "/dp.png"}
-                                    alt={user.full_name}
-                                    className="w-full h-full object-cover rounded-full transition-transform duration-500 ease-out"
-                                />
+                                <div className="w-full h-full relative rounded-full overflow-hidden">
+                                    <AnimatePresence>
+                                        {!imageLoaded && (
+                                            <motion.div
+                                                initial={{ opacity: 1 }}
+                                                exit={{ opacity: 0 }}
+                                                className="absolute inset-0 flex items-center justify-center font-bold text-4xl md:text-6xl select-none"
+                                                style={{
+                                                    backgroundColor: isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)',
+                                                    color: theme.primary,
+                                                    fontFamily: theme.font
+                                                }}
+                                            >
+                                                {getInitials(user.full_name || 'Anonymous')}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                    <img
+                                        src={user.avatar_url || "/dp.png"}
+                                        alt={user.full_name}
+                                        onLoad={() => setImageLoaded(true)}
+                                        className={cn(
+                                            "w-full h-full object-cover rounded-full transition-all duration-1000 ease-out",
+                                            imageLoaded ? "opacity-100 scale-100 pb-0" : "opacity-0 scale-110"
+                                        )}
+                                    />
+                                </div>
                             </div>
 
                             {/* Prestige Badge / Story Trigger */}
@@ -334,7 +364,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                     {/* Featured Track */}
                                     <div className="w-full max-w-4xl relative group">
                                         <div
-                                            className="relative aspect-[16/9] md:aspect-[21/9] rounded-[3rem] overflow-hidden cursor-pointer border shadow-2xl transition-all duration-700 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)]"
+                                            className="relative aspect-[16/9] md:aspect-[21/9] rounded-[2rem] overflow-hidden cursor-pointer border shadow-2xl transition-all duration-700 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)]"
                                             style={{ borderColor: cardBorder }}
                                             onClick={() => togglePreview(user.top_tracks[0].previewUrl)}
                                         >
@@ -378,7 +408,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                 <div
                                                     key={track.id}
                                                     onClick={() => togglePreview(track.previewUrl)}
-                                                    className="group relative aspect-[16/9] md:aspect-[21/9] rounded-[2rem] overflow-hidden border bg-white/[0.02] cursor-pointer transition-all duration-300 shadow-xl"
+                                                    className="group relative aspect-[16/9]  rounded-[2rem] overflow-hidden border bg-white/[0.02] cursor-pointer transition-all duration-300 shadow-xl"
                                                     style={{ borderColor: playingPreview === track.previewUrl ? `${theme.primary}40` : cardBorder }}
                                                 >
                                                     <img
