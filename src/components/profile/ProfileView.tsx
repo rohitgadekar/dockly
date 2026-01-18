@@ -38,7 +38,8 @@ import {
     FaMedium,
     FaReddit,
     FaPatreon,
-    FaGlobe
+    FaGlobe,
+    FaInstagram
 } from "react-icons/fa";
 declare global {
     interface Window {
@@ -64,6 +65,7 @@ const platformIcons: Record<string, any> = {
     Medium: FaMedium,
     Reddit: FaReddit,
     Patreon: FaPatreon,
+    Instagram: FaInstagram,
     Personal: FaGlobe,
     Default: FaGlobe
 };
