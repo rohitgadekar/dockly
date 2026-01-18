@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS profiles (
   currency TEXT DEFAULT 'USD',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   top_tracks JSONB DEFAULT '[]'::jsonb,
+  youtube_channel_id TEXT,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 

@@ -46,6 +46,11 @@ declare global {
         YT: any;
         onYouTubeIframeAPIReady: (() => void) | undefined;
     }
+    interface ImportMeta {
+        env: {
+            [key: string]: string | undefined;
+        };
+    }
 }
 
 const platformIcons: Record<string, any> = {
@@ -209,43 +214,70 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
 
     useEffect(() => {
         if (user.youtube_channel_id) {
-            // Using a CORS proxy for YouTube RSS as it doesn't allow direct browser fetch
             const fetchYT = async () => {
+                const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
+
+                if (!API_KEY) {
+                    console.warn("YouTube API Key missing. Please add VITE_YOUTUBE_API_KEY to your .env file.");
+                    return;
+                }
+
                 let channelId = user.youtube_channel_id;
 
                 try {
-                    // Smart Handle Resolution: If input is a handle (@name) or full URL, resolve to ID
-                    if (channelId.includes('@') || channelId.includes('youtube.com')) {
-                        const handle = channelId.includes('@')
-                            ? channelId.split('@')[1].split('/')[0]
-                            : channelId.split('/').pop()?.replace('@', '');
+                    // 1. Resolve Handle/URL to Channel ID if necessary
+                    if (channelId.includes('@') || channelId.includes('youtube.com') || !channelId.startsWith('UC')) {
+                        let handle = '';
+                        if (channelId.includes('@')) {
+                            handle = channelId.split('@')[1].split('/')[0].split('?')[0];
+                        } else if (channelId.includes('youtube.com/c/')) {
+                            handle = channelId.split('/c/')[1].split('/')[0].split('?')[0];
+                        } else if (channelId.includes('youtube.com/')) {
+                            const parts = channelId.split('/');
+                            const lastPart = parts[parts.length - 1].replace('@', '').split('?')[0];
+                            if (lastPart.startsWith('UC')) {
+                                channelId = lastPart;
+                            } else {
+                                handle = lastPart;
+                            }
+                        } else if (!channelId.startsWith('UC')) {
+                            handle = channelId.replace('@', '');
+                        }
 
-                        const resolveRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://www.youtube.com/@${handle}`)}`);
-                        const resolveData = await resolveRes.json();
-                        const idMatch = resolveData.contents.match(/UC[a-zA-Z0-9_-]{22}/);
-                        if (idMatch) {
-                            channelId = idMatch[0];
+                        if (handle && !channelId.startsWith('UC')) {
+                            // Search for channel by handle/name
+                            const searchRes = await fetch(
+                                `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${handle}&type=channel&key=${API_KEY}`
+                            );
+                            const searchData = await searchRes.json();
+                            if (searchData.items?.[0]?.id?.channelId) {
+                                channelId = searchData.items[0].id.channelId;
+                            }
                         }
                     }
 
-                    const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`)}`);
-                    const data = await response.json();
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(data.contents, "text/xml");
-                    const entries = Array.from(doc.querySelectorAll("entry")).slice(0, 6);
-                    const videos = entries.map(entry => {
-                        const videoId = entry.getElementsByTagName("yt:videoId")[0]?.textContent || entry.querySelector("videoId")?.textContent;
-                        return {
-                            id: videoId,
-                            title: entry.querySelector("title")?.textContent,
-                            link: entry.querySelector("link")?.getAttribute("href"),
-                            thumbnail: `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
-                            published: entry.querySelector("published")?.textContent
-                        };
-                    });
-                    setYtVideos(videos);
+                    // 2. Fetch Latest Videos via Official API
+                    if (channelId.startsWith('UC')) {
+                        const videoRes = await fetch(
+                            `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&maxResults=6&order=date&type=video&key=${API_KEY}`
+                        );
+                        const videoData = await videoRes.json();
+
+                        if (videoData.items) {
+                            const videos = videoData.items.map((item: any) => ({
+                                id: item.id.videoId,
+                                title: item.snippet.title,
+                                link: `https://www.youtube.com/watch?v=${item.id.videoId}`,
+                                thumbnail: item.snippet.thumbnails?.maxres?.url || item.snippet.thumbnails?.high?.url,
+                                published: item.snippet.publishedAt
+                            }));
+                            setYtVideos(videos.filter((v: any) => v.id));
+                        } else if (videoData.error) {
+                            console.error("YouTube API Error:", videoData.error.message);
+                        }
+                    }
                 } catch (error) {
-                    console.error("YouTube Fetch Error:", error);
+                    console.error("YouTube Logic Error:", error);
                 }
             };
             fetchYT();
