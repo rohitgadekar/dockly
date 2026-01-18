@@ -612,7 +612,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                     {/* Featured Track */}
                                     <div className="w-full max-w-4xl relative group">
                                         <div
-                                            className="relative aspect-[16/9] md:aspect-[21/9] rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden cursor-pointer border shadow-2xl transition-all duration-700 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)]"
+                                            className="relative aspect-[16/9] md:aspect-[21/9] rounded-[2rem] md:rounded-[3.5rem] overflow-hidden cursor-pointer border shadow-2xl transition-all duration-700 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)]"
                                             style={{ borderColor: cardBorder }}
                                             onClick={() => togglePreview(user.top_tracks[0].previewUrl)}
                                         >
@@ -704,7 +704,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                     {/* Featured Video */}
                                     <div className="w-full max-w-4xl relative group">
                                         <div
-                                            className="relative aspect-[16/9] md:aspect-video rounded-[3rem]  overflow-hidden cursor-pointer border shadow-2xl transition-all duration-700 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)]"
+                                            className="relative aspect-[16/9] md:aspect-video rounded-[2rem] md:rounded-[3.5rem]  overflow-hidden cursor-pointer border shadow-2xl transition-all duration-700 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)]"
                                             style={{ borderColor: cardBorder }}
                                             onClick={() => setActiveVideoId(ytVideos[0].id)}
                                         >
@@ -753,7 +753,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                 <div
                                                     key={video.id}
                                                     onClick={() => setActiveVideoId(video.id)}
-                                                    className="group relative aspect-[16/9] rounded-2xl md:rounded-[2rem] overflow-hidden border bg-white/[0.02] cursor-pointer transition-all duration-300 shadow-xl"
+                                                    className="group relative aspect-[16/9] rounded-[2rem] overflow-hidden border bg-white/[0.02] cursor-pointer transition-all duration-300 shadow-xl"
                                                     style={{ borderColor: cardBorder }}
                                                 >
                                                     <img
