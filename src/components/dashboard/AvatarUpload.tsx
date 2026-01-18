@@ -17,20 +17,22 @@ export const AvatarUpload = ({ currentUrl, onUploadComplete }: AvatarUploadProps
 
     // Resolve current (potentially path-based) URL
     useEffect(() => {
+        let isMounted = true;
         const resolve = async () => {
             if (!currentUrl) {
-                setResolvedUrl(null);
+                if (isMounted) setResolvedUrl(null);
                 return;
             }
             if (currentUrl.startsWith('http') || currentUrl.startsWith('blob:')) {
-                setResolvedUrl(currentUrl);
+                if (isMounted) setResolvedUrl(currentUrl);
                 return;
             }
             // It's a path, resolve it
-            const { data } = await supabase.storage.from('avatars').createSignedUrl(currentUrl, 3600);
-            setResolvedUrl(data?.signedUrl || null);
+            const { data } = await supabase.storage.from('avatars').createSignedUrl(currentUrl, 31536000);
+            if (isMounted) setResolvedUrl(data?.signedUrl || null);
         };
         resolve();
+        return () => { isMounted = false; };
     }, [currentUrl]);
 
     const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,16 +51,25 @@ export const AvatarUpload = ({ currentUrl, onUploadComplete }: AvatarUploadProps
             // Clean up old avatar if exists
             if (currentUrl) {
                 try {
-                    // Extract path from public URL
-                    // URL format: https://.../storage/v1/object/public/avatars/user_id/filename.ext
-                    const urlParts = currentUrl.split('/avatars/');
-                    if (urlParts.length > 1) {
-                        const oldPath = urlParts[1];
-                        console.log("Purging legacy asset:", oldPath);
-                        await supabase.storage.from('avatars').remove([oldPath]);
+                    let oldPath = "";
+                    if (currentUrl.startsWith('http')) {
+                        // Extract path from full URL (public or signed)
+                        // Looks for /avatars/ and takes everything after it up to a query string
+                        const match = currentUrl.match(/\/avatars\/(.+?)(\?|$)/);
+                        if (match && match[1]) {
+                            oldPath = decodeURIComponent(match[1]);
+                        }
+                    } else if (!currentUrl.startsWith('blob:') && !currentUrl.startsWith('data:')) {
+                        oldPath = currentUrl;
                     }
-                } catch (purgeError) {
-                    console.error("Purge failure:", purgeError);
+
+                    if (oldPath) {
+                        console.log("Purging legacy identity asset:", oldPath);
+                        const { error: purgeError } = await supabase.storage.from('avatars').remove([oldPath]);
+                        if (purgeError) console.error("Purge Error:", purgeError);
+                    }
+                } catch (err) {
+                    console.error("Purge system failure:", err);
                 }
             }
 
@@ -71,7 +82,7 @@ export const AvatarUpload = ({ currentUrl, onUploadComplete }: AvatarUploadProps
 
             if (uploadError) throw uploadError;
 
-            // Store the path, not the public URL, for consistent resolution
+            // Store the relative path, NOT the full public URL, for consistent resolution by hooks
             const { error: updateError } = await supabase
                 .from('profiles')
                 .update({ avatar_url: filePath })
@@ -81,7 +92,7 @@ export const AvatarUpload = ({ currentUrl, onUploadComplete }: AvatarUploadProps
 
             onUploadComplete(filePath);
             toast.success("Identity Visual Synchronized.");
-            setPreviewUrl(null); // Clear preview to show the newly resolved URL
+            setPreviewUrl(null);
         } catch (error: any) {
             toast.error(error.message);
             setPreviewUrl(null);

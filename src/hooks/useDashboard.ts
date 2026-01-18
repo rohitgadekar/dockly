@@ -21,18 +21,25 @@ export function useDashboard() {
                 supabase.from("link_clicks").select("*").eq("profile_id", user.id)
             ]);
 
-            // Helper to generate temporary signed URLs for private content
+            // Helper to generate long-lived URLs (1 year) for avatars to prevent expiration
+            const resolvePermanentUrl = async (url: string, bucket: string) => {
+                if (!url || url.startsWith('http')) return url;
+                // Using 1 year (31,536,000 seconds) as a "permanent" solution
+                const { data } = await supabase.storage.from(bucket).createSignedUrl(url, 31536000);
+                return data?.signedUrl || url;
+            };
+
             const resolveSecureUrl = async (url: string, bucket: string) => {
                 if (!url || url.startsWith('http')) return url;
-                const { data } = await supabase.storage.from(bucket).createSignedUrl(url, 3600); // 1h expiry for dashboard
+                const { data } = await supabase.storage.from(bucket).createSignedUrl(url, 3600); // 1h expiry
                 return data?.signedUrl || url;
             };
 
             const [avatarUrl, resolvedVentures, resolvedProducts, resolvedStories] = await Promise.all([
-                resolveSecureUrl(profile.data?.avatar_url, 'avatars'),
+                resolvePermanentUrl(profile.data?.avatar_url, 'avatars'),
                 Promise.all((ventures.data || []).map(async v => ({ ...v, logo_url: await resolveSecureUrl(v.logo_url, 'ventures') }))),
                 Promise.all((products.data || []).map(async p => ({ ...p, image_url: await resolveSecureUrl(p.image_url, 'products') }))),
-                Promise.all((stories.data || []).map(async s => ({ ...s, media_url: await resolveSecureUrl(s.media_url, 'story-media') })))
+                Promise.all((stories.data || []).map(async s => ({ ...s, media_url: await resolveSecureUrl(s.media_url, 'stories') })))
             ]);
 
             return {
