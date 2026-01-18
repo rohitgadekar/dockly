@@ -222,64 +222,111 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                     return;
                 }
 
+                const CACHE_KEY = `yt_videos_v2_${user.youtube_channel_id}`;
+                const CACHE_DURATION = 1000 * 60 * 60; // 1 hour
+
+                // 1. Check Video Cache
+                try {
+                    const cachedData = localStorage.getItem(CACHE_KEY);
+                    if (cachedData) {
+                        const { timestamp, data } = JSON.parse(cachedData);
+                        if (Date.now() - timestamp < CACHE_DURATION) {
+                            setYtVideos(data);
+                            return;
+                        }
+                    }
+                } catch (e) {
+                    // Ignore cache errors
+                }
+
                 let channelId = user.youtube_channel_id;
 
                 try {
-                    // 1. Resolve Handle/URL to Channel ID if necessary
+                    // 2. Resolve Handle/URL to Channel ID if necessary
                     if (channelId.includes('@') || channelId.includes('youtube.com') || !channelId.startsWith('UC')) {
-                        let handle = '';
-                        if (channelId.includes('@')) {
-                            handle = channelId.split('@')[1].split('/')[0].split('?')[0];
-                        } else if (channelId.includes('youtube.com/c/')) {
-                            handle = channelId.split('/c/')[1].split('/')[0].split('?')[0];
-                        } else if (channelId.includes('youtube.com/')) {
-                            const parts = channelId.split('/');
-                            const lastPart = parts[parts.length - 1].replace('@', '').split('?')[0];
-                            if (lastPart.startsWith('UC')) {
-                                channelId = lastPart;
-                            } else {
-                                handle = lastPart;
-                            }
-                        } else if (!channelId.startsWith('UC')) {
-                            handle = channelId.replace('@', '');
-                        }
+                        const RESOLVED_ID_KEY = `yt_resolved_id_${user.youtube_channel_id}`;
+                        const cachedId = localStorage.getItem(RESOLVED_ID_KEY);
 
-                        if (handle && !channelId.startsWith('UC')) {
-                            // Search for channel by handle/name
-                            const searchRes = await fetch(
-                                `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${handle}&type=channel&key=${API_KEY}`
-                            );
-                            const searchData = await searchRes.json();
-                            if (searchData.items?.[0]?.id?.channelId) {
-                                channelId = searchData.items[0].id.channelId;
+                        if (cachedId) {
+                            channelId = cachedId;
+                        } else {
+                            let handle = '';
+                            if (channelId.includes('@')) {
+                                handle = channelId.split('@')[1].split('/')[0].split('?')[0];
+                            } else if (channelId.includes('youtube.com/c/')) {
+                                handle = channelId.split('/c/')[1].split('/')[0].split('?')[0];
+                            } else if (channelId.includes('youtube.com/')) {
+                                const parts = channelId.split('/');
+                                const lastPart = parts[parts.length - 1].replace('@', '').split('?')[0];
+                                if (lastPart.startsWith('UC')) {
+                                    channelId = lastPart;
+                                } else {
+                                    handle = lastPart;
+                                }
+                            } else if (!channelId.startsWith('UC')) {
+                                handle = channelId.replace('@', '');
+                            }
+
+                            if (handle && !channelId.startsWith('UC')) {
+                                // Search for channel by handle/name (Costly: 100 units, but only once due to caching)
+                                const searchRes = await fetch(
+                                    `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${handle}&type=channel&key=${API_KEY}`
+                                );
+                                const searchData = await searchRes.json();
+                                if (searchData.items?.[0]?.id?.channelId) {
+                                    channelId = searchData.items[0].id.channelId;
+                                    localStorage.setItem(RESOLVED_ID_KEY, channelId);
+                                }
                             }
                         }
                     }
 
-                    // 2. Fetch Latest Videos via Official API
+                    // 3. Fetch Latest Videos via Official API (Optimized: 2 units cost)
                     if (channelId.startsWith('UC')) {
-                        const videoRes = await fetch(
-                            `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&maxResults=6&order=date&type=video&key=${API_KEY}`
+                        // Get Uploads Content Details (Cost: 1 unit)
+                        const channelRes = await fetch(
+                            `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${API_KEY}`
                         );
-                        const videoData = await videoRes.json();
+                        const channelData = await channelRes.json();
 
-                        if (videoData.items) {
-                            const decodeHTML = (html: string) => {
-                                const txt = document.createElement("textarea");
-                                txt.innerHTML = html;
-                                return txt.value;
-                            };
+                        if (channelData.error) {
+                            console.error("YouTube API Error (Channel):", channelData.error.message);
+                            return;
+                        }
 
-                            const videos = videoData.items.map((item: any) => ({
-                                id: item.id.videoId,
-                                title: decodeHTML(item.snippet.title),
-                                link: `https://www.youtube.com/watch?v=${item.id.videoId}`,
-                                thumbnail: item.snippet.thumbnails?.maxres?.url || item.snippet.thumbnails?.high?.url,
-                                published: item.snippet.publishedAt
-                            }));
-                            setYtVideos(videos.filter((v: any) => v.id));
-                        } else if (videoData.error) {
-                            console.error("YouTube API Error:", videoData.error.message);
+                        const uploadsId = channelData.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
+
+                        if (uploadsId) {
+                            // Get Playlist Items (Cost: 1 unit)
+                            const videoRes = await fetch(
+                                `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=6&key=${API_KEY}`
+                            );
+                            const videoData = await videoRes.json();
+
+                            if (videoData.items) {
+                                const decodeHTML = (html: string) => {
+                                    const txt = document.createElement("textarea");
+                                    txt.innerHTML = html;
+                                    return txt.value;
+                                };
+
+                                const videos = videoData.items.map((item: any) => ({
+                                    id: item.snippet.resourceId.videoId,
+                                    title: decodeHTML(item.snippet.title),
+                                    link: `https://www.youtube.com/watch?v=${item.snippet.resourceId.videoId}`,
+                                    thumbnail: item.snippet.thumbnails?.maxres?.url || item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.medium?.url,
+                                    published: item.snippet.publishedAt
+                                }));
+                                setYtVideos(videos);
+
+                                // Cache the result
+                                localStorage.setItem(CACHE_KEY, JSON.stringify({
+                                    timestamp: Date.now(),
+                                    data: videos
+                                }));
+                            } else if (videoData.error) {
+                                console.error("YouTube API Error (Playlist):", videoData.error.message);
+                            }
                         }
                     }
                 } catch (error) {

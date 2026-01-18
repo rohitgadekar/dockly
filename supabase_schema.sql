@@ -237,3 +237,21 @@ DROP TRIGGER IF EXISTS on_auth_user_created_email ON auth.users;
 CREATE TRIGGER on_auth_user_created_email
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.trigger_welcome_email();
+
+-- Create newsletter_subscribers table
+CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  profile_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
+  email TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  UNIQUE(profile_id, email)
+);
+
+-- Enable RLS
+ALTER TABLE newsletter_subscribers ENABLE ROW LEVEL SECURITY;
+
+-- Allow anyone to subscribe
+CREATE POLICY "Anyone can subscribe to newsletters" ON newsletter_subscribers FOR INSERT WITH CHECK (true);
+
+-- Only owner can view their subscribers
+CREATE POLICY "Owners can view their own subscribers" ON newsletter_subscribers FOR SELECT USING (auth.uid() = profile_id);
