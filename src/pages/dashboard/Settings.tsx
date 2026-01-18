@@ -48,6 +48,7 @@ const Settings = () => {
     const [bio, setBio] = useState("");
     const [avatarUrl, setAvatarUrl] = useState("");
     const [currency, setCurrency] = useState("USD");
+    const [youtubeChannelId, setYoutubeChannelId] = useState("");
     const [role, setRole] = useState("");
     const [loading, setLoading] = useState(false);
     const [uploadingStory, setUploadingStory] = useState(false);
@@ -69,6 +70,7 @@ const Settings = () => {
             setBio(data.profile.bio || "");
             setAvatarUrl(data.profile.avatar_url || "");
             setCurrency(data.profile.currency || "USD");
+            setYoutubeChannelId(data.profile.youtube_channel_id || "");
             setRole(data.profile.role || "Creator");
             setStories(data.stories || []);
         }
@@ -171,6 +173,7 @@ const Settings = () => {
                 bio: bio,
                 avatar_url: avatarUrl,
                 currency: currency,
+                youtube_channel_id: youtubeChannelId,
                 role: role,
                 updated_at: new Date().toISOString()
             }).eq("id", user.id);
@@ -372,6 +375,19 @@ const Settings = () => {
                                         className="!rounded-[2rem]"
                                     />
                                 </div>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/20 ml-2">Broadcast ID or Handle</label>
+                                    <input
+                                        value={youtubeChannelId}
+                                        onChange={(e) => setYoutubeChannelId(e.target.value)}
+                                        placeholder="@username or UC..."
+                                        className="w-full bg-white/[0.02] border border-white/5 rounded-[2rem] py-6 px-10 outline-none focus:border-luxury-gold/40 focus:bg-white/[0.04] transition-all duration-700 font-plus text-xl text-white"
+                                    />
+                                    <p className="text-[8px] font-syncopate uppercase tracking-widest text-white/10 ml-4 italic">Supports @handles, IDs, or full channel links.</p>
+                                </div>
+                                <div className="space-y-4 invisible hidden md:block" />
                             </div>
 
                             <div className="space-y-4">

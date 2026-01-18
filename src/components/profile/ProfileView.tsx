@@ -12,7 +12,10 @@ import {
     X,
     Clock,
     Volume2,
-    VolumeX
+    VolumeX,
+    Maximize,
+    Minimize,
+    ExternalLink
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CiCircleCheck } from "react-icons/ci";
@@ -35,9 +38,14 @@ import {
     FaMedium,
     FaReddit,
     FaPatreon,
-    FaInstagram,
     FaGlobe
 } from "react-icons/fa";
+declare global {
+    interface Window {
+        YT: any;
+        onYouTubeIframeAPIReady: (() => void) | undefined;
+    }
+}
 
 const platformIcons: Record<string, any> = {
     Twitter: FaTwitter,
@@ -56,7 +64,6 @@ const platformIcons: Record<string, any> = {
     Medium: FaMedium,
     Reddit: FaReddit,
     Patreon: FaPatreon,
-    Instagram: FaInstagram,
     Personal: FaGlobe,
     Default: FaGlobe
 };
@@ -74,6 +81,19 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
     const [isMuted, setIsMuted] = useState(false);
     const [currentDuration, setCurrentDuration] = useState<number | null>(null);
     const [imageLoaded, setImageLoaded] = useState(false);
+    const [ytVideos, setYtVideos] = useState<any[]>([]);
+    const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
+
+    // Custom Player States
+    const [player, setPlayer] = useState<any>(null);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [duration, setDuration] = useState(0);
+    const [isPlayerMuted, setIsPlayerMuted] = useState(false);
+    const [isScrubbing, setIsScrubbing] = useState(false);
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const playerContainerRef = useRef<HTMLDivElement>(null);
+
 
     const getInitials = (name: string) => {
         if (!name) return "??";
@@ -185,6 +205,168 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
         };
     }, [theme.bg, isLight, isPreview]);
 
+    useEffect(() => {
+        if (user.youtube_channel_id) {
+            // Using a CORS proxy for YouTube RSS as it doesn't allow direct browser fetch
+            const fetchYT = async () => {
+                let channelId = user.youtube_channel_id;
+
+                try {
+                    // Smart Handle Resolution: If input is a handle (@name) or full URL, resolve to ID
+                    if (channelId.includes('@') || channelId.includes('youtube.com')) {
+                        const handle = channelId.includes('@')
+                            ? channelId.split('@')[1].split('/')[0]
+                            : channelId.split('/').pop()?.replace('@', '');
+
+                        const resolveRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://www.youtube.com/@${handle}`)}`);
+                        const resolveData = await resolveRes.json();
+                        const idMatch = resolveData.contents.match(/UC[a-zA-Z0-9_-]{22}/);
+                        if (idMatch) {
+                            channelId = idMatch[0];
+                        }
+                    }
+
+                    const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`)}`);
+                    const data = await response.json();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(data.contents, "text/xml");
+                    const entries = Array.from(doc.querySelectorAll("entry")).slice(0, 6);
+                    const videos = entries.map(entry => {
+                        const videoId = entry.getElementsByTagName("yt:videoId")[0]?.textContent || entry.querySelector("videoId")?.textContent;
+                        return {
+                            id: videoId,
+                            title: entry.querySelector("title")?.textContent,
+                            link: entry.querySelector("link")?.getAttribute("href"),
+                            thumbnail: `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
+                            published: entry.querySelector("published")?.textContent
+                        };
+                    });
+                    setYtVideos(videos);
+                } catch (error) {
+                    console.error("YouTube Fetch Error:", error);
+                }
+            };
+            fetchYT();
+        }
+    }, [user.youtube_channel_id]);
+
+    // Cinema Player Logic
+    useEffect(() => {
+        if (!activeVideoId) return;
+
+        // Load YouTube API if not already exists
+        if (!(window as any).YT) {
+            const tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            const firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+        }
+
+        const onPlayerReady = (event: any) => {
+            setPlayer(event.target);
+            setDuration(event.target.getDuration());
+            // Force maximum fidelity protocol
+            if (event.target.setPlaybackQuality) {
+                event.target.setPlaybackQuality('highres');
+            }
+            event.target.playVideo();
+        };
+
+        const onPlayerStateChange = (event: any) => {
+            // 1: Playing, 2: Paused
+            setIsPlaying(event.data === 1);
+        };
+
+        const initPlayer = () => {
+            new (window as any).YT.Player(`youtube-player-active-viewport`, { // Changed ID here
+                height: '100%',
+                width: '100%',
+                videoId: activeVideoId,
+                playerVars: {
+                    autoplay: 1,
+                    controls: 0,
+                    modestbranding: 1,
+                    rel: 0,
+                    showinfo: 0,
+                    iv_load_policy: 3,
+                    playsinline: 1,
+                    disablekb: 1,
+                    fs: 0,
+                    autohide: 1
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        };
+
+        if ((window as any).YT && (window as any).YT.Player) {
+            initPlayer();
+        } else {
+            (window as any).onYouTubeIframeAPIReady = initPlayer;
+        }
+
+        return () => {
+            if (player) {
+                player.destroy();
+                setPlayer(null);
+            }
+        };
+    }, [activeVideoId]);
+
+    // Time Tracking Loop - High frequency for luxury fluidity
+    useEffect(() => {
+        let interval: any;
+        if (player && isPlaying && !isScrubbing) {
+            interval = window.setInterval(() => {
+                setCurrentTime(player.getCurrentTime());
+            }, 100); // 100ms for smoother progress
+        }
+        return () => {
+            if (interval !== undefined) {
+                window.clearInterval(interval);
+            }
+        };
+    }, [player, isPlaying, isScrubbing]);
+
+    const formatTime = (seconds: number) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    const handleScrub = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const time = parseFloat(e.target.value);
+        setCurrentTime(time);
+        if (player) {
+            player.seekTo(time, true);
+        }
+    };
+
+    const toggleFullscreen = () => {
+        if (!playerContainerRef.current) return;
+
+        if (!document.fullscreenElement) {
+            playerContainerRef.current.requestFullscreen().catch((err) => {
+                console.error(`Error attempting to enable fullscreen: ${err.message}`);
+            });
+            setIsFullscreen(true);
+        } else {
+            document.exitFullscreen();
+            setIsFullscreen(false);
+        }
+    };
+
+    // Listen for fullscreen changes (e.g., via ESC key)
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            setIsFullscreen(!!document.fullscreenElement);
+        };
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    }, []);
+
 
     return (
         <>
@@ -194,7 +376,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                     "min-h-screen flex flex-col items-center relative transition-colors duration-1000 overflow-x-hidden pt-[env(safe-area-inset-top)]",
                     isPreview
                         ? "rounded-none shadow-none scale-[0.85] origin-top w-[118%] h-[120%] -ml-[9%] pt-12"
-                        : "py-16 md:py-24 lg:py-32 px-6"
+                        : "pt-16 md:pt-32 pb-20 md:pb-40 px-4 md:px-6"
                 )}
                 style={{
                     backgroundColor: theme.bg,
@@ -245,7 +427,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                 {/* Content Container */}
                 <div className="w-full max-w-5xl relative z-10 flex flex-col items-center">
                     {/* Hero Profile Section */}
-                    <div className="relative mb-24 flex flex-col items-center">
+                    <div className="relative mb-12 md:mb-24 flex flex-col items-center">
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -293,7 +475,6 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                     </AnimatePresence>
                                     <img
                                         src={user.avatar_url || "/dp.png"}
-                                        alt={user.full_name}
                                         onLoad={() => setImageLoaded(true)}
                                         className={cn(
                                             "w-full h-full object-cover rounded-full transition-all duration-1000 ease-out",
@@ -323,10 +504,10 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                         </motion.div>
 
                         {/* Identity Typography */}
-                        <div className="mt-16 text-center">
+                        <div className="mt-12 md:mt-16 text-center">
                             <h1
                                 className={cn(
-                                    "text-5xl md:text-8xl font-bold uppercase tracking-[-0.04em] mb-6 leading-[0.9]",
+                                    "text-4xl md:text-8xl font-bold uppercase tracking-[-0.04em] mb-4 md:mb-6 leading-[0.9]",
                                     theme.id === "royale" ? "bg-gradient-to-b from-white via-white to-luxury-gold/50 bg-clip-text text-transparent" : ""
                                 )}
                                 style={{
@@ -342,7 +523,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                     {user.role || 'Digital Architect'}
                                 </span>
 
-                                <p className="max-w-xl text-xl md:text-2xl font-light italic leading-relaxed opacity-60 px-6">
+                                <p className="max-w-xl text-lg md:text-2xl font-light italic leading-relaxed opacity-60 px-4 md:px-6">
                                     {user.bio || 'Architecting digital sovereignty for the global elite.'}
                                 </p>
                             </div>
@@ -350,21 +531,88 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                     </div>
 
                     {/* Main Content Grid */}
-                    <div className="w-full space-y-32 md:space-y-48">
+                    <div className="w-full space-y-16 md:space-y-40">
+
+                        {/* Social Ecosystem */}
+                        <section className="flex flex-col items-center pt-8 md:pt-16">
+                            <div className="flex flex-col items-center mb-12 md:mb-20">
+                                <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em] opacity-40 text-center truncate max-w-full px-4">Social Ecosystem</span>
+                            </div>
+                            <div className="flex flex-wrap justify-center gap-6 max-w-2xl px-6">
+                                {(user.socials?.filter((s: any) => !s.platform.startsWith('custom:')) || []).map((link: any, idx: number) => {
+                                    const Icon = platformIcons[link.platform] || platformIcons.Default;
+                                    return (
+                                        <motion.button
+                                            key={link.id}
+                                            onClick={() => handleLinkClick('social', link.id, link.url)}
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            whileHover={{ y: -8, scale: 1.1 }}
+                                            transition={{ delay: idx * 0.05, type: "spring", stiffness: 200 }}
+                                            className="w-14 h-14 md:w-20 md:h-20 rounded-2xl md:rounded-[2rem] flex items-center justify-center border transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)]"
+                                            style={{
+                                                borderColor: cardBorder,
+                                                backgroundColor: isLight ? 'rgba(0,0,0,0.02)' : 'rgba(255,255,255,0.02)',
+                                                color: textMuted
+                                            }}
+                                        >
+                                            <Icon size={28} />
+                                        </motion.button>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Digital Dossier Secondary */}
+                            {user.socials?.some((s: any) => s.platform.startsWith('custom:')) && (
+                                <div className={cn(
+                                    "mt-20 grid gap-6 w-full max-w-3xl",
+                                    user.socials.filter((s: any) => s.platform.startsWith('custom:')).length === 1
+                                        ? "grid-cols-1 max-w-md"
+                                        : "grid-cols-1 md:grid-cols-2"
+                                )}>
+                                    {user.socials.filter((s: any) => s.platform.startsWith('custom:')).map((link: any) => (
+                                        <div
+                                            key={link.id}
+                                            onClick={() => handleLinkClick('social', link.id, link.url)}
+                                            className="flex items-center justify-between p-6 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border group transition-all duration-700"
+                                            style={{
+                                                borderColor: cardBorder,
+                                                backgroundColor: isLight ? 'rgba(0,0,0,0.01)' : 'rgba(255,255,255,0.01)'
+                                            }}
+                                        >
+                                            <div className="text-left flex-1 min-w-0 pr-4">
+                                                <span className="text-[10px] font-syncopate tracking-[0.3em] opacity-40 block mb-2 uppercase">Protocol Link</span>
+                                                <h4 className="text-lg md:text-xl font-bold uppercase tracking-tighter truncate" style={{ fontFamily: theme.font }}>
+                                                    {link.platform.replace('custom:', '')}
+                                                </h4>
+                                            </div>
+                                            <div className="w-12 h-12 rounded-full border flex items-center justify-center group-hover:scale-110 transition-all duration-500"
+                                                style={{
+                                                    borderColor: cardBorder,
+                                                    backgroundColor: 'transparent',
+                                                    color: textPrimary
+                                                }}>
+                                                <ArrowUpRight size={20} />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </section>
+
 
                         {/* Auditory Signature (Spotify) */}
                         {user.top_tracks && user.top_tracks.length > 0 && (
                             <section className="relative">
-                                <div className="flex flex-col items-center mb-16">
-                                    <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em] opacity-40 mb-4 text-center truncate max-w-full px-4">Auditory Atmosphere</span>
-
+                                <div className="flex flex-col items-center mb-10 md:mb-20">
+                                    <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em] opacity-40 text-center truncate max-w-full px-4">Auditory Atmosphere</span>
                                 </div>
 
                                 <div className="flex flex-col gap-8 items-center w-full">
                                     {/* Featured Track */}
                                     <div className="w-full max-w-4xl relative group">
                                         <div
-                                            className="relative aspect-[16/9] md:aspect-[21/9] rounded-[2rem] overflow-hidden cursor-pointer border shadow-2xl transition-all duration-700 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)]"
+                                            className="relative aspect-[16/9] md:aspect-[21/9] rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden cursor-pointer border shadow-2xl transition-all duration-700 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)]"
                                             style={{ borderColor: cardBorder }}
                                             onClick={() => togglePreview(user.top_tracks[0].previewUrl)}
                                         >
@@ -408,7 +656,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                 <div
                                                     key={track.id}
                                                     onClick={() => togglePreview(track.previewUrl)}
-                                                    className="group relative aspect-[16/9]  rounded-[2rem] overflow-hidden border bg-white/[0.02] cursor-pointer transition-all duration-300 shadow-xl"
+                                                    className="group relative aspect-[16/9] rounded-[2rem]  overflow-hidden border bg-white/[0.02] cursor-pointer transition-all duration-300 shadow-xl"
                                                     style={{ borderColor: playingPreview === track.previewUrl ? `${theme.primary}40` : cardBorder }}
                                                 >
                                                     <img
@@ -443,86 +691,133 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                             </section>
                         )}
 
-                        {/* Social Ecosystem */}
-                        <section className="flex flex-col items-center">
-                            <div className="flex flex-wrap justify-center gap-6 max-w-2xl px-6">
-                                {(user.socials?.filter((s: any) => !s.platform.startsWith('custom:')) || []).map((link: any, idx: number) => {
-                                    const Icon = platformIcons[link.platform] || platformIcons.Default;
-                                    return (
-                                        <motion.button
-                                            key={link.id}
-                                            onClick={() => handleLinkClick('social', link.id, link.url)}
-                                            initial={{ opacity: 0 }}
-                                            animate={{ opacity: 1 }}
-                                            whileHover={{ y: -8, scale: 1.1 }}
-                                            transition={{ delay: idx * 0.05, type: "spring", stiffness: 200 }}
-                                            className="w-20 h-20 rounded-[2rem] flex items-center justify-center border transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)]"
-                                            style={{
-                                                borderColor: cardBorder,
-                                                backgroundColor: isLight ? 'rgba(0,0,0,0.02)' : 'rgba(255,255,255,0.02)',
-                                                color: textMuted
-                                            }}
-                                        >
-                                            <Icon size={28} />
-                                        </motion.button>
-                                    );
-                                })}
-                            </div>
 
-                            {/* Digital Dossier Secondary */}
-                            {user.socials?.some((s: any) => s.platform.startsWith('custom:')) && (
-                                <div className={cn(
-                                    "mt-20 grid gap-6 w-full max-w-3xl",
-                                    user.socials.filter((s: any) => s.platform.startsWith('custom:')).length === 1
-                                        ? "grid-cols-1 max-w-md"
-                                        : "grid-cols-1 md:grid-cols-2"
-                                )}>
-                                    {user.socials.filter((s: any) => s.platform.startsWith('custom:')).map((link: any) => (
+
+                        {/* Creative Spectrum (YouTube) */}
+                        {user.youtube_channel_id && ytVideos.length > 0 && (
+                            <section className="relative">
+                                <div className="flex flex-col items-center mb-10 md:mb-20">
+                                    <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em] opacity-40 text-center truncate max-w-full px-4">Visual Transmission</span>
+                                </div>
+
+                                <div className="flex flex-col gap-8 items-center w-full">
+                                    {/* Featured Video */}
+                                    <div className="w-full max-w-4xl relative group">
                                         <div
-                                            key={link.id}
-                                            onClick={() => handleLinkClick('social', link.id, link.url)}
-                                            className="flex items-center justify-between p-8 rounded-[2.5rem] border group transition-all duration-700"
-                                            style={{
-                                                borderColor: cardBorder,
-                                                backgroundColor: isLight ? 'rgba(0,0,0,0.01)' : 'rgba(255,255,255,0.01)'
-                                            }}
+                                            className="relative aspect-[16/9] md:aspect-video rounded-[3rem]  overflow-hidden cursor-pointer border shadow-2xl transition-all duration-700 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)]"
+                                            style={{ borderColor: cardBorder }}
+                                            onClick={() => setActiveVideoId(ytVideos[0].id)}
                                         >
-                                            <div className="text-left flex-1 min-w-0 pr-4">
-                                                <span className="text-[10px] font-syncopate tracking-[0.3em] opacity-40 block mb-2 uppercase">Protocol Link</span>
-                                                <h4 className="text-lg md:text-xl font-bold uppercase tracking-tighter truncate" style={{ fontFamily: theme.font }}>
-                                                    {link.platform.replace('custom:', '')}
-                                                </h4>
-                                            </div>
-                                            <div className="w-12 h-12 rounded-full border flex items-center justify-center group-hover:scale-110 transition-all duration-500"
-                                                style={{
-                                                    borderColor: cardBorder,
-                                                    backgroundColor: 'transparent',
-                                                    color: textPrimary
-                                                }}>
-                                                <ArrowUpRight size={20} />
+                                            <img
+                                                src={ytVideos[0].thumbnail}
+                                                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-60"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+
+                                            <div className="absolute inset-0 p-8 md:p-12 flex flex-col justify-end">
+                                                <div className="flex items-center gap-6">
+                                                    <div
+                                                        className="w-16 h-16 md:w-24 md:h-24 rounded-full flex items-center justify-center backdrop-blur-3xl border-2 transition-all duration-500 scale-90 group-hover:scale-100 shadow-2xl aspect-square"
+                                                        style={{
+                                                            borderColor: theme.primary + '33',
+                                                            backgroundColor: 'rgba(255,255,255,0.05)',
+                                                            color: textPrimary
+                                                        }}
+                                                    >
+                                                        <Play size={32} fill="currentColor" className="ml-1" />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <span className="text-[10px] font-syncopate tracking-[0.4em] uppercase opacity-60 mb-2 block">Latest Premiere</span>
+                                                        <h3 className="text-3xl md:text-5xl font-bold tracking-tight mb-2 leading-none uppercase truncate">{ytVideos[0].title}</h3>
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
+                                                            <p className="text-[9px] font-syncopate uppercase tracking-widest text-white/40">
+                                                                {ytVideos[0].published ? formatDistanceToNow(new Date(ytVideos[0].published), { addSuffix: true }) : 'Live Signal'}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    ))}
+                                    </div>
+
+                                    {ytVideos.length > 1 && (
+                                        <div className={cn(
+                                            "grid gap-4 w-full max-w-4xl",
+                                            (ytVideos.length - 1) === 1 ? "grid-cols-1" :
+                                                (ytVideos.length - 1) === 2 ? "grid-cols-1 sm:grid-cols-2" :
+                                                    (ytVideos.length - 1) === 3 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" :
+                                                        "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+                                        )}>
+                                            {ytVideos.slice(1, 5).map((video: any) => (
+                                                <div
+                                                    key={video.id}
+                                                    onClick={() => setActiveVideoId(video.id)}
+                                                    className="group relative aspect-[16/9] rounded-2xl md:rounded-[2rem] overflow-hidden border bg-white/[0.02] cursor-pointer transition-all duration-300 shadow-xl"
+                                                    style={{ borderColor: cardBorder }}
+                                                >
+                                                    <img
+                                                        src={video.thumbnail}
+                                                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-60"
+                                                    />
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+
+                                                    <div className="absolute inset-0 p-4 md:p-6 flex flex-col justify-end">
+                                                        <div className="flex items-center gap-4">
+                                                            <div
+                                                                className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center backdrop-blur-3xl border transition-all duration-500 scale-90 group-hover:scale-100 shadow-2xl aspect-square shrink-0"
+                                                                style={{
+                                                                    borderColor: theme.primary + '20',
+                                                                    backgroundColor: 'rgba(255,255,255,0.05)',
+                                                                    color: textPrimary
+                                                                }}
+                                                            >
+                                                                <Play size={18} fill="currentColor" className="ml-0.5" />
+                                                            </div>
+                                                            <div className="flex-1 min-w-0">
+                                                                <h4 className="text-xs md:text-sm font-bold uppercase tracking-tight leading-tight truncate">{video.title}</h4>
+                                                                <p className="text-[10px] opacity-40 font-light truncate">
+                                                                    {video.published ? formatDistanceToNow(new Date(video.published), { addSuffix: true }) : 'Recent'}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    <div className="flex justify-center pt-8">
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => window.open(`https://youtube.com/channel/${user.youtube_channel_id}`, '_blank')}
+                                            className="group relative px-12 py-6 rounded-full text-[10px] font-syncopate tracking-[0.4em] uppercase border-white/10 hover:border-luxury-gold/40 bg-white/[0.02] hover:bg-white/[0.05] transition-all duration-700"
+                                        >
+                                            <span className="relative z-10 flex items-center gap-4">
+                                                Access Full Archive <ArrowUpRight size={16} className="transition-transform duration-500 group-hover:translate-x-1 group-hover:-translate-y-1" />
+                                            </span>
+                                        </Button>
+                                    </div>
                                 </div>
-                            )}
-                        </section>
+                            </section>
+                        )}
+
 
                         {/* Neural Ventures (Projects) */}
                         {user.ventures?.length > 0 && (
-                            <section>
-                                <div className="flex flex-col items-center mb-24">
-                                    <span className="text-[11px] font-syncopate uppercase tracking-[1em] opacity-40 mb-6 font-black">Digital Products</span>
-
+                            <section className="space-y-20">
+                                <div className="flex flex-col items-center">
+                                    <span className="text-[11px] font-syncopate uppercase tracking-[1em] opacity-40 font-black">Digital Products</span>
                                 </div>
 
-                                <div className="space-y-40">
+                                <div className="space-y-12 md:space-y-24">
                                     {user.ventures.map((project: any, idx: number) => (
                                         <div
                                             key={project.id}
                                             className="w-full max-w-4xl mx-auto"
                                         >
                                             <div
-                                                className="p-12 md:p-20 rounded-[4rem] border transition-all duration-700 bg-white/[0.01] hover:bg-white/[0.03] text-center flex flex-col items-center space-y-10 group"
+                                                className="p-8 md:p-20 rounded-[2.5rem] md:rounded-[3.5rem]  border transition-all duration-700 bg-white/[0.01] hover:bg-white/[0.03] text-center flex flex-col items-center space-y-10 group"
                                                 style={{
                                                     borderColor: cardBorder,
                                                     backgroundColor: isLight ? 'rgba(0,0,0,0.01)' : 'rgba(255,255,255,0.01)'
@@ -571,10 +866,9 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
 
                         {/* Elite Boutique (Products) */}
                         {user.products?.length > 0 && (
-                            <section>
-                                <div className="flex flex-col items-center mb-24">
-                                    <span className="text-[11px] font-syncopate uppercase tracking-[1em] opacity-40 mb-6 font-black">Curated Vault</span>
-
+                            <section className="space-y-20">
+                                <div className="flex flex-col items-center">
+                                    <span className="text-[11px] font-syncopate uppercase tracking-[1em] opacity-40 font-black">Curated Vault</span>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -583,7 +877,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                             key={product.id}
                                             className="group relative"
                                         >
-                                            <div className="relative aspect-[4/5] rounded-[3.5rem] overflow-hidden border bg-neutral-900" style={{ borderColor: cardBorder }}>
+                                            <div className="relative aspect-[4/5] rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden border bg-neutral-900" style={{ borderColor: cardBorder }}>
                                                 <img
                                                     src={product.image_url || "https://images.unsplash.com/photo-1510511459019-5dee99c4ff5d?auto=format&fit=crop&q=80&w=400"}
                                                     alt={product.title}
@@ -592,7 +886,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 transition-opacity" />
 
                                                 {/* Luxury Product Info */}
-                                                <div className="absolute inset-x-0 bottom-0 p-10 md:p-12 flex flex-col justify-end">
+                                                <div className="absolute inset-x-0 bottom-0 p-8 md:p-12 flex flex-col justify-end">
                                                     <div className="flex justify-between items-end gap-5 translate-y-0 md:translate-y-4 md:group-hover:translate-y-0 transition-transform duration-700">
                                                         <div className="flex-1 min-w-0 space-y-1">
                                                             <h3 className="text-2xl md:text-3xl font-bold uppercase tracking-tighter leading-none truncate">{product.title}</h3>
@@ -626,7 +920,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                     </div>
 
                     {/* Prestige Footer */}
-                    <footer className="mt-32 md:mt-64 flex flex-col items-center gap-12 md:gap-16 w-full px-6">
+                    <footer className="mt-24 md:mt-48 flex flex-col items-center gap-12 md:gap-16 w-full px-6">
 
 
                         <div className="text-center space-y-10">
@@ -809,6 +1103,175 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                         </motion.div>
                     )}
                 </AnimatePresence>
+                {/* Cinema Intelligence Overlay */}
+                <AnimatePresence>
+                    {activeVideoId && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-[300] bg-black/98 backdrop-blur-[100px] flex items-center justify-center p-0 md:p-12"
+                        >
+                            <motion.div
+                                ref={playerContainerRef}
+                                initial={{ scale: 0.9, opacity: 0, y: 30 }}
+                                animate={{ scale: 1, opacity: 1, y: 0 }}
+                                exit={{ scale: 0.95, opacity: 0, y: 30 }}
+                                transition={{ type: "spring", damping: 30, stiffness: 200 }}
+                                className={cn(
+                                    "relative w-full max-w-6xl aspect-video overflow-hidden bg-black shadow-[0_0_200px_rgba(212,175,55,0.1)] border border-white/5 group",
+                                    isFullscreen ? "max-w-none w-screen h-screen rounded-none" : "rounded-[2rem]"
+                                )}
+                            >
+                                {/* The Hidden Engine */}
+                                <div id={`youtube-player-${activeVideoId}`} className="absolute inset-0 pointer-events-none opacity-0" />
+
+                                {/* Static Poster / Background */}
+                                <div className="absolute inset-0 z-0">
+                                    <img
+                                        src={ytVideos.find(v => v.id === activeVideoId)?.thumbnail}
+                                        className="w-full h-full object-cover blur-3xl opacity-20"
+                                        alt="Background"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                                </div>
+
+                                {/* Active Viewport with Horizon Saturation */}
+                                <div
+                                    className="absolute inset-0 z-10 cursor-pointer overflow-hidden bg-black"
+                                    onClick={() => isPlaying ? player?.pauseVideo() : player?.playVideo()}
+                                >
+                                    {/* The Engine - Engineered for 0% Border Exposure */}
+                                    <div
+                                        id={`youtube-player-active-viewport`}
+                                        className="absolute -top-[20%] -left-[20%] w-[140%] h-[140%] pointer-events-none origin-center"
+                                    />
+
+                                    {/* Subtle Ambient Vignette */}
+                                    <div className={cn(
+                                        "absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none z-20 transition-opacity duration-700",
+                                        isPlaying ? "opacity-0 group-hover:opacity-100" : "opacity-100"
+                                    )} />
+
+                                    {/* Branding Disruption Overlay */}
+                                    <div className="absolute inset-0 pointer-events-none bg-black/5 mix-blend-overlay z-30 opacity-20" />
+                                    <div className="absolute inset-0 z-10 pointer-events-none opacity-[0.01]" style={{ backgroundImage: `url('https://grainy-gradients.vercel.app/noise.svg')` }} />
+
+                                    {/* Playback Indicator */}
+                                    <AnimatePresence>
+                                        {!isPlaying && (
+                                            <motion.div
+                                                initial={{ opacity: 0, scale: 0.8 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                exit={{ opacity: 0, scale: 1.2 }}
+                                                className="absolute inset-0 flex items-center justify-center z-20"
+                                            >
+                                                <div className="w-32 h-32 rounded-full bg-white/5 backdrop-blur-3xl border border-white/10 flex items-center justify-center">
+                                                    <Play size={40} className="text-white ml-2" fill="white" />
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+
+                                {/* Custom UI Layer - Architectural Overlay */}
+                                <div className="absolute inset-x-0 bottom-0 z-50 p-8 md:p-12 translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-700">
+                                    <div className="space-y-8">
+                                        {/* Dynamic Scrubber */}
+                                        <div className="relative group/scrub">
+                                            <input
+                                                type="range"
+                                                min="0"
+                                                max={duration || 0}
+                                                value={currentTime}
+                                                onChange={handleScrub}
+                                                onMouseDown={() => setIsScrubbing(true)}
+                                                onMouseUp={() => setIsScrubbing(false)}
+                                                className="absolute inset-x-0 -top-2 h-4 w-full opacity-0 cursor-pointer z-20"
+                                            />
+                                            <div className="relative h-1 w-full bg-white/10 rounded-full overflow-hidden">
+                                                <motion.div
+                                                    className="absolute h-full bg-luxury-gold shadow-[0_0_20px_rgba(212,175,55,0.5)]"
+                                                    initial={false}
+                                                    animate={{ width: `${(currentTime / (duration || 1)) * 100}%` }}
+                                                    transition={{ duration: 0.1, ease: "linear" }}
+                                                />
+                                            </div>
+                                            <div className="flex justify-between mt-3">
+                                                <span className="text-[10px] font-syncopate tracking-widest text-white/40">{formatTime(currentTime)}</span>
+                                                <span className="text-[10px] font-syncopate tracking-widest text-white/40">{formatTime(duration)}</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Control Architecture */}
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-10">
+                                                <button
+                                                    onClick={() => isPlaying ? player?.pauseVideo() : player?.playVideo()}
+                                                    className="text-white hover:text-luxury-gold transition-colors"
+                                                >
+                                                    {isPlaying ? <Pause size={28} fill="currentColor" /> : <Play size={28} fill="currentColor" />}
+                                                </button>
+
+                                                <div className="hidden md:flex flex-col">
+                                                    <span className="text-[9px] font-syncopate uppercase tracking-[0.2em] text-white/40 mb-1">Current Transmission</span>
+                                                    <h4 className="text-lg font-bold uppercase tracking-tight text-white line-clamp-1 max-w-md">
+                                                        {ytVideos.find(v => v.id === activeVideoId)?.title}
+                                                    </h4>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center gap-8">
+                                                <button
+                                                    onClick={toggleFullscreen}
+                                                    className="text-white hover:text-luxury-gold transition-colors"
+                                                >
+                                                    {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
+                                                </button>
+
+                                                <button
+                                                    onClick={() => window.open(`https://www.youtube.com/watch?v=${activeVideoId}`, '_blank')}
+                                                    className="text-white hover:text-luxury-gold transition-colors"
+                                                    title="Open in YouTube"
+                                                >
+                                                    <ExternalLink size={20} />
+                                                </button>
+
+                                                <button
+                                                    onClick={() => {
+                                                        const newState = !isPlayerMuted;
+                                                        setIsPlayerMuted(newState);
+                                                        newState ? player?.mute() : player?.unMute();
+                                                    }}
+                                                    className="text-white hover:text-luxury-gold transition-colors"
+                                                >
+                                                    {isPlayerMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+                                                </button>
+
+                                                <button
+                                                    onClick={() => setActiveVideoId(null)}
+                                                    className="w-12 h-12 bg-white/5 hover:bg-white/10 backdrop-blur-2xl rounded-full flex items-center justify-center text-white transition-all border border-white/10"
+                                                >
+                                                    <X size={20} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Minimal Status Bar */}
+                                <div className="absolute top-10 left-10 z-20 flex items-center gap-4 opacity-40">
+                                    <div className="w-2 h-2 rounded-full bg-luxury-gold animate-pulse" />
+                                    <span className="text-[8px] font-syncopate uppercase tracking-[0.4em] text-white">Quantum Encryption Active</span>
+                                </div>
+                            </motion.div>
+
+                            {/* Close on Backdrop Click */}
+                            <div className="absolute inset-0 -z-10" onClick={() => setActiveVideoId(null)} />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
             </div>
         </>
     );

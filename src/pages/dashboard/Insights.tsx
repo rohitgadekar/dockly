@@ -7,10 +7,10 @@ import {
     Sparkles,
     Lock,
     Zap,
-    ArrowUpRight,
-    BarChart3,
     Activity,
-    Loader2
+    Loader2,
+    ShoppingBag,
+    ExternalLink
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useDashboard } from "@/hooks/useDashboard";
@@ -48,53 +48,91 @@ const Insights = () => {
         ];
     }, [data?.analytics]);
 
+    const linkIntelligence = useMemo(() => {
+        if (!data) return [];
+
+        const clickCounts: Record<string, number> = {};
+        data.analytics.linkClicks.forEach((click: any) => {
+            clickCounts[click.link_id] = (clickCounts[click.link_id] || 0) + 1;
+        });
+
+        const isValid = (url: string | null | undefined) => {
+            if (!url) return false;
+            const normalized = url.toLowerCase().trim();
+            return normalized !== "" && normalized !== "about:blank" && normalized !== "null";
+        };
+
+        const socials = (data.socials || []).filter((s: any) => isValid(s.url)).map((s: any) => ({
+            id: s.id,
+            title: s.platform,
+            type: "Social Node",
+            url: s.url,
+            clicks: clickCounts[s.id] || 0,
+            icon: Globe
+        }));
+
+        const ventures = (data.ventures || []).filter((v: any) => isValid(v.url)).map((v: any) => ({
+            id: v.id,
+            title: v.title,
+            type: "Digital Product",
+            url: v.url,
+            clicks: clickCounts[v.id] || 0,
+            icon: Zap
+        }));
+
+        const products = (data.products || []).filter((p: any) => isValid(p.url)).map((p: any) => ({
+            id: p.id,
+            title: p.title,
+            type: "Vault Item",
+            url: p.url,
+            clicks: clickCounts[p.id] || 0,
+            icon: ShoppingBag
+        }));
+
+        const groups = [
+            { id: 'socials', label: 'Social Nodes', items: socials },
+            { id: 'ventures', label: 'Digital Products', items: ventures },
+            { id: 'products', label: 'Curated Vault', items: products }
+        ].filter(g => g.items.length > 0);
+
+        return groups;
+    }, [data]);
+
+    const maxClicks = useMemo(() => {
+        if (!linkIntelligence.length) return 1;
+        return Math.max(...linkIntelligence.flatMap(g => g.items.map(i => i.clicks))) || 1;
+    }, [linkIntelligence]);
+
     const isNewUser =
         (data?.analytics?.profileViews?.length || 0) === 0 &&
         (data?.ventures?.length || 0) === 0 &&
         (data?.products?.length || 0) === 0 &&
         (data?.socials?.length || 0) === 0;
 
-    // Realtime Simulation State
-    const [realtimeData, setRealtimeData] = useState<any[]>([]);
+    const overallEngagement = useMemo(() => {
+        if (!data?.analytics) return [];
 
-    useEffect(() => {
-        if (isNewUser) {
-            // Static flatline
-            const initialData = Array.from({ length: 24 }).map((_, i) => ({
-                time: `${i}:00`,
-                velocity: 0,
-                intensity: 0
-            }));
-            setRealtimeData(initialData);
-            return;
-        }
+        const totalViews = data.analytics.profileViews.length;
 
-        // Generate initial data
-        const initialData = Array.from({ length: 24 }).map((_, i) => ({
-            time: `${i}:00`,
-            velocity: Math.floor(Math.random() * 40) + 20,
-            intensity: Math.floor(Math.random() * 60) + 10
-        }));
-        setRealtimeData(initialData);
+        const clicksByCategory = {
+            social: 0,
+            venture: 0,
+            product: 0
+        };
 
-        const interval = setInterval(() => {
-            setRealtimeData(prev => {
-                const newData = [...prev.slice(1)];
-                const lastTime = prev[prev.length - 1].time;
-                const [hours] = lastTime.split(':').map(Number);
-                const nextHour = (hours + 1) % 24;
+        data.analytics.linkClicks.forEach((click: any) => {
+            if (clicksByCategory.hasOwnProperty(click.link_type)) {
+                clicksByCategory[click.link_type as keyof typeof clicksByCategory]++;
+            }
+        });
 
-                newData.push({
-                    time: `${nextHour}:00`,
-                    velocity: Math.floor(Math.random() * 40) + 20,
-                    intensity: Math.floor(Math.random() * 60) + 10
-                });
-                return newData;
-            });
-        }, 5000);
-
-        return () => clearInterval(interval);
-    }, [isNewUser]);
+        return [
+            { name: "Projections", value: totalViews, color: "#3b82f6", displayLabel: "Profile Projections" },
+            { name: "Socials", value: clicksByCategory.social, color: "#a855f7", displayLabel: "Social Node Activations" },
+            { name: "Products", value: clicksByCategory.venture, color: "#10b981", displayLabel: "Product Node Activations" },
+            { name: "Vault", value: clicksByCategory.product, color: "#D4AF37", displayLabel: "Vault Node Activations" }
+        ];
+    }, [data]);
 
     if (isLoading) {
         return (
@@ -159,91 +197,186 @@ const Insights = () => {
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                <div className="lg:col-span-2">
-                    <Card className="p-10 border-white/5 bg-white/[0.01] hover:bg-white/[0.03]  h-full">
-                        <div className="flex justify-between items-center mb-10">
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-white/40">
-                                    <Activity size={20} />
-                                </div>
-                                <h3 className="text-lg font-syncopate font-bold uppercase tracking-tight text-white">Engagement Velocity</h3>
-                            </div>
-                            <Button variant="ghost" size="sm" className="text-[10px] font-syncopate tracking-widest uppercase">Deep Audit <ArrowUpRight size={14} className="ml-2" /></Button>
+            {/* Categorical Engagement Distribution */}
+            <Card className="p-10 border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-all duration-700">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-16">
+                    <div className="flex items-center gap-5">
+                        <div className="w-14 h-14 bg-luxury-gold/10 rounded-2xl flex items-center justify-center text-luxury-gold">
+                            <Activity size={28} strokeWidth={1.5} />
                         </div>
-                        <div className="aspect-[2/1] bg-white/[0.01] rounded-[2rem] border border-white/5 overflow-hidden p-6">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart data={realtimeData}>
-                                    <defs>
-                                        <linearGradient id="velocityGradient" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#D4AF37" stopOpacity={0.3} />
-                                            <stop offset="95%" stopColor="#D4AF37" stopOpacity={0} />
-                                        </linearGradient>
-                                    </defs>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" vertical={false} />
-                                    <XAxis
-                                        dataKey="time"
-                                        stroke="rgba(255,255,255,0.1)"
-                                        fontSize={10}
-                                        tickLine={false}
-                                        axisLine={false}
-                                        fontFamily="Syncopate"
-                                    />
-                                    <YAxis
-                                        stroke="rgba(255,255,255,0.1)"
-                                        fontSize={10}
-                                        tickLine={false}
-                                        axisLine={false}
-                                        fontFamily="Syncopate"
-                                    />
-                                    <Tooltip
-                                        contentStyle={{
-                                            backgroundColor: '#050505',
-                                            border: '1px solid rgba(212,175,55,0.2)',
-                                            borderRadius: '1rem',
-                                            fontSize: '10px',
-                                            fontFamily: 'Syncopate'
-                                        }}
-                                        itemStyle={{ color: '#D4AF37' }}
-                                    />
-                                    <Area
-                                        type="monotone"
-                                        dataKey="velocity"
-                                        stroke="#D4AF37"
-                                        strokeWidth={2}
-                                        fillOpacity={1}
-                                        fill="url(#velocityGradient)"
-                                        animationDuration={1500}
-                                    />
-                                </AreaChart>
-                            </ResponsiveContainer>
+                        <div>
+                            <h3 className="text-2xl font-syncopate font-bold uppercase tracking-tight text-white">Neural Distribution</h3>
+                            <p className="text-[10px] text-white/30 font-syncopate uppercase tracking-[0.3em] mt-1">Overall architectural engagement matrix</p>
                         </div>
-                    </Card>
+                    </div>
                 </div>
 
-                <div className="space-y-8">
-                    <Card className="p-8 border-white/5 bg-white/[0.01] flex flex-col justify-center text-center py-16 group">
-                        <div className="w-16 h-16 bg-luxury-gold/10 rounded-[2rem] flex items-center justify-center text-luxury-gold mx-auto mb-6 group-hover:scale-110 transition-transform duration-500">
-                            <BarChart3 size={32} strokeWidth={1} />
-                        </div>
-                        <h4 className="text-lg font-syncopate font-bold uppercase tracking-widest text-white mb-2">Neural Engine</h4>
-                        <p className="text-xs text-white/20 font-plus leading-relaxed uppercase tracking-widest">Synthesizing behavioral patterns from {data?.analytics?.profileViews.length || 0} unique vectors.</p>
-                    </Card>
-
-                    <Card className="p-8 border-luxury-gold/10 bg-luxury-gold/[0.01] hover:bg-luxury-gold/[0.03] transition-colors duration-700">
-                        <div className="flex items-start gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-luxury-gold/10 flex items-center justify-center text-luxury-gold shrink-0">
-                                <Zap size={20} />
-                            </div>
-                            <div>
-                                <h4 className="text-sm font-syncopate font-bold uppercase tracking-widest text-white mb-2">Matrix Status</h4>
-                                <p className="text-xs text-white/40 font-plus leading-relaxed">
-                                    Operational efficiency is currently <span className="text-emerald-500">Peak</span>. All nodes are reporting clear engagement flows.
-                                </p>
-                            </div>
-                        </div>
-                    </Card>
+                <div className="h-[400px] w-full bg-white/[0.01] rounded-[2.5rem] border border-white/5 overflow-hidden p-8 pt-12">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={overallEngagement} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                            <defs>
+                                <linearGradient id="engagementGradient" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#D4AF37" stopOpacity={0.3} />
+                                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.02)" vertical={false} />
+                            <XAxis
+                                dataKey="name"
+                                stroke="rgba(255,255,255,0.1)"
+                                fontSize={10}
+                                tickLine={false}
+                                axisLine={false}
+                                fontFamily="Syncopate"
+                                dy={15}
+                            />
+                            <YAxis
+                                stroke="rgba(255,255,255,0.1)"
+                                fontSize={10}
+                                tickLine={false}
+                                axisLine={false}
+                                fontFamily="Syncopate"
+                            />
+                            <Tooltip
+                                contentStyle={{
+                                    backgroundColor: '#050505',
+                                    border: '1px solid rgba(255,255,255,0.05)',
+                                    borderRadius: '1.5rem',
+                                    fontSize: '10px',
+                                    fontFamily: 'Syncopate',
+                                    padding: '1.5rem'
+                                }}
+                                formatter={(value: any, name: any, props: any) => [value, props.payload.displayLabel]}
+                                labelStyle={{ display: 'none' }}
+                            />
+                            <Area
+                                type="monotone"
+                                dataKey="value"
+                                stroke="#D4AF37"
+                                strokeWidth={3}
+                                fill="url(#engagementGradient)"
+                                fillOpacity={1}
+                                isAnimationActive={false}
+                            />
+                        </AreaChart>
+                    </ResponsiveContainer>
                 </div>
+            </Card>
+            {/* Node Performance Intelligence */}
+            <div className="pt-16 border-t border-white/5">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-16">
+                    <div>
+                        <div className="flex items-center gap-3 mb-4">
+                            <Activity className="text-luxury-gold w-5 h-5" />
+                            <span className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-luxury-gold">Active Intelligence</span>
+                        </div>
+                        <h2 className="text-4xl font-syncopate font-bold uppercase tracking-tighter">Engagement Matrix<span className="text-luxury-gold">.</span></h2>
+                        <p className="text-white/30 font-plus text-sm mt-4 uppercase tracking-[0.2em]">Detailed audit of every digital node in your estate</p>
+                    </div>
+
+                    <div className="flex items-center gap-4 bg-white/[0.02] border border-white/5 rounded-2xl px-6 py-3">
+                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-[9px] font-syncopate text-white/40 uppercase tracking-widest">Live Flow Tracking Active</span>
+                    </div>
+                </div>
+
+                <div className="space-y-24">
+                    {linkIntelligence.map((group, groupIdx) => (
+                        <div key={group.id} className="space-y-12">
+                            <div className="flex items-center gap-6">
+                                <h3 className="text-xl font-syncopate font-bold uppercase tracking-[0.3em] text-white/40 whitespace-nowrap">{group.label}</h3>
+                                <div className="h-[1px] w-full bg-white/5" />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                {group.items.map((link, idx) => (
+                                    <motion.div
+                                        key={link.id}
+                                        initial={{ opacity: 0, y: 30 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: (groupIdx * 0.2) + (idx * 0.1), duration: 0.8 }}
+                                    >
+                                        <div className="group relative overflow-hidden rounded-[2.5rem] border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-all duration-700 p-10 hover:border-luxury-gold/20">
+                                            {/* Hover Glow */}
+                                            <div className="absolute top-0 right-0 w-64 h-64 bg-luxury-gold/5 blur-[80px] -mr-32 -mt-32 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+
+                                            <div className="relative z-10">
+                                                <div className="flex justify-between items-start mb-12">
+                                                    <div className="flex items-center gap-6">
+                                                        <div className="w-16 h-16 bg-white/5 rounded-[1.5rem] flex items-center justify-center text-white/40 group-hover:text-luxury-gold transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 border border-white/5">
+                                                            <link.icon size={28} strokeWidth={1} />
+                                                        </div>
+                                                        <div>
+                                                            <div className="text-[9px] font-syncopate text-luxury-gold uppercase tracking-[0.3em] mb-2">{link.type}</div>
+                                                            <h4 className="text-2xl font-syncopate font-bold text-white uppercase tracking-tighter leading-none">{link.title}</h4>
+                                                        </div>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <motion.div
+                                                            className="text-5xl font-syncopate font-bold text-white mb-1 tracking-tighter"
+                                                            initial={{ opacity: 0 }}
+                                                            animate={{ opacity: 1 }}
+                                                        >
+                                                            {link.clicks}
+                                                        </motion.div>
+                                                        <div className="text-[9px] font-syncopate text-white/20 uppercase tracking-[0.3em]">Activations</div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="space-y-6">
+                                                    {/* Performance Bar Architecture */}
+                                                    <div className="relative pt-2">
+                                                        <div className="flex justify-between mb-3">
+                                                            <span className="text-[8px] font-syncopate text-white/30 uppercase tracking-widest">Engagement Strength</span>
+                                                            <span className="text-[8px] font-syncopate text-luxury-gold uppercase tracking-widest">
+                                                                {Math.round((link.clicks / maxClicks) * 100)}%
+                                                            </span>
+                                                        </div>
+                                                        <div className="h-[2px] w-full bg-white/5 rounded-full overflow-hidden">
+                                                            <motion.div
+                                                                initial={{ width: 0 }}
+                                                                animate={{ width: `${(link.clicks / maxClicks) * 100}%` }}
+                                                                transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+                                                                className="h-full bg-gradient-to-r from-luxury-gold/40 via-luxury-gold to-luxury-gold/40 shadow-[0_0_15px_rgba(212,175,55,0.4)]"
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex justify-between items-center pt-8 border-t border-white/5">
+                                                        <div className="flex items-center gap-3 opacity-30 group-hover:opacity-100 transition-opacity">
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                                            <span className="text-[9px] font-syncopate text-white uppercase tracking-widest line-clamp-1 max-w-[200px]">Node Verified</span>
+                                                        </div>
+
+                                                        <div
+                                                            className="text-[9px] font-syncopate text-luxury-gold/40 uppercase tracking-[0.2em] group-hover:text-luxury-gold transition-colors"
+                                                        >
+                                                            Data Node Active
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {linkIntelligence.length === 0 && (
+                    <div className="py-32 border border-dashed border-white/5 rounded-[4rem] flex flex-col items-center justify-center bg-white/[0.01]">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="text-center"
+                        >
+                            <MousePointer2 size={64} strokeWidth={1} className="text-white/5 mb-8 mx-auto" />
+                            <h4 className="text-lg font-syncopate font-bold text-white/20 uppercase tracking-[0.5em]">No Intelligence Detected</h4>
+                            <p className="text-[10px] font-plus text-white/10 uppercase tracking-[0.2em] mt-2">Deploy your content nodes to begin tracking flow</p>
+                        </motion.div>
+                    </div>
+                )}
             </div>
         </div>
     );
