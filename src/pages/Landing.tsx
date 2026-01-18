@@ -80,7 +80,7 @@ const Landing = () => {
                     className="flex flex-col md:flex-row gap-4"
                 >
                     <Button variant="luxury" size="lg" className="group" onClick={() => navigate('/auth')}>
-                        Claim Your Handle <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+                        Initialize Access <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                     </Button>
                     <Button variant="outline" size="lg" onClick={() => document.getElementById('studio')?.scrollIntoView({ behavior: 'smooth' })}>
                         Explore The Features
