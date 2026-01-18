@@ -264,9 +264,15 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                         const videoData = await videoRes.json();
 
                         if (videoData.items) {
+                            const decodeHTML = (html: string) => {
+                                const txt = document.createElement("textarea");
+                                txt.innerHTML = html;
+                                return txt.value;
+                            };
+
                             const videos = videoData.items.map((item: any) => ({
                                 id: item.id.videoId,
-                                title: item.snippet.title,
+                                title: decodeHTML(item.snippet.title),
                                 link: `https://www.youtube.com/watch?v=${item.id.videoId}`,
                                 thumbnail: item.snippet.thumbnails?.maxres?.url || item.snippet.thumbnails?.high?.url,
                                 published: item.snippet.publishedAt
