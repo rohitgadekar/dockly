@@ -549,7 +549,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                             animate={{ opacity: 1 }}
                                             whileHover={{ y: -8, scale: 1.1 }}
                                             transition={{ delay: idx * 0.05, type: "spring", stiffness: 200 }}
-                                            className="w-14 h-14 md:w-20 md:h-20 rounded-2xl md:rounded-[2rem] flex items-center justify-center border transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)]"
+                                            className="w-14 h-14 md:w-20 md:h-20 rounded-2xl md:rounded-[2rem] flex items-center justify-center border  hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)]"
                                             style={{
                                                 borderColor: cardBorder,
                                                 backgroundColor: isLight ? 'rgba(0,0,0,0.02)' : 'rgba(255,255,255,0.02)',
