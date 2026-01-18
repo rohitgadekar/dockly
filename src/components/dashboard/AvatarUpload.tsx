@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { Camera, Loader2, UploadCloud, CheckCircle2 } from "lucide-react";
@@ -12,7 +12,26 @@ interface AvatarUploadProps {
 export const AvatarUpload = ({ currentUrl, onUploadComplete }: AvatarUploadProps) => {
     const [uploading, setUploading] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [resolvedUrl, setResolvedUrl] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Resolve current (potentially path-based) URL
+    useEffect(() => {
+        const resolve = async () => {
+            if (!currentUrl) {
+                setResolvedUrl(null);
+                return;
+            }
+            if (currentUrl.startsWith('http') || currentUrl.startsWith('blob:')) {
+                setResolvedUrl(currentUrl);
+                return;
+            }
+            // It's a path, resolve it
+            const { data } = await supabase.storage.from('avatars').createSignedUrl(currentUrl, 3600);
+            setResolvedUrl(data?.signedUrl || null);
+        };
+        resolve();
+    }, [currentUrl]);
 
     const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         try {
@@ -20,12 +39,28 @@ export const AvatarUpload = ({ currentUrl, onUploadComplete }: AvatarUploadProps
             const file = event.target.files?.[0];
             if (!file) return;
 
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error("Unauthorized");
+
             // Preview immediately
             const objectUrl = URL.createObjectURL(file);
             setPreviewUrl(objectUrl);
 
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) throw new Error("Unauthorized");
+            // Clean up old avatar if exists
+            if (currentUrl) {
+                try {
+                    // Extract path from public URL
+                    // URL format: https://.../storage/v1/object/public/avatars/user_id/filename.ext
+                    const urlParts = currentUrl.split('/avatars/');
+                    if (urlParts.length > 1) {
+                        const oldPath = urlParts[1];
+                        console.log("Purging legacy asset:", oldPath);
+                        await supabase.storage.from('avatars').remove([oldPath]);
+                    }
+                } catch (purgeError) {
+                    console.error("Purge failure:", purgeError);
+                }
+            }
 
             const fileExt = file.name.split('.').pop();
             const filePath = `${user.id}/${Math.random()}.${fileExt}`;
@@ -36,20 +71,17 @@ export const AvatarUpload = ({ currentUrl, onUploadComplete }: AvatarUploadProps
 
             if (uploadError) throw uploadError;
 
-            const { data: { publicUrl } } = supabase.storage
-                .from('avatars')
-                .getPublicUrl(filePath);
-
-            // Update profile table
+            // Store the path, not the public URL, for consistent resolution
             const { error: updateError } = await supabase
                 .from('profiles')
-                .update({ avatar_url: publicUrl })
+                .update({ avatar_url: filePath })
                 .eq('id', user.id);
 
             if (updateError) throw updateError;
 
-            onUploadComplete(publicUrl);
+            onUploadComplete(filePath);
             toast.success("Identity Visual Synchronized.");
+            setPreviewUrl(null); // Clear preview to show the newly resolved URL
         } catch (error: any) {
             toast.error(error.message);
             setPreviewUrl(null);
@@ -66,9 +98,9 @@ export const AvatarUpload = ({ currentUrl, onUploadComplete }: AvatarUploadProps
                     className="w-40 h-40 rounded-full border-2 border-luxury-gold p-1.5 relative overflow-hidden bg-black/40 backdrop-blur-sm"
                 >
                     <div className="w-full h-full rounded-full overflow-hidden relative">
-                        {(previewUrl || currentUrl) ? (
+                        {(previewUrl || resolvedUrl) ? (
                             <img
-                                src={previewUrl || currentUrl}
+                                src={previewUrl || resolvedUrl || ""}
                                 alt="Avatar Preview"
                                 className="w-full h-full object-cover mix-blend-luminosity hover:mix-blend-normal transition-all duration-700"
                             />

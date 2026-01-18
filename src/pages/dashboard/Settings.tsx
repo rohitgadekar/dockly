@@ -72,9 +72,14 @@ const Settings = () => {
             setCurrency(data.profile.currency || "USD");
             setYoutubeChannelId(data.profile.youtube_channel_id || "");
             setRole(data.profile.role || "Creator");
+        }
+    }, [data?.profile]);
+
+    useEffect(() => {
+        if (data?.stories) {
             setStories(data.stories || []);
         }
-    }, [data?.profile?.id, data?.stories]);
+    }, [data?.stories]);
 
     useEffect(() => {
         if (previewVideoRef.current) {
@@ -311,6 +316,9 @@ const Settings = () => {
                                 onUploadComplete={(url) => {
                                     setAvatarUrl(url);
                                     queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+                                    if (data?.profile?.username) {
+                                        queryClient.invalidateQueries({ queryKey: ["profile", data.profile.username] });
+                                    }
                                 }}
                             />
                             <div className="text-center md:text-left">
