@@ -257,3 +257,36 @@ CREATE POLICY "Anyone can subscribe to newsletters" ON newsletter_subscribers FO
 
 -- Only owner can view their subscribers
 CREATE POLICY "Owners can view their own subscribers" ON newsletter_subscribers FOR SELECT USING (auth.uid() = profile_id);
+-- Add accepting_inquiries to profiles
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS accepting_inquiries BOOLEAN DEFAULT false;
+
+-- Create inquiries table
+CREATE TABLE IF NOT EXISTS inquiries (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    profile_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
+    sender_name TEXT NOT NULL,
+    sender_email TEXT NOT NULL,
+    contact_number TEXT,
+    company_name TEXT,
+    inquiry_type TEXT NOT NULL,
+    message TEXT NOT NULL,
+    budget_range TEXT,
+    status TEXT DEFAULT 'pending',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Enable RLS
+ALTER TABLE inquiries ENABLE ROW LEVEL SECURITY;
+
+-- Policies
+CREATE POLICY "Public can send inquiries" ON inquiries
+    FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Users can view own inquiries" ON inquiries
+    FOR SELECT USING (auth.uid() = profile_id);
+
+CREATE POLICY "Users can update own inquiries" ON inquiries
+    FOR UPDATE USING (auth.uid() = profile_id);
+
+CREATE POLICY "Users can delete own inquiries" ON inquiries
+    FOR DELETE USING (auth.uid() = profile_id);

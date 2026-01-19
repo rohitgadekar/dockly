@@ -15,9 +15,19 @@ interface LuxeSelectProps {
     onChange: (value: string) => void;
     placeholder?: string;
     className?: string;
+    triggerClassName?: string;
+    style?: React.CSSProperties;
 }
 
-export const LuxeSelect = ({ options, value, onChange, placeholder = "Select option", className }: LuxeSelectProps) => {
+export const LuxeSelect = ({
+    options,
+    value,
+    onChange,
+    placeholder = "Select option",
+    className,
+    triggerClassName,
+    style
+}: LuxeSelectProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -38,17 +48,21 @@ export const LuxeSelect = ({ options, value, onChange, placeholder = "Select opt
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-5 px-8 flex items-center justify-between outline-none focus:border-luxury-gold/40 focus:bg-white/[0.05] transition-all duration-500 group"
+                className={cn(
+                    "w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 px-6 flex items-center justify-between outline-none transition-all duration-500 group",
+                    triggerClassName
+                )}
+                style={style}
             >
                 <div className="flex items-center gap-4">
                     {selectedOption?.icon && (
-                        <div className="text-luxury-gold">
+                        <div className="opacity-40 group-hover:opacity-100 transition-opacity">
                             {selectedOption.icon}
                         </div>
                     )}
                     <span className={cn(
-                        "text-lg font-plus font-medium",
-                        !selectedOption ? "text-white/20" : "text-white"
+                        "text-sm tracking-wider",
+                        !selectedOption ? "opacity-30" : "opacity-100"
                     )}>
                         {selectedOption ? selectedOption.label : placeholder}
                     </span>
@@ -96,7 +110,7 @@ export const LuxeSelect = ({ options, value, onChange, placeholder = "Select opt
                                                 {option.icon}
                                             </div>
                                         )}
-                                        <span className="font-plus font-bold text-sm tracking-wide uppercase">
+                                        <span className="text-sm tracking-wider opacity-70">
                                             {option.label}
                                         </span>
                                     </div>

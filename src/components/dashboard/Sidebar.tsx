@@ -12,7 +12,8 @@ import {
     Palette,
     Music,
     Fingerprint,
-    Users
+    Users,
+    Briefcase
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -25,6 +26,7 @@ const sidebarItems = [
     { icon: FolderGit2, label: "Projects", path: "/dashboard/ventures" },
     { icon: Palette, label: "Themes", path: "/dashboard/atmospherics" },
     { icon: Users, label: "Leads", path: "/dashboard/audience" },
+    { icon: Briefcase, label: "Inquiries", path: "/dashboard/inquiries" },
     { icon: Share2, label: "Socials", path: "/dashboard/socials" },
     { icon: Music, label: "Music", path: "/dashboard/sonic" },
     { icon: ShoppingBag, label: "Store", path: "/dashboard/marketplace" },
@@ -62,7 +64,11 @@ export const DashboardSidebar = () => {
 
             <nav className="flex-1 flex flex-col gap-1.5 relative z-10 overflow-y-auto scrollbar-none pr-2">
                 <div className="text-[9px] font-syncopate text-white/20 uppercase tracking-[0.4em] mb-4 ml-4">Architecture</div>
-                {sidebarItems.filter(item => item.label !== "Leads" || data?.profile?.newsletter_enabled).map((item) => {
+                {sidebarItems.filter(item => {
+                    if (item.label === "Leads") return data?.profile?.newsletter_enabled;
+                    if (item.label === "Inquiries") return data?.profile?.accepting_inquiries;
+                    return true;
+                }).map((item) => {
                     const isActive = location.pathname === item.path;
                     return (
                         <Link

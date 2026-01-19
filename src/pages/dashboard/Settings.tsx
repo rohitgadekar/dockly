@@ -51,6 +51,7 @@ const Settings = () => {
     const [youtubeChannelId, setYoutubeChannelId] = useState("");
     const [role, setRole] = useState("");
     const [newsletterEnabled, setNewsletterEnabled] = useState(false);
+    const [acceptingInquiries, setAcceptingInquiries] = useState(false);
     const [loading, setLoading] = useState(false);
     const [uploadingStory, setUploadingStory] = useState(false);
     const [updatingPassword, setUpdatingPassword] = useState(false);
@@ -74,6 +75,7 @@ const Settings = () => {
             setYoutubeChannelId(data.profile.youtube_channel_id || "");
             setRole(data.profile.role || "Creator");
             setNewsletterEnabled(data.profile.newsletter_enabled || false);
+            setAcceptingInquiries(data.profile.accepting_inquiries || false);
         }
     }, [data?.profile]);
 
@@ -477,7 +479,57 @@ const Settings = () => {
                     </div>
                 </Card>
 
-                {/* Section 3: Stories */}
+                {/* Section 3: Brand Inquiries Configuration */}
+                <Card className="p-16 border-white/5 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-emerald-500/[0.02] blur-[120px] -mr-48 -mt-48 pointer-events-none" />
+
+                    <div className="flex flex-col md:flex-row items-center gap-12 border-b border-white/5 pb-16 mb-12">
+                        <div className="w-20 h-20 bg-emerald-500/5 rounded-[1.5rem] flex items-center justify-center text-emerald-500 border border-emerald-500/10 shrink-0">
+                            <Sparkles size={32} strokeWidth={1} />
+                        </div>
+                        <div className="text-center md:text-left">
+                            <h2 className="text-3xl font-syncopate font-bold uppercase tracking-tight text-white">Brand Inquiries</h2>
+                            <p className="text-[10px] text-white/20 font-syncopate uppercase tracking-[0.4em] mt-2">Accept collaboration & brand deal requests</p>
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col md:flex-row items-center justify-between p-8 bg-white/[0.02] border border-white/5 rounded-[2rem] gap-8">
+                        <div className="max-w-xl">
+                            <label className="text-xs font-syncopate uppercase tracking-[0.2em] text-white block mb-3">Inquiry Form Visibility</label>
+                            <p className="text-sm text-white/40 font-plus leading-relaxed">
+                                When active, brands and collaborators can reach out to you directly through your public profile. View and manage all requests in the Inquiries dashboard.
+                            </p>
+                        </div>
+                        <button
+                            type="button"
+                            disabled={loading}
+                            onClick={async () => {
+                                const newValue = !acceptingInquiries;
+                                setAcceptingInquiries(newValue);
+                                try {
+                                    const { data: { user } } = await supabase.auth.getUser();
+                                    if (user) {
+                                        await supabase.from("profiles").update({
+                                            accepting_inquiries: newValue,
+                                            updated_at: new Date().toISOString()
+                                        }).eq("id", user.id);
+                                        queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+                                        toast.success(newValue ? "Now Accepting Inquiries" : "Inquiries Disabled");
+                                    }
+                                } catch (error) {
+                                    console.error("Toggle failed", error);
+                                    setAcceptingInquiries(!newValue); // Revert on error
+                                    toast.error("Connection failed");
+                                }
+                            }}
+                            className={`w-20 h-10 rounded-full relative transition-all duration-500 ease-out border-2 ${acceptingInquiries ? 'bg-emerald-500/10 border-emerald-500' : 'bg-white/5 border-white/10'}`}
+                        >
+                            <div className={`absolute top-1 left-1 w-7 h-7 rounded-full bg-white transition-all duration-500 shadow-[0_0_15px_rgba(255,255,255,0.3)] ${acceptingInquiries ? 'translate-x-10 bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.6)]' : 'translate-x-0 opacity-40'}`} />
+                        </button>
+                    </div>
+                </Card>
+
+                {/* Section 4: Stories */}
                 <Card className="p-16 border-white/5 relative overflow-hidden group">
                     <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-luxury-gold/[0.01] blur-[120px] -ml-48 -mt-48 pointer-events-none" />
 

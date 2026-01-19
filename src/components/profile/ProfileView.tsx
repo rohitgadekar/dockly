@@ -22,6 +22,7 @@ import {
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import { InquiryForm } from "@/components/profile/InquiryForm";
 import { CiCircleCheck } from "react-icons/ci";
 import {
     SiTidal,
@@ -1047,6 +1048,24 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                         )}
 
 
+                        {/* Brand Inquiries Form */}
+                        {user.accepting_inquiries && (
+                            <section className="relative w-full flex flex-col items-center mt-16">
+                                <div className="flex flex-col items-center mb-10 md:mb-16">
+                                    <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em] opacity-40 text-center truncate max-w-full px-4">Collaboration</span>
+                                </div>
+                                <InquiryForm
+                                    profileId={user.id}
+                                    theme={theme}
+                                    isLight={isLight}
+                                    textPrimary={textPrimary}
+                                    cardBorder={cardBorder}
+                                />
+                            </section>
+                        )}
+
+
+
                         {/* Exclusive Access / Newsletter */}
                         {user.newsletter_enabled && (
                             <section className="relative w-full flex flex-col items-center">
@@ -1055,10 +1074,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                 </div>
 
                                 <motion.div
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    whileInView={{ opacity: 1, scale: 1 }}
-                                    viewport={{ once: true }}
-                                    transition={{ duration: 0.8 }}
+                                    // 
                                     className="w-full max-w-4xl relative"
                                 >
                                     {/* Architectural Glow */}
@@ -1181,6 +1197,8 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                             </section>
                         )}
 
+                        
+
                     </div>
 
                     {/* Prestige Footer */}
@@ -1198,10 +1216,10 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                         <div className="text-center space-y-8">
                             <div className="flex flex-wrap items-center justify-center gap-3 text-[10px] md:text-xs font-syncopate tracking-[0.3em] md:tracking-[0.6em] uppercase opacity-60"
                                 style={{ color: textMuted }}>
-                                Powered by <span className="font-bold flex items-center mx-2 gap-2" style={{ color: theme.primary }}>Docked</span>
+                                Powered by <span className="font-bold flex items-center mx-2 gap-2" style={{ color: theme.primary }}>Citadel v4.2</span>
                             </div>
 
-                            <div className="space-y-4 text-[10px] md:text-xs font-syncopate tracking-[0.4em] md:tracking-[0.8em] uppercase leading-loose opacity-40"
+                            <div className="space-y-4 text-[10px] md:text-xs font-syncopate tracking-[0.4em] md:tracking-[0.8em] uppercase leading-loose "
                                 style={{ color: textMuted }}>
                                 <p>© 2026 EAGLES</p>
                                 <p className="hidden md:block">All Rights Reserved</p>

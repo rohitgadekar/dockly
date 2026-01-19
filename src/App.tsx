@@ -22,6 +22,7 @@ import Atmospherics from "@/pages/dashboard/Atmospherics";
 import Sonic from "@/pages/dashboard/Sonic";
 import Identity from "@/pages/dashboard/Identity";
 import Audience from "@/pages/dashboard/Audience";
+import Inquiries from "@/pages/dashboard/Inquiries";
 import Protocol from "@/pages/Protocol";
 
 const queryClient = new QueryClient();
@@ -124,6 +125,7 @@ function App() {
                                 <Route path="atmospherics" element={<Atmospherics />} />
                                 <Route path="sonic" element={<Sonic />} />
                                 <Route path="audience" element={<Audience />} />
+                                <Route path="inquiries" element={<Inquiries />} />
                             </Route>
                             <Route path="/preview" element={<PreviewRedirect />} />
                             <Route path="/protocol/:id" element={<Protocol />} />

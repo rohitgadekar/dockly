@@ -133,7 +133,7 @@ const Audience = () => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: idx * 0.05 }}
-                            className="group flex flex-col md:flex-row md:items-center justify-between p-6 bg-white/[0.01] border border-white/5 rounded-[1.5rem] hover:bg-white/[0.03] hover:border-white/10 transition-all duration-500"
+                            className="group flex flex-col md:flex-row md:items-center justify-between p-6 bg-white/[0.01] border border-white/5 rounded-[1.5rem] hover:bg-white/[0.03] hover:border-white/10"
                         >
                             <div className="flex items-center gap-6 mb-4 md:mb-0">
                                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-white/5 to-transparent border border-white/10 flex items-center justify-center text-luxury-gold/60 font-syncopate font-bold text-lg">

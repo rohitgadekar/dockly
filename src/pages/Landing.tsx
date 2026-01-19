@@ -1,12 +1,189 @@
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { ArrowRight, Sparkles, Zap, Activity, Shield, Radio, Quote } from "lucide-react";
+import { ArrowRight, Sparkles, Zap, Activity, Shield, Radio, Quote, Briefcase } from "lucide-react";
 import { SiSpotify } from "react-icons/si";
 import { useNavigate } from "react-router-dom";
 import { useTitle } from "@/hooks/useTitle";
+import { cn } from "@/lib/utils";
+
+const features = [
+    {
+        id: 'analytics',
+        tag: 'Dossier Insights',
+        icon: <Activity size={16} />,
+        tagBg: 'bg-emerald-500/10',
+        tagBorder: 'border-emerald-500/20',
+        tagText: 'text-emerald-500',
+        title: 'POWERFUL',
+        titleAccent: 'INSIGHTS',
+        color: '#10B981',
+        description: 'Understand your audience with detailed analytics. Track profile views, link clicks, and see exactly what content is performing best.',
+        bullets: [
+            { title: "Traffic Sources", desc: "See where your visitors are coming from." },
+            { title: "Link Performance", desc: "Identify your most popular content and links." },
+            { title: "Real-time Data", desc: "Watch your stats update live as fans interact." }
+        ],
+        visualIcon: Activity,
+        glowColor: 'bg-emerald-500/5'
+    },
+    {
+        id: 'music',
+        tag: 'Sonic Identity',
+        icon: <SiSpotify size={16} />,
+        tagBg: 'bg-[#1DB954]/10',
+        tagBorder: 'border-[#1DB954]/20',
+        tagText: 'text-[#1DB954]',
+        title: 'SHARE YOUR',
+        titleAccent: 'MUSIC',
+        color: '#1DB954',
+        description: 'Showcase your top tracks directly from Spotify. Let visitors listen to your music without leaving your profile.',
+        bullets: [
+            { title: "Top 5 Tracks", desc: "Curate your favorite songs or releases." },
+            { title: "Instant Playback", desc: "Visitors can listen to previews instantly." },
+            { title: "Artist Link", desc: "One click to your full Spotify artist profile." }
+        ],
+        visualIcon: Radio,
+        glowColor: 'bg-[#1DB954]/5'
+    },
+    {
+        id: 'stories',
+        tag: 'Live Transmission',
+        icon: <Radio size={16} />,
+        tagBg: 'bg-luxury-gold/10',
+        tagBorder: 'border-luxury-gold/20',
+        tagText: 'text-luxury-gold',
+        title: 'STORIES',
+        titleAccent: 'FEED',
+        color: '#FFFFFF',
+        description: 'Keep your audience engaged with 24-hour ephemeral stories. Share photos, videos, and moments directly on your profile.',
+        bullets: [
+            { title: "24-Hour Stories", desc: "Content expires automatically, keeping your page fresh." },
+            { title: "Photo & Video", desc: "Support for high-res images and vertical video." },
+            { title: "Immersive Player", desc: "Full-screen cinematic viewing experience." }
+        ],
+        visualIcon: Radio,
+        glowColor: 'bg-luxury-gold/5'
+    }
+];
 
 const Landing = () => {
+    const [activeFeature, setActiveFeature] = useState(0);
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setActiveFeature((prev) => (prev + 1) % features.length);
+        }, 5000);
+        return () => clearInterval(timer);
+    }, []);
+
+    const FeatureShowcase = () => {
+        const feature = features[activeFeature];
+        const VisualIcon = feature.visualIcon;
+
+        return (
+            <div className="relative min-h-[600px] flex flex-col justify-center">
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={activeFeature}
+                        initial={{ opacity: 0, scale: 0.98, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 1.02, y: -20 }}
+                        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                        className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center"
+                    >
+                        {/* Visual Side */}
+                        <div className="relative aspect-square order-2 lg:order-1">
+                            <div className={cn("absolute inset-0 blur-[120px] rounded-full transition-colors duration-1000", feature.glowColor)} />
+                            <Card className="h-full border-white/10 bg-black/40 flex items-center justify-center p-0 overflow-hidden group">
+                                <motion.div
+                                    initial={{ opacity: 0, rotate: -10, scale: 0.8 }}
+                                    animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                                    transition={{ duration: 1, delay: 0.2 }}
+                                >
+                                    <VisualIcon size={160} className="opacity-20 transition-all duration-1000 scale-100 group-hover:scale-110" style={{ color: feature.color }} />
+                                </motion.div>
+                            </Card>
+                        </div>
+
+                        {/* Content Side */}
+                        <div className="order-1 lg:order-2 flex flex-col justify-center items-start text-left">
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+                                className={cn("inline-flex items-center gap-3 px-4 py-1.5 rounded-full mb-8 border backdrop-blur-md", feature.tagBg, feature.tagBorder, feature.tagText)}
+                            >
+                                {feature.icon}
+                                <span className="text-[9px] font-syncopate uppercase tracking-[0.3em] font-bold">{feature.tag}</span>
+                            </motion.div>
+
+                            <motion.h3
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+                                className="text-4xl sm:text-5xl md:text-6xl font-syncopate font-bold uppercase tracking-tighter mb-8 leading-[0.95] text-white"
+                            >
+                                {feature.title}<br />
+                                <span style={{ color: feature.color }}>{feature.titleAccent}</span>
+                            </motion.h3>
+
+                            <motion.p
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+                                className="text-xl text-white/40 font-plus mb-10 leading-relaxed max-w-xl"
+                            >
+                                {feature.description}
+                            </motion.p>
+
+                            <div className="space-y-6">
+                                {feature.bullets.map((item, i) => (
+                                    <motion.div
+                                        key={i}
+                                        initial={{ opacity: 0, x: 10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.4 + (i * 0.1) }}
+                                        className="flex items-start gap-4"
+                                    >
+                                        <div className="w-1.5 h-1.5 rounded-full mt-2 shrink-0 shadow-[0_0_8px_currentColor]" style={{ backgroundColor: feature.color, color: feature.color }} />
+                                        <div>
+                                            <div className="text-sm font-syncopate font-bold text-white uppercase tracking-widest mb-1">{item.title}</div>
+                                            <div className="text-xs text-white/30 font-plus">{item.desc}</div>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        </div>
+                    </motion.div>
+                </AnimatePresence>
+
+                {/* Navigation Controls */}
+                <div className="mt-16 flex items-center justify-center gap-4">
+                    {features.map((_, idx) => (
+                        <button
+                            key={idx}
+                            onClick={() => setActiveFeature(idx)}
+                            className="group relative py-4 px-2"
+                        >
+                            <div className={cn(
+                                "h-1 transition-all duration-500 rounded-full",
+                                activeFeature === idx ? "w-12 bg-luxury-gold" : "w-6 bg-white/10 hover:bg-white/30"
+                            )} />
+                            {activeFeature === idx && (
+                                <motion.div
+                                    layoutId="nav-glow"
+                                    className="absolute inset-0 bg-luxury-gold/20 blur-xl rounded-full -z-10"
+                                />
+                            )}
+                        </button>
+                    ))}
+                </div>
+            </div>
+        );
+    };
+
     useTitle("Premium Creator Presence | Docked");
     const navigate = useNavigate();
 
@@ -106,43 +283,10 @@ const Landing = () => {
             </section>
 
             {/* Deep Feature Breakdown */}
-            <section className="py-20 md:py-32 px-6 max-w-7xl mx-auto space-y-24 md:space-y-32">
-                {/* Analytics Detail */}
-                <div id="analytics" className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-                    <div className="relative aspect-square">
-                        <div className="absolute inset-0 bg-emerald-500/5 blur-[120px] rounded-full" />
-                        <Card className="h-full border-white/10 bg-black/40 flex items-center justify-center p-0 overflow-hidden group">
-                            <Activity size={120} className="text-emerald-500/20 group-hover:scale-110 transition-transform duration-1000" />
-                        </Card>
-                    </div>
-                    <div>
-                        <div className="inline-flex items-center gap-3 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full mb-8">
-                            <Activity size={16} className="text-emerald-500" />
-                            <span className="text-[10px] font-syncopate uppercase tracking-[0.2em] text-emerald-500">Analytics</span>
-                        </div>
-                        <h3 className="text-3xl sm:text-4xl md:text-5xl font-syncopate font-bold uppercase tracking-tighter mb-8 leading-tight">
-                            POWERFUL<br /><span className="text-[#10B981]">INSIGHTS</span>
-                        </h3>
-                        <p className="text-xl text-white/40 font-plus mb-10 leading-relaxed">
-                            Understand your audience with detailed analytics. Track profile views,
-                            link clicks, and see exactly what content is performing best.
-                        </p>
-                        <div className="space-y-6">
-                            {[
-                                { title: "Traffic Sources", desc: "See where your visitors are coming from." },
-                                { title: "Link Performance", desc: "Identify your most popular content and links." },
-                                { title: "Real-time Data", desc: "Watch your stats update live as fans interact." }
-                            ].map((item, i) => (
-                                <div key={i} className="flex items-start gap-4">
-                                    <div className="w-1 h-1 rounded-full bg-emerald-500 mt-2 shrink-0 shadow-[0_0_8px_#10B981]" />
-                                    <div>
-                                        <div className="text-sm font-syncopate font-bold text-white uppercase tracking-widest mb-1">{item.title}</div>
-                                        <div className="text-xs text-white/30 font-plus">{item.desc}</div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+            {/* Dynamic Feature Showcase */}
+            <section id="features" className="py-24 md:py-40 relative overflow-hidden px-6">
+                <div className="max-w-7xl mx-auto">
+                    <FeatureShowcase />
                 </div>
             </section>
 
@@ -223,86 +367,7 @@ const Landing = () => {
                 </div>
             </section>
 
-            <section className="py-20 md:py-32 px-6 max-w-7xl mx-auto space-y-24 md:space-y-32">
-                {/* Music Detail */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-                    <div>
-                        <div className="inline-flex items-center gap-3 px-4 py-2 bg-[#1DB954]/10 border border-[#1DB954]/20 rounded-full mb-8 font-syncopate">
-                            <SiSpotify size={16} className="text-[#1DB954]" />
-                            <span className="text-[10px] uppercase tracking-[0.2em] text-[#1DB954]">Powered by Spotify</span>
-                        </div>
-                        <h3 className="text-3xl sm:text-4xl md:text-5xl font-syncopate font-bold uppercase tracking-tighter mb-8 leading-tight">
-                            SHARE YOUR<br /><span className="text-[#1DB954]">MUSIC</span>
-                        </h3>
-                        <p className="text-xl text-white/40 font-plus mb-10 leading-relaxed">
-                            Showcase your top tracks directly from Spotify. Let visitors listen to your
-                            music without leaving your profile.
-                        </p>
-                        <div className="space-y-6">
-                            {[
-                                { title: "Top 5 Tracks", desc: "Curate your favorite songs or releases." },
-                                { title: "Instant Playback", desc: "Visitors can listen to previews instantly." },
-                                { title: "Artist Link", desc: "One click to your full Spotify artist profile." }
-                            ].map((item, i) => (
-                                <div key={i} className="flex items-start gap-4">
-                                    <div className="w-1 h-1 rounded-full bg-[#1DB954] mt-2 shrink-0 shadow-[0_0_8px_#1DB954]" />
-                                    <div>
-                                        <div className="text-sm font-syncopate font-bold text-white uppercase tracking-widest mb-1">{item.title}</div>
-                                        <div className="text-xs text-white/30 font-plus">{item.desc}</div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="relative aspect-square">
-                        <div className="absolute inset-0 bg-[#1DB954]/5 blur-[120px] rounded-full" />
-                        <Card className="h-full border-white/10 bg-black/40 flex items-center justify-center p-0 overflow-hidden group">
-                            <Radio size={120} className="text-[#1DB954]/20 group-hover:animate-pulse" />
-                        </Card>
-                    </div>
-                </div>
 
-                {/* Stories Detail */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-                    <div className="order-2 lg:order-1 relative aspect-square">
-                        <div className="absolute inset-0 bg-luxury-gold/5 blur-[120px] rounded-full" />
-                        <Card className="h-full border-white/10 bg-black/40 flex items-center justify-center p-0 overflow-hidden group">
-                            <div className="relative">
-                                <Radio size={120} className="text-luxury-gold/10 group-hover:scale-110 transition-transform duration-1000" />
-                            </div>
-                        </Card>
-                    </div>
-                    <div className="order-1 lg:order-2">
-                        <div className="inline-flex items-center gap-3 px-4 py-2 bg-luxury-gold/10 border border-luxury-gold/20 rounded-full mb-8 font-syncopate">
-                            <Radio size={16} className="text-luxury-gold" />
-                            <span className="text-[10px] uppercase tracking-[0.2em] text-luxury-gold">Updates</span>
-                        </div>
-                        <h3 className="text-3xl sm:text-4xl md:text-5xl font-syncopate font-bold uppercase tracking-tighter mb-8 leading-tight">
-                            STORIES<br /><span className="text-white">FEED</span>
-                        </h3>
-                        <p className="text-xl text-white/40 font-plus mb-10 leading-relaxed">
-                            Keep your audience engaged with 24-hour ephemeral stories.
-                            Share photos, videos, and moments directly on your profile.
-                        </p>
-                        <div className="space-y-6">
-                            {[
-                                { title: "24-Hour Stories", desc: "Content expires automatically, keeping your page fresh." },
-                                { title: "Photo & Video", desc: "Support for high-res images and vertical video." },
-                                { title: "Immersive Player", desc: "Full-screen cinematic viewing experience." }
-                            ].map((item, i) => (
-                                <div key={i} className="flex items-start gap-4">
-                                    <div className="w-1 h-1 rounded-full bg-luxury-gold mt-2 shrink-0 shadow-[0_0_8px_#D4AF37]" />
-                                    <div>
-                                        <div className="text-sm font-syncopate font-bold text-white uppercase tracking-widest mb-1">{item.title}</div>
-                                        <div className="text-xs text-white/30 font-plus">{item.desc}</div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-            </section >
 
             {/* Monetization & Store Section */}
 
@@ -494,6 +559,155 @@ const Landing = () => {
                 </div>
             </section>
 
+            {/* Inquiries / Collaboration Nexus */}
+            <section id="inquiries" className="py-32 px-6 relative overflow-hidden bg-white/[0.01]">
+                <div className="absolute top-1/2 left-0 w-[600px] h-[600px] bg-luxury-gold/5 blur-[150px] rounded-full -z-10" />
+
+                <div className="max-w-7xl mx-auto">
+                    <div className="text-center mb-16">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            className="inline-flex items-center gap-3 px-4 py-2 bg-luxury-gold/10 border border-luxury-gold/20 rounded-full mb-8"
+                        >
+                            <Briefcase size={14} className="text-luxury-gold" />
+                            <span className="text-[10px] font-syncopate uppercase tracking-[0.2em] text-luxury-gold">Strategic Nexus</span>
+                        </motion.div>
+                        <motion.h2
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="text-4xl md:text-7xl font-syncopate font-bold uppercase tracking-tighter mb-8 max-w-5xl mx-auto leading-[0.9]"
+                        >
+                            STRATEGIC<br /><span className="text-gradient">INQUIRIES</span>
+                        </motion.h2>
+                        <motion.p
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="text-xl text-white/40 font-plus max-w-3xl mx-auto leading-relaxed"
+                        >
+                            Elevate your professional outreach with an integrated collaboration bridge.
+                            Manage high-value brand partnerships through a mission-critical transmission portal designed for clarity and control.
+                        </motion.p>
+                    </div>
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 100 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1 }}
+                        className="w-full max-w-6xl mx-auto glass rounded-3xl p-4 border-white/5 shadow-2xl shadow-luxury-gold/5"
+                    >
+                        <div className="bg-luxury-obsidian rounded-2xl overflow-hidden relative border border-white/5">
+                            <div className="absolute inset-0 bg-gradient-to-tr from-luxury-gold/10 via-transparent to-transparent" />
+                            <img
+                                src="/enquiries.png"
+                                alt="Strategic Inquiries Portal"
+                                className="w-full h-full object-cover"
+                            />
+                        </div>
+                    </motion.div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mt-24">
+                        {[
+                            { title: "Centralized Nexus", desc: "A unified, encrypted stream for all high-stakes professional transmissions.", icon: Radio },
+                            { title: "Precision Filtering", desc: "Instantly categorize by investment depth, partnership type, and priority status.", icon: Activity },
+                            { title: "Seamless Bridging", desc: "Professional communication pathways that convert casual interest into strategic ventures.", icon: ArrowRight }
+                        ].map((item, i) => (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: i * 0.1 }}
+                                className="space-y-4"
+                            >
+                                <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-luxury-gold border border-white/10 group-hover:border-luxury-gold/40 transition-all">
+                                    <item.icon size={20} />
+                                </div>
+                                <h4 className="text-lg font-syncopate font-bold text-white uppercase tracking-tight">{item.title}</h4>
+                                <p className="text-sm text-white/30 font-plus leading-relaxed">{item.desc}</p>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Exclusivity / Invite Only Section */}
+            <section className="py-32 px-6 relative overflow-hidden bg-black">
+                <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-luxury-gold/[0.03] blur-[150px] rounded-full -z-10" />
+                <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-luxury-gold/[0.02] blur-[150px] rounded-full -z-10" />
+
+                <div className="max-w-5xl mx-auto text-center relative z-10">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="inline-flex items-center gap-3 px-6 py-2 bg-luxury-gold/[0.08] border border-luxury-gold/30 rounded-full mb-12 shadow-[0_0_30px_rgba(212,175,55,0.1)]"
+                    >
+                        <Shield size={14} className="text-luxury-gold" />
+                        <span className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-luxury-gold font-bold">Protocol Restricted</span>
+                    </motion.div>
+
+                    <motion.h2
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="text-4xl md:text-7xl font-syncopate font-bold uppercase tracking-tighter mb-10 leading-[0.9] text-white"
+                    >
+                        FOR THE <span className="text-gradient">CURATED</span><br />FEW.
+                    </motion.h2>
+
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.1 }}
+                        className="text-xl md:text-2xl text-white/40 font-plus mb-16 leading-relaxed max-w-3xl mx-auto"
+                    >
+                        This is not just a platform it's a closed ecosystem. We are strictly invite only,
+                        preserving a space dedicated to creators who define excellence in their craft.
+                    </motion.p>
+
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.2 }}
+                        className="grid grid-cols-1 md:grid-cols-3 gap-12 text-left bg-white/[0.02] border border-white/5 p-12 rounded-[3rem] backdrop-blur-xl relative overflow-hidden"
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-br from-luxury-gold/5 via-transparent to-transparent pointer-events-none" />
+
+                        <div className="space-y-4">
+                            <div className="w-10 h-10 rounded-xl bg-luxury-gold/10 border border-luxury-gold/20 flex items-center justify-center text-luxury-gold">
+                                <Sparkles size={18} />
+                            </div>
+                            <h4 className="text-sm font-syncopate font-bold text-white uppercase tracking-widest">High-Tier Content</h4>
+                            <p className="text-xs text-white/30 font-plus leading-relaxed">Dedicated to visionaries who prioritize quality and architectural aesthetics in every creation.</p>
+                        </div>
+
+                        <div className="space-y-4 text-center">
+                            <div className="w-10 h-10 rounded-xl bg-luxury-gold/10 border border-luxury-gold/20 flex items-center justify-center text-luxury-gold mx-auto">
+                                <Shield size={18} />
+                            </div>
+                            <h4 className="text-sm font-syncopate font-bold text-white uppercase tracking-widest">Vetted Ecosystem</h4>
+                            <p className="text-xs text-white/30 font-plus leading-relaxed">Every member is hand-verified to maintain the platform's standard of prestige and authority.</p>
+                        </div>
+
+                        <div className="space-y-4 text-right flex flex-col items-end">
+                            <div className="w-10 h-10 rounded-xl bg-luxury-gold/10 border border-luxury-gold/20 flex items-center justify-center text-luxury-gold">
+                                <Zap size={18} />
+                            </div>
+                            <h4 className="text-sm font-syncopate font-bold text-white uppercase tracking-widest">Elite Networking</h4>
+                            <p className="text-xs text-white/30 font-plus leading-relaxed">Join a peer-to-peer network of the world's most influential and strategic content architects.</p>
+                        </div>
+                    </motion.div>
+                </div>
+            </section>
+
             {/* Premium Footer Archetype */}
             <footer className="py-32 px-6 border-t border-white/5 relative overflow-hidden bg-[#050505]">
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-luxury-gold/[0.02] blur-[120px] rounded-full pointer-events-none" />
@@ -522,6 +736,7 @@ const Landing = () => {
                                     { name: 'Features', href: '#features' },
                                     { name: 'Analytics', href: '#analytics' },
                                     { name: 'Monetization', href: '#monetization' },
+                                    { name: 'Inquiries', href: '#inquiries' },
                                     { name: 'Themes', href: '#themes' },
                                     { name: 'Brand Card', href: '#brand-card' }
                                 ].map((item) => (
