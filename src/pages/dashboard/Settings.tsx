@@ -50,6 +50,7 @@ const Settings = () => {
     const [currency, setCurrency] = useState("USD");
     const [youtubeChannelId, setYoutubeChannelId] = useState("");
     const [role, setRole] = useState("");
+    const [newsletterEnabled, setNewsletterEnabled] = useState(false);
     const [loading, setLoading] = useState(false);
     const [uploadingStory, setUploadingStory] = useState(false);
     const [updatingPassword, setUpdatingPassword] = useState(false);
@@ -72,6 +73,7 @@ const Settings = () => {
             setCurrency(data.profile.currency || "USD");
             setYoutubeChannelId(data.profile.youtube_channel_id || "");
             setRole(data.profile.role || "Creator");
+            setNewsletterEnabled(data.profile.newsletter_enabled || false);
         }
     }, [data?.profile]);
 
@@ -180,6 +182,7 @@ const Settings = () => {
                 currency: currency,
                 youtube_channel_id: youtubeChannelId,
                 role: role,
+                newsletter_enabled: newsletterEnabled,
                 updated_at: new Date().toISOString()
             }).eq("id", user.id);
 
@@ -278,7 +281,7 @@ const Settings = () => {
                     <div className="flex items-center justify-center md:justify-start gap-4 mb-6">
                         <div className="px-4 py-1.5 bg-white/[0.03] border border-white/5 rounded-full flex items-center gap-2 backdrop-blur-md">
                             <Sparkles size={12} className="text-luxury-gold shadow-[0_0_10px_rgba(212,175,55,0.4)]" />
-                            <span className="text-[10px] font-syncopate uppercase tracking-widest text-white/40">Identity Management</span>
+                            <span className="text-[10px] font-syncopate uppercase tracking-widest text-white/40">Profile Control</span>
                         </div>
                     </div>
                     <motion.h1
@@ -286,10 +289,10 @@ const Settings = () => {
                         animate={{ opacity: 1, y: 0 }}
                         className="text-7xl font-syncopate font-bold uppercase tracking-tighter leading-none"
                     >
-                        The Vault<span className="text-luxury-gold">.</span>
+                        Settings<span className="text-luxury-gold">.</span>
                     </motion.h1>
                     <p className="text-white/20 font-plus text-xl mt-8 max-w-2xl leading-relaxed italic">
-                        Archiving your digital essence and configuring terminal parameters.
+                        Manage your account settings and profile information.
                     </p>
                 </div>
 
@@ -299,13 +302,13 @@ const Settings = () => {
                         className="w-full md:w-auto text-red-500/40 hover:text-red-500 hover:bg-red-500/5 gap-3 px-10 py-7 text-xs font-syncopate tracking-[0.2em] uppercase border border-red-500/5 rounded-2xl transition-all duration-700"
                         onClick={handleLogout}
                     >
-                        <LogOut size={18} /> Terminate
+                        <LogOut size={18} /> Logout
                     </Button>
                 </div>
             </header>
 
             <div className="space-y-24">
-                {/* Section 1: Core Biometrics */}
+                {/* Section 1: Profile Information */}
                 <Card className="p-16 border-white/5 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-luxury-gold/[0.02] blur-[120px] -mr-48 -mt-48 pointer-events-none" />
 
@@ -327,8 +330,8 @@ const Settings = () => {
                                         <Fingerprint size={28} strokeWidth={1} />
                                     </div>
                                     <div>
-                                        <h2 className="text-3xl font-syncopate font-bold uppercase tracking-tight text-white">Identity Core</h2>
-                                        <p className="text-[10px] text-white/20 font-syncopate uppercase tracking-[0.4em] mt-2">Biometric Registry Synchronization</p>
+                                        <h2 className="text-3xl font-syncopate font-bold uppercase tracking-tight text-white">Profile Information</h2>
+                                        <p className="text-[10px] text-white/20 font-syncopate uppercase tracking-[0.4em] mt-2">Update your personal details</p>
                                     </div>
                                 </div>
                             </div>
@@ -337,7 +340,7 @@ const Settings = () => {
                         <form onSubmit={handleUpdateProfile} className="space-y-16">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                                 <div className="space-y-4">
-                                    <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/20 ml-2">Interface Alias</label>
+                                    <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/20 ml-2">Username</label>
                                     <div className="relative">
                                         <input
                                             disabled
@@ -351,7 +354,7 @@ const Settings = () => {
                                 </div>
 
                                 <div className="space-y-4">
-                                    <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/20 ml-2">Public Designation</label>
+                                    <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/20 ml-2">Full Name</label>
                                     <input
                                         required
                                         value={fullName}
@@ -364,7 +367,7 @@ const Settings = () => {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                                 <div className="space-y-4">
-                                    <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/20 ml-2">Digital Role / Title</label>
+                                    <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/20 ml-2">Role / Title</label>
                                     <input
                                         required
                                         value={role}
@@ -375,7 +378,7 @@ const Settings = () => {
                                 </div>
 
                                 <div className="space-y-4">
-                                    <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/20 ml-2">Economic Parameter</label>
+                                    <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/20 ml-2">Preferred Currency</label>
                                     <LuxeSelect
                                         options={currencyOptions}
                                         value={currency}
@@ -386,7 +389,7 @@ const Settings = () => {
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                                 <div className="space-y-4">
-                                    <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/20 ml-2">Broadcast ID or Handle</label>
+                                    <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/20 ml-2">YouTube Handle</label>
                                     <input
                                         value={youtubeChannelId}
                                         onChange={(e) => setYoutubeChannelId(e.target.value)}
@@ -398,8 +401,9 @@ const Settings = () => {
                                 <div className="space-y-4 invisible hidden md:block" />
                             </div>
 
+
                             <div className="space-y-4">
-                                <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/20 ml-2">Strategic Manifesto</label>
+                                <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/20 ml-2">Bio / About</label>
                                 <textarea
                                     value={bio}
                                     onChange={(e) => setBio(e.target.value)}
@@ -407,7 +411,6 @@ const Settings = () => {
                                     className="w-full bg-white/[0.02] border border-white/5 rounded-[2.5rem] py-8 px-10 outline-none focus:border-luxury-gold/40 focus:bg-white/[0.04] transition-all duration-700 h-48 font-plus text-xl leading-relaxed text-white italic resize-none"
                                 />
                             </div>
-
                             <Button
                                 type="submit"
                                 variant="luxury"
@@ -418,13 +421,63 @@ const Settings = () => {
                                     className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"
                                 />
                                 {loading ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
-                                Synchronize Identity
+                                Save Changes
                             </Button>
                         </form>
                     </div>
                 </Card>
 
-                {/* Section 2: Temporal Chronicles */}
+                {/* Section 2: Newsletter Configuration */}
+                <Card className="p-16 border-white/5 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-luxury-gold/[0.02] blur-[120px] -mr-48 -mt-48 pointer-events-none" />
+
+                    <div className="flex flex-col md:flex-row items-center gap-12 border-b border-white/5 pb-16 mb-12">
+                        <div className="w-20 h-20 bg-luxury-gold/5 rounded-[1.5rem] flex items-center justify-center text-luxury-gold border border-luxury-gold/10 shrink-0">
+                            <Radio size={32} strokeWidth={1} />
+                        </div>
+                        <div className="text-center md:text-left">
+                            <h2 className="text-3xl font-syncopate font-bold uppercase tracking-tight text-white">Newsletter Configuration</h2>
+                            <p className="text-[10px] text-white/20 font-syncopate uppercase tracking-[0.4em] mt-2">Manage public newsletter subscription</p>
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col md:flex-row items-center justify-between p-8 bg-white/[0.02] border border-white/5 rounded-[2rem] gap-8">
+                        <div className="max-w-xl">
+                            <label className="text-xs font-syncopate uppercase tracking-[0.2em] text-white block mb-3">Subscription Visibility</label>
+                            <p className="text-sm text-white/40 font-plus leading-relaxed">
+                                When active, a newsletter subscription form will be visible on your public profile, allowing visitors to subscribe.
+                            </p>
+                        </div>
+                        <button
+                            type="button"
+                            disabled={loading}
+                            onClick={async () => {
+                                const newValue = !newsletterEnabled;
+                                setNewsletterEnabled(newValue);
+                                try {
+                                    const { data: { user } } = await supabase.auth.getUser();
+                                    if (user) {
+                                        await supabase.from("profiles").update({
+                                            newsletter_enabled: newValue,
+                                            updated_at: new Date().toISOString()
+                                        }).eq("id", user.id);
+                                        queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+                                        toast.success(newValue ? "Newsletter Enabled" : "Newsletter Disabled");
+                                    }
+                                } catch (error) {
+                                    console.error("Toggle failed", error);
+                                    setNewsletterEnabled(!newValue); // Revert on error
+                                    toast.error("Connection failed");
+                                }
+                            }}
+                            className={`w-20 h-10 rounded-full relative transition-all duration-500 ease-out border-2 ${newsletterEnabled ? 'bg-luxury-gold/10 border-luxury-gold' : 'bg-white/5 border-white/10'}`}
+                        >
+                            <div className={`absolute top-1 left-1 w-7 h-7 rounded-full bg-white transition-all duration-500 shadow-[0_0_15px_rgba(255,255,255,0.3)] ${newsletterEnabled ? 'translate-x-10 bg-luxury-gold shadow-[0_0_20px_rgba(212,175,55,0.6)]' : 'translate-x-0 opacity-40'}`} />
+                        </button>
+                    </div>
+                </Card>
+
+                {/* Section 3: Stories */}
                 <Card className="p-16 border-white/5 relative overflow-hidden group">
                     <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-luxury-gold/[0.01] blur-[120px] -ml-48 -mt-48 pointer-events-none" />
 
@@ -434,8 +487,8 @@ const Settings = () => {
                                 <Radio size={32} strokeWidth={1} className="animate-pulse" />
                             </div>
                             <div>
-                                <h2 className="text-3xl font-syncopate font-bold uppercase tracking-tight text-white">Chronicles</h2>
-                                <p className="text-[10px] text-white/20 font-syncopate uppercase tracking-[0.4em] mt-2">Ephemeral Identity Projection</p>
+                                <h2 className="text-3xl font-syncopate font-bold uppercase tracking-tight text-white">Stories</h2>
+                                <p className="text-[10px] text-white/20 font-syncopate uppercase tracking-[0.4em] mt-2">Manage your 24h statuses</p>
                             </div>
                         </div>
 
@@ -447,7 +500,7 @@ const Settings = () => {
                                 className="w-full md:w-auto gap-4 px-10 py-6 rounded-2xl shadow-2xl text-xs tracking-[0.2em] font-syncopate uppercase group"
                             >
                                 {uploadingStory ? <Loader2 className="animate-spin" size={18} /> : <Plus size={18} />}
-                                Sync Instance
+                                Add Story
                             </Button>
                             <input
                                 type="file"
@@ -460,8 +513,8 @@ const Settings = () => {
                     </div>
 
                     <p className="text-lg text-white/30 font-plus leading-relaxed max-w-2xl italic mb-12">
-                        Project ephemeral instances of your digital persona valid for <span className="text-luxury-gold">24 hours</span>.
-                        Videos are limited to <span className="text-luxury-gold font-bold">30 seconds</span> within the neural grid.
+                        Upload ephemeral stories visible on your profile for <span className="text-luxury-gold">24 hours</span>.
+                        Videos are limited to <span className="text-luxury-gold font-bold">30 seconds</span>.
                     </p>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
@@ -470,7 +523,7 @@ const Settings = () => {
                                 <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 border border-white/5 group-hover/empty:border-luxury-gold/20 transition-all">
                                     <Clock className="text-white/10 group-hover/empty:text-luxury-gold transition-colors" size={24} />
                                 </div>
-                                <p className="text-white/20 font-syncopate uppercase tracking-widest text-[9px]">Timeline Dormant</p>
+                                <p className="text-white/20 font-syncopate uppercase tracking-widest text-[9px]">No Active Stories</p>
                             </div>
                         ) : (
                             stories.map((story) => (
@@ -518,7 +571,7 @@ const Settings = () => {
                     </div>
                 </Card>
 
-                {/* Section 3: Security Cipher */}
+                {/* Section 4: Security */}
                 <Card className="p-16 border-white/5 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-luxury-gold/[0.02] blur-[120px] -mr-48 -mt-48 pointer-events-none" />
 
@@ -528,15 +581,15 @@ const Settings = () => {
                                 <Lock size={32} strokeWidth={1} />
                             </div>
                             <div className="text-center md:text-left">
-                                <h2 className="text-3xl font-syncopate font-bold uppercase tracking-tight text-white">Security Cipher</h2>
-                                <p className="text-[10px] text-white/20 font-syncopate uppercase tracking-[0.4em] mt-2">Access Key Rotation</p>
+                                <h2 className="text-3xl font-syncopate font-bold uppercase tracking-tight text-white">Security</h2>
+                                <p className="text-[10px] text-white/20 font-syncopate uppercase tracking-[0.4em] mt-2">Change Password</p>
                             </div>
                         </div>
 
                         <form onSubmit={handleUpdatePassword} className="space-y-12">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                                 <div className="space-y-4">
-                                    <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/20 ml-2">New Sequence</label>
+                                    <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/20 ml-2">New Password</label>
                                     <input
                                         type="password"
                                         required
@@ -548,7 +601,7 @@ const Settings = () => {
                                 </div>
 
                                 <div className="space-y-4">
-                                    <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/20 ml-2">Confirm Sequence</label>
+                                    <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/20 ml-2">Confirm Password</label>
                                     <input
                                         type="password"
                                         required
@@ -570,13 +623,13 @@ const Settings = () => {
                                     className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"
                                 />
                                 {updatingPassword ? <Loader2 className="animate-spin" size={20} /> : <Lock size={20} />}
-                                Rotate Access Keys
+                                Update Password
                             </Button>
                         </form>
                     </div>
                 </Card>
 
-                {/* Section 4: Oblivion Protocol */}
+                {/* Section 5: Delete Account */}
                 <Card className="p-16 border-red-500/5 bg-red-500/[0.002] group">
                     <div className="flex flex-col md:flex-row items-center gap-12">
                         <div className="w-20 h-20 bg-red-500/5 rounded-[1.5rem] flex items-center justify-center text-red-500/20 group-hover:text-red-500 transition-colors duration-1000 border border-red-500/5 shrink-0 shadow-2xl">
@@ -584,11 +637,11 @@ const Settings = () => {
                         </div>
                         <div className="flex-1 text-center md:text-left space-y-6">
                             <div>
-                                <h2 className="text-3xl font-syncopate font-bold uppercase tracking-tight text-red-500/20 group-hover:text-red-500 transition-colors">Terminus</h2>
-                                <p className="text-[10px] text-red-500/10 font-syncopate uppercase tracking-[0.5em] mt-2">Oblivion Protocol Enforcement</p>
+                                <h2 className="text-3xl font-syncopate font-bold uppercase tracking-tight text-red-500/20 group-hover:text-red-500 transition-colors">Delete Account</h2>
+                                <p className="text-[10px] text-red-500/10 font-syncopate uppercase tracking-[0.5em] mt-2">Permanent Account Deletion</p>
                             </div>
                             <p className="text-lg text-white/5 font-plus leading-relaxed max-w-2xl group-hover:text-white/20 transition-colors">
-                                Total environmental de-allocation. This terminal operation will purge your digital sovereignty from the grid.
+                                Permanently delete your account and all associated data. This action cannot be undone.
                             </p>
                         </div>
                         <Button
@@ -596,7 +649,7 @@ const Settings = () => {
                             className="px-12 py-7 text-[10px] font-syncopate uppercase tracking-[0.4em] border border-red-500/5 hover:border-red-500/20 text-red-500/20 hover:text-red-500 hover:bg-red-500/5 transition-all duration-1000 shrink-0"
                             onClick={handleDeleteAccount}
                         >
-                            Execute Purge
+                            Delete Account
                         </Button>
                     </div>
                 </Card>
@@ -606,8 +659,8 @@ const Settings = () => {
                 onClose={() => setIsDeleteDialogOpen(false)}
                 onConfirm={confirmDeleteAccount}
                 isDeleting={loading}
-                title="TERMINUS AUTHORIZATION"
-                description="WARNING: You are initiating the Oblivion Protocol. This will permanently erase your digital footprint from the matrix. This action is irreversible."
+                title="DELETE ACCOUNT"
+                description="WARNING: You are about to permanently delete your account. This action cannot be undone. Are you sure you want to proceed?"
             />
 
             {/* Story Preview Overlay */}

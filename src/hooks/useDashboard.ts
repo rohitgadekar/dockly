@@ -101,5 +101,42 @@ export function useDashboard() {
         };
     }, [queryClient]);
 
+    // Cleanup expired stories
+    useEffect(() => {
+        const cleanupExpiredStories = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            const { data: expiredStories } = await supabase
+                .from("stories")
+                .select("*")
+                .eq("profile_id", user.id)
+                .lte("expires_at", new Date().toISOString());
+
+            if (expiredStories && expiredStories.length > 0) {
+                
+                // Delete files from storage
+                const filePaths = expiredStories.map(s => s.media_url).filter(Boolean);
+                if (filePaths.length > 0) {
+                    const { error: storageError } = await supabase.storage.from("stories").remove(filePaths);
+                    if (storageError) console.error("Error deleting story files:", storageError);
+                }
+
+                // Delete records from database
+                const { error: dbError } = await supabase
+                    .from("stories")
+                    .delete()
+                    .in("id", expiredStories.map(s => s.id));
+                
+                if (dbError) console.error("Error deleting story records:", dbError);
+                
+                // Refresh data
+                queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+            }
+        };
+
+        cleanupExpiredStories();
+    }, []);
+
     return query;
 }

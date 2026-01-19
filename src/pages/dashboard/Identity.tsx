@@ -24,8 +24,8 @@ const PremiumQR = ({ url }: { url: string }) => {
 
     useEffect(() => {
         qrCode.current = new QRCodeStyling({
-            width: 80,
-            height: 80,
+            width: 400,
+            height: 400,
             data: url,
             margin: 0,
             qrOptions: {
@@ -61,14 +61,14 @@ const PremiumQR = ({ url }: { url: string }) => {
             <div className="absolute -inset-1  rounded-xl blur-md opacity-0 group-hover/qr:opacity-100 transition-opacity duration-500" />
             <div
                 ref={qrRef}
-                className="relative  rounded-xl  flex items-center justify-center overflow-hidden"
+                className="relative w-20 h-20 rounded-xl flex items-center justify-center overflow-hidden [&>canvas]:w-full [&>canvas]:h-full"
             />
         </div>
     );
 };
 
 const Identity = () => {
-    useTitle("Brand Identity");
+    useTitle("Brand Card");
     const { data } = useDashboard();
     const cardRef = useRef<HTMLDivElement>(null);
     const [isDownloading, setIsDownloading] = useState(false);
@@ -121,10 +121,10 @@ const Identity = () => {
                 }
             });
             const link = document.createElement("a");
-            link.download = `${data?.profile?.username || 'user'}-identity-card.png`;
+            link.download = `${data?.profile?.username || 'user'}-brand-card.png`;
             link.href = dataUrl;
             link.click();
-            toast.success("Premium Identity Card downloaded.");
+            toast.success("Brand Card downloaded.");
         } catch (err) {
             console.error(err);
             toast.error("Download failed.");
@@ -152,13 +152,13 @@ const Identity = () => {
                         <div className="p-2 bg-luxury-gold/10 rounded-lg border border-luxury-gold/20">
                             <Fingerprint size={18} className="text-luxury-gold" />
                         </div>
-                        <span className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/40">Creator Profile</span>
+                        <span className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/40">Download Card</span>
                     </div>
                     <h1 className="text-5xl font-syncopate font-bold uppercase tracking-tighter text-white">
-                        BRAND <span className="text-luxury-gold">IDENTITY</span>
+                        Brand <span className="text-luxury-gold">Card</span>
                     </h1>
                     <p className="text-white/40 font-plus italic mt-4">
-                        Download your premium brand card to share with the world.
+                        Download your branded profile card to share with the world.
                     </p>
                 </div>
 
@@ -220,13 +220,13 @@ const Identity = () => {
                             {/* Profile Visual (Avatar) */}
                             <div className="relative mb-6 self-center">
                                 <div className="absolute -inset-1 bg-gradient-to-tr from-luxury-gold/30 via-transparent to-luxury-gold/30 rounded-[2.5rem] blur-sm opacity-50" />
-                                <div className="relative w-40 h-40 rounded-[2.2rem] overflow-hidden border border-white/10 p-1 bg-black shadow-2xl">
-                                    <div className="w-full h-full rounded-[1.8rem] overflow-hidden">
+                                <div className="relative w-40 h-40 rounded-[2.2rem] overflow-hidden shadow-2xl">
+                                    <div className="w-full h-full rounded-[2.2rem] overflow-hidden">
                                         <img
                                             src={data.profile.avatar_url || "/dp.png"}
                                             alt="Avatar"
                                             crossOrigin="anonymous"
-                                            className="w-full h-full object-cover mix-blend-luminosity grayscale contrast-[1.1] brightness-[1.1]"
+                                            className="w-full h-full object-cover"
                                         />
                                     </div>
                                 </div>
@@ -259,7 +259,7 @@ const Identity = () => {
                                     <PremiumQR url={profileUrl} />
                                     <div className="space-y-1">
                                         <div className="text-[8px] font-syncopate text-luxury-gold uppercase tracking-[0.4em] font-bold">Scan to View</div>
-                                        <div className="text-[6px] font-mono text-white/20 tracking-[0.3em] uppercase">Auth: {data.profile.username?.toUpperCase()}</div>
+                                        <div className="text-[6px] font-mono text-luxury-gold tracking-[0.3em] uppercase">Auth: {data.profile.username?.toUpperCase()}</div>
                                     </div>
                                 </div>
 
@@ -275,7 +275,7 @@ const Identity = () => {
                                             />
                                         ))}
                                     </div>
-                                    <div className="text-[6px] font-syncopate text-white/20 uppercase tracking-[0.5em]">Signature ID</div>
+                                    <div className="text-[6px] font-syncopate text-luxury-gold uppercase tracking-[0.5em]">Signature ID</div>
                                 </div>
                             </div>
 

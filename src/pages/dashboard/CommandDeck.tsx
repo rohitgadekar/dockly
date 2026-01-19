@@ -27,7 +27,7 @@ import {
 } from 'recharts';
 
 const CommandDeck = () => {
-    useTitle("Command Deck");
+    useTitle("Dashboard");
     const { data } = useDashboard();
 
     const isNewUser =
@@ -104,21 +104,21 @@ const CommandDeck = () => {
             color: "#D4AF37"
         },
         {
-            label: "Active Ventures",
+            label: "Active Projects",
             value: data?.ventures?.length || 0,
             change: isNewUser ? "Initial State" : "+2",
             icon: Zap,
             color: "#3B82F6"
         },
         {
-            label: "Acquisition Targets",
+            label: "Store Assets",
             value: data?.products?.length || 0,
             change: "Stable",
             icon: ShoppingBag,
             color: "#10B981"
         },
         {
-            label: "Network Nodes",
+            label: "Social Nodes",
             value: data?.socials?.length || 0,
             change: "Optimal",
             icon: Globe,
@@ -147,10 +147,10 @@ const CommandDeck = () => {
             <div className="flex justify-between items-end">
                 <div>
                     <h1 className="text-4xl font-syncopate font-bold uppercase tracking-tighter text-white mb-2">
-                        Command Deck
+                        Dashboard
                     </h1>
                     <p className="text-white/40 font-plus italic">
-                        Welcome back, <span className="text-white">{data?.profile?.full_name || "Architect"}</span>. Systems operational.
+                        Welcome back, <span className="text-white">{data?.profile?.full_name || "Architect"}</span>.
                     </p>
                 </div>
                 <div className="flex items-center gap-3 px-4 py-2 bg-white/5 rounded-full border border-white/10 backdrop-blur-sm">
@@ -159,7 +159,7 @@ const CommandDeck = () => {
                         <div className="absolute inset-0 bg-emerald-500 rounded-full animate-ping opacity-20" />
                     </div>
                     <span className="text-[10px] font-syncopate uppercase tracking-widest text-emerald-500">
-                        Citadel Protocol Active
+                        System Online
                     </span>
                 </div>
             </div>
@@ -214,9 +214,9 @@ const CommandDeck = () => {
                                 </div>
                                 <div>
                                     <h2 className="text-sm font-syncopate font-bold uppercase tracking-widest text-white">
-                                        Neural Trajectory
+                                        Activity Stream
                                     </h2>
-                                    <p className="text-[9px] font-syncopate text-white/20 uppercase tracking-widest mt-1">Live Telemetry Stram</p>
+                                    <p className="text-[9px] font-syncopate text-white/20 uppercase tracking-widest mt-1">Live Traffic Data</p>
                                 </div>
                             </div>
                             <div className="flex gap-2">
@@ -287,7 +287,7 @@ const CommandDeck = () => {
                         <div className="flex justify-between items-center mb-6">
                             <div className="flex items-center gap-3">
                                 <MousePointer2 size={16} className="text-blue-400" />
-                                <span className="text-[10px] font-syncopate font-bold uppercase tracking-widest text-white/60">Pulse Stream</span>
+                                <span className="text-[10px] font-syncopate font-bold uppercase tracking-widest text-white/60">Engagement</span>
                             </div>
                             <span className="text-[10px] font-mono text-blue-400">LIVE</span>
                         </div>

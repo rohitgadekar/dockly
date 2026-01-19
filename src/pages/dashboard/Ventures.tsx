@@ -22,7 +22,7 @@ import { DeleteDialog } from "@/components/ui/DeleteDialog";
 import { useTitle } from "@/hooks/useTitle";
 
 const Ventures = () => {
-    useTitle("Neural Ventures");
+    useTitle("Projects");
     const { data, isLoading } = useDashboard();
     const [isAdding, setIsAdding] = useState(false);
     const [title, setTitle] = useState("");
@@ -59,7 +59,7 @@ const Ventures = () => {
                     })
                     .eq("id", editId);
                 if (error) throw error;
-                toast.success("Identity Venture Updated.");
+                toast.success("Project Updated.");
             } else {
                 const { error } = await supabase.from("ventures").insert([
                     {
@@ -70,7 +70,7 @@ const Ventures = () => {
                     }
                 ]);
                 if (error) throw error;
-                toast.success("Identity Venture Synchronized.");
+                toast.success("Project Added.");
             }
 
             resetForm();
@@ -101,7 +101,7 @@ const Ventures = () => {
         try {
             const { error } = await supabase.from("ventures").delete().eq("id", deleteId);
             if (error) throw error;
-            toast.success("Venture Decommissioned.");
+            toast.success("Project Removed.");
             queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
             setDeleteId(null);
         } catch (error: any) {
@@ -115,7 +115,7 @@ const Ventures = () => {
         return (
             <div className="h-[70vh] flex flex-col items-center justify-center gap-6">
                 <Loader2 className="animate-spin text-luxury-gold" size={48} />
-                <p className="text-white/20 font-syncopate uppercase tracking-[0.5em] text-[10px]">Scanning Venture Registry...</p>
+                <p className="text-white/20 font-syncopate uppercase tracking-[0.5em] text-[10px]">Loading Projects...</p>
             </div>
         );
     }
@@ -128,17 +128,17 @@ const Ventures = () => {
                 <div>
                     <div className="flex items-center gap-3 mb-4">
                         <Sparkles className="text-luxury-gold w-5 h-5 opacity-50" />
-                        <span className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-luxury-gold opacity-60">High-Performance Grid</span>
+                        <span className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-luxury-gold opacity-60">Portfolio</span>
                     </div>
-                    <h1 className="text-6xl font-syncopate font-bold uppercase tracking-tighter leading-none">Venture Studio</h1>
+                    <h1 className="text-6xl font-syncopate font-bold uppercase tracking-tighter leading-none">Projects</h1>
                     <p className="text-white/30 font-plus text-xl mt-6 max-w-2xl leading-relaxed">
-                        Architect and manage your digital infrastructure components and strategic high-performance assets.
+                        Showcase and manage your key projects and initiatives.
                     </p>
                 </div>
 
                 {!isAdding && (
                     <Button variant="luxury" onClick={() => setIsAdding(true)} className="gap-3 px-10 py-6 rounded-[2rem] shadow-[0_0_30px_rgba(212,175,55,0.2)] text-sm tracking-widest font-syncopate uppercase">
-                        <Plus size={20} /> Initialize Venture
+                        <Plus size={20} /> Add Project
                     </Button>
                 )}
             </header>
@@ -160,17 +160,17 @@ const Ventures = () => {
                                     </div>
                                     <div>
                                         <h2 className="text-2xl font-syncopate font-bold uppercase tracking-tight text-white">
-                                            {editId ? "Venture Modification" : "New Venture Initialization"}
+                                            {editId ? "Edit Project" : "New Project"}
                                         </h2>
                                         <p className="text-xs text-white/20 font-syncopate uppercase tracking-widest mt-1">
-                                            {editId ? "Update Architectural Parameters" : "Specify Architectural Parameters"}
+                                            {editId ? "Update Project Details" : "Add Project Details"}
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
                                     <div className="space-y-3">
-                                        <label className="text-[10px] font-syncopate uppercase tracking-[0.3em] text-white/40 ml-2">Venture Designation</label>
+                                        <label className="text-[10px] font-syncopate uppercase tracking-[0.3em] text-white/40 ml-2">Project Name</label>
                                         <input
                                             required
                                             value={title}
@@ -180,34 +180,34 @@ const Ventures = () => {
                                         />
                                     </div>
                                     <div className="space-y-3">
-                                        <label className="text-[10px] font-syncopate uppercase tracking-[0.3em] text-white/40 ml-2">Access Portal Vector (URL)</label>
+                                        <label className="text-[10px] font-syncopate uppercase tracking-[0.3em] text-white/40 ml-2">Project URL</label>
                                         <input
                                             required
                                             type="url"
                                             value={url}
                                             onChange={(e) => setUrl(e.target.value)}
-                                            placeholder="https://venture-domain.pro"
+                                            placeholder="https://project-domain.com"
                                             className="w-full bg-white/[0.03] border border-white/10 rounded-[2rem] py-5 px-8 outline-none focus:border-luxury-gold/40 focus:bg-white/[0.05] transition-all duration-500 font-plus text-lg text-white"
                                         />
                                     </div>
                                 </div>
 
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-syncopate uppercase tracking-[0.3em] text-white/40 ml-2">Mission Parameters (Brief Description)</label>
+                                    <label className="text-[10px] font-syncopate uppercase tracking-[0.3em] text-white/40 ml-2">Description</label>
                                     <textarea
                                         required
                                         value={description}
                                         onChange={(e) => setDescription(e.target.value)}
-                                        placeholder="Define the strategic objective and key results..."
+                                        placeholder="Brief description of the project..."
                                         className="w-full bg-white/[0.03] border border-white/10 rounded-[2rem] py-6 px-8 outline-none focus:border-luxury-gold/40 focus:bg-white/[0.05] transition-all duration-500 h-40 font-plus text-lg leading-relaxed text-white resize-none"
                                     />
                                 </div>
 
                                 <div className="flex justify-end gap-6 pt-6">
-                                    <Button type="button" variant="ghost" className="px-10 text-xs font-syncopate uppercase tracking-widest h-14" onClick={resetForm}>Abort Sequence</Button>
+                                    <Button type="button" variant="ghost" className="px-10 text-xs font-syncopate uppercase tracking-widest h-14" onClick={resetForm}>Cancel</Button>
                                     <Button type="submit" variant="luxury" disabled={loading} className="gap-3 px-12 h-14 rounded-xl text-xs font-syncopate uppercase tracking-widest shadow-2xl">
                                         {loading ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
-                                        {editId ? "Sychronize Updates" : "Initialize Grid Component"}
+                                        {editId ? "Save Changes" : "Add Project"}
                                     </Button>
                                 </div>
                             </form>
@@ -228,8 +228,8 @@ const Ventures = () => {
                             <div className="w-24 h-24 bg-white/[0.02] rounded-full flex items-center justify-center mx-auto mb-10 border border-white/5 group-hover:border-luxury-gold/20 ">
                                 <Search size={40} className="text-white/5 group-hover:text-luxury-gold group-hover:scale-110 " strokeWidth={1} />
                             </div>
-                            <h3 className="text-2xl font-syncopate font-bold text-white/40 mb-4 uppercase tracking-tighter">No Active Protocols</h3>
-                            <p className="text-white/20 font-plus text-lg mb-10 max-w-sm mx-auto uppercase tracking-widest text-[10px]">Your modular infrastructure is currently offline.</p>
+                            <h3 className="text-2xl font-syncopate font-bold text-white/40 mb-4 uppercase tracking-tighter">No Projects Found</h3>
+                            <p className="text-white/20 font-plus text-lg mb-10 max-w-sm mx-auto uppercase tracking-widest text-[10px]">Your portfolio is currently empty.</p>
 
                         </div>
                     </motion.div>
@@ -284,7 +284,7 @@ const Ventures = () => {
 
                                 <div className="flex items-center justify-between pt-10 border-t border-white/5 mt-auto bg-transparent relative">
                                     <div className="flex flex-col">
-                                        <span className="text-[9px] font-syncopate text-white/10 uppercase tracking-[0.3em] mb-1">Grid Deployment</span>
+                                        <span className="text-[9px] font-syncopate text-white/10 uppercase tracking-[0.3em] mb-1">Date Added</span>
                                         <span className="text-[10px] font-plus text-white/40 uppercase tracking-widest font-bold">
                                             {new Date(venture.created_at).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
                                         </span>
@@ -292,9 +292,9 @@ const Ventures = () => {
                                     <div className="flex flex-col items-end">
                                         <div className="flex items-center gap-2 mb-1">
                                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] animate-pulse" />
-                                            <span className="text-[10px] font-syncopate text-emerald-500 uppercase tracking-widest font-bold">Optimal Matrix</span>
+                                            <span className="text-[10px] font-syncopate text-emerald-500 uppercase tracking-widest font-bold">Active</span>
                                         </div>
-                                        <span className="text-[8px] font-syncopate text-white/10 uppercase tracking-[0.2em]">Vector: {venture.id.substring(0, 8).toUpperCase()}</span>
+                                        <span className="text-[8px] font-syncopate text-white/10 uppercase tracking-[0.2em]">ID: {venture.id.substring(0, 8).toUpperCase()}</span>
                                     </div>
                                     <ChevronRight size={20} className="absolute -right-4 top-1/2 -translate-y-1/2 text-white/5 group-hover:text-luxury-gold/20 group-hover:translate-x-2 " />
                                 </div>
@@ -308,8 +308,8 @@ const Ventures = () => {
                 onClose={() => setDeleteId(null)}
                 onConfirm={confirmDelete}
                 isDeleting={deleting}
-                title="Decommission Venture"
-                description="This protocol will purge the selected Venture from your portfolio immediately. Active links will be terminated."
+                title="Remove Project"
+                description="This will permanently delete this project from your portfolio."
             />
         </div>
     );

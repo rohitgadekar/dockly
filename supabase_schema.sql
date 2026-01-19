@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS profiles (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   top_tracks JSONB DEFAULT '[]'::jsonb,
   youtube_channel_id TEXT,
+  newsletter_enabled BOOLEAN DEFAULT false,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -243,6 +244,7 @@ CREATE TABLE IF NOT EXISTS newsletter_subscribers (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   profile_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
   email TEXT NOT NULL,
+  name TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   UNIQUE(profile_id, email)
 );

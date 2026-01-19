@@ -86,7 +86,7 @@ const themes = [
 ];
 
 const Atmospherics = () => {
-    useTitle("Atmosphere Architect");
+    useTitle("Themes");
     const { data, isLoading } = useDashboard();
     const [selectedThemeId, setSelectedThemeId] = useState("royale");
     const [loading, setLoading] = useState(false);
@@ -114,7 +114,7 @@ const Atmospherics = () => {
 
             if (error) throw error;
 
-            toast.success("Atmospheric configuration archived.");
+            toast.success("Theme configuration saved.");
             queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
         } catch (error: any) {
             toast.error(error.message);
@@ -127,7 +127,7 @@ const Atmospherics = () => {
         return (
             <div className="h-[80vh] flex flex-col items-center justify-center gap-6">
                 <Loader2 className="animate-spin text-luxury-gold" size={48} />
-                <p className="text-white/20 font-syncopate uppercase tracking-[0.5em] text-[10px]">Accessing Aesthetic Matrix...</p>
+                <p className="text-white/20 font-syncopate uppercase tracking-[0.5em] text-[10px]">Loading Aesthetic Matrix...</p>
             </div>
         );
     }
@@ -151,14 +151,14 @@ const Atmospherics = () => {
                         <div className="flex items-center gap-4 mb-6">
                             <div className="px-4 py-1.5 bg-white/[0.03] border border-white/5 rounded-full flex items-center gap-2 backdrop-blur-md">
                                 <Palette size={12} style={{ color: currentStagedTheme.primary }} />
-                                <span className="text-[10px] font-syncopate uppercase tracking-widest text-white/40">Atmospheric Orchestrator</span>
+                                <span className="text-[10px] font-syncopate uppercase tracking-widest text-white/40">Appearance</span>
                             </div>
                         </div>
                         <h1 className="text-6xl font-syncopate font-bold uppercase tracking-tighter leading-none text-white">
-                            Personas<span style={{ color: currentStagedTheme.primary }}>.</span>
+                            Themes<span style={{ color: currentStagedTheme.primary }}>.</span>
                         </h1>
                         <p className="text-white/20 font-plus text-lg mt-6 max-w-xl leading-relaxed italic">
-                            Sculpting your digital sovereignty through high-fidelity visual templates.
+                            Customize your digital profile with high-fidelity visual templates.
                         </p>
                     </div>
 
@@ -168,7 +168,7 @@ const Atmospherics = () => {
                             onClick={() => setIsPreviewMode(true)}
                             className="bg-white/5 border-white/10 hover:border-luxury-gold/50 text-[10px] font-syncopate tracking-widest uppercase py-6 px-10 rounded-2xl gap-3 transition-all duration-500 h-auto"
                         >
-                            <Eye size={16} /> Neural Preview
+                            <Eye size={16} /> Preview
                         </Button>
                         <Button
                             onClick={handleUpdateTheme}
@@ -182,7 +182,7 @@ const Atmospherics = () => {
                             }}
                         >
                             {loading ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
-                            Synchronize
+                            Save Theme
                         </Button>
                     </div>
                 </div>
@@ -263,10 +263,10 @@ const Atmospherics = () => {
                                     <Monitor size={18} className="text-white/40" />
                                 </div>
                                 <div>
-                                    <h2 className="text-[10px] font-syncopate font-bold text-white uppercase tracking-widest">Neural Persona Simulation</h2>
+                                    <h2 className="text-[10px] font-syncopate font-bold text-white uppercase tracking-widest">Full Preview</h2>
                                     <div className="flex items-center gap-2 mt-0.5">
                                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                        <span className="text-[8px] font-syncopate text-white/20 tracking-[0.2em] uppercase uppercase">Real-time Atmospheric Shaders Active</span>
+                                        <span className="text-[8px] font-syncopate text-white/20 tracking-[0.2em] uppercase uppercase">Real-time Shaders Active</span>
                                     </div>
                                 </div>
                             </div>
@@ -283,7 +283,7 @@ const Atmospherics = () => {
                             {/* Theme Selector Sidebar */}
                             <div className="w-80 border-r border-white/5 bg-[#050505] hidden md:flex flex-col overflow-y-auto custom-scrollbar">
                                 <div className="p-6">
-                                    <h3 className="text-[9px] font-syncopate text-white/40 uppercase tracking-[0.2em] mb-4">Atmospheric Data</h3>
+                                    <h3 className="text-[9px] font-syncopate text-white/40 uppercase tracking-[0.2em] mb-4">Theme Options</h3>
                                     <div className="space-y-3">
                                         {themes.map((theme) => (
                                             <button

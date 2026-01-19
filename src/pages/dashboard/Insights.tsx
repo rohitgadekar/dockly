@@ -27,7 +27,7 @@ import {
 } from 'recharts';
 
 const Insights = () => {
-    useTitle("Intelligence Matrix");
+    useTitle("Analytics");
     const { data, isLoading } = useDashboard();
 
     const metrics = useMemo(() => {
@@ -41,10 +41,10 @@ const Insights = () => {
         const uniqueIdentities = new Set(data.analytics.profileViews.map((v: any) => v.viewer_ip || v.id)).size;
 
         return [
-            { label: "Total Projections", value: totalViews.toLocaleString(), delta: "+100%", icon: Globe, color: "text-blue-400" },
-            { label: "Unique Identities", value: uniqueIdentities.toLocaleString(), delta: "Live", icon: Users, color: "text-purple-400" },
-            { label: "Neural Clicks", value: totalClicks.toLocaleString(), delta: "Live", icon: MousePointer2, color: "text-luxury-gold" },
-            { label: "Sync Rate", value: `${clickThroughRate}%`, delta: "Optimal", icon: Activity, color: "text-emerald-400" },
+            { label: "Profile Views", value: totalViews.toLocaleString(), delta: "+100%", icon: Globe, color: "text-blue-400" },
+            { label: "Unique Visitors", value: uniqueIdentities.toLocaleString(), delta: "Live", icon: Users, color: "text-purple-400" },
+            { label: "Total Clicks", value: totalClicks.toLocaleString(), delta: "Live", icon: MousePointer2, color: "text-luxury-gold" },
+            { label: "Click Rate", value: `${clickThroughRate}%`, delta: "Optimal", icon: Activity, color: "text-emerald-400" },
         ];
     }, [data?.analytics]);
 
@@ -65,7 +65,7 @@ const Insights = () => {
         const socials = (data.socials || []).filter((s: any) => isValid(s.url)).map((s: any) => ({
             id: s.id,
             title: s.platform,
-            type: "Social Node",
+            type: "Social",
             url: s.url,
             clicks: clickCounts[s.id] || 0,
             icon: Globe
@@ -74,7 +74,7 @@ const Insights = () => {
         const ventures = (data.ventures || []).filter((v: any) => isValid(v.url)).map((v: any) => ({
             id: v.id,
             title: v.title,
-            type: "Digital Product",
+            type: "Project",
             url: v.url,
             clicks: clickCounts[v.id] || 0,
             icon: Zap
@@ -83,16 +83,16 @@ const Insights = () => {
         const products = (data.products || []).filter((p: any) => isValid(p.url)).map((p: any) => ({
             id: p.id,
             title: p.title,
-            type: "Vault Item",
+            type: "Product",
             url: p.url,
             clicks: clickCounts[p.id] || 0,
             icon: ShoppingBag
         }));
 
         const groups = [
-            { id: 'socials', label: 'Social Nodes', items: socials },
-            { id: 'ventures', label: 'Digital Products', items: ventures },
-            { id: 'products', label: 'Curated Vault', items: products }
+            { id: 'socials', label: 'Socials', items: socials },
+            { id: 'ventures', label: 'Projects', items: ventures },
+            { id: 'products', label: 'Store Items', items: products }
         ].filter(g => g.items.length > 0);
 
         return groups;
@@ -127,18 +127,18 @@ const Insights = () => {
         });
 
         return [
-            { name: "Projections", value: totalViews, color: "#3b82f6", displayLabel: "Profile Projections" },
-            { name: "Socials", value: clicksByCategory.social, color: "#a855f7", displayLabel: "Social Node Activations" },
-            { name: "Products", value: clicksByCategory.venture, color: "#10b981", displayLabel: "Product Node Activations" },
-            { name: "Vault", value: clicksByCategory.product, color: "#D4AF37", displayLabel: "Vault Node Activations" }
+            { name: "Views", value: totalViews, color: "#3b82f6", displayLabel: "Profile Views" },
+            { name: "Socials", value: clicksByCategory.social, color: "#a855f7", displayLabel: "Social Clicks" },
+            { name: "Projects", value: clicksByCategory.venture, color: "#10b981", displayLabel: "Project Clicks" },
+            { name: "Store", value: clicksByCategory.product, color: "#D4AF37", displayLabel: "Store Clicks" }
         ];
     }, [data]);
 
     if (isLoading) {
         return (
-            <div className="h-[80vh] flex flex-col items-center justify-center gap-6">
+            <div className="h-[70vh] flex flex-col items-center justify-center gap-6">
                 <Loader2 className="animate-spin text-luxury-gold" size={48} />
-                <p className="text-white/20 font-syncopate uppercase tracking-[0.5em] text-[10px]">Decrypting Intelligence...</p>
+                <p className="text-white/20 font-syncopate uppercase tracking-[0.5em] text-[10px]">Loading Analytics...</p>
             </div>
         );
     }
@@ -150,25 +150,17 @@ const Insights = () => {
 
                 <div>
                     <div className="flex items-center gap-3 mb-4">
-                        <Sparkles className="text-luxury-gold w-5 h-5 opacity-50" />
-                        <span className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-luxury-gold opacity-60">Intelligence Hub</span>
+                        <Activity className="text-luxury-gold w-5 h-5 opacity-50" />
+                        <span className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-luxury-gold opacity-60">Analytics</span>
                     </div>
-                    <h1 className="text-6xl font-syncopate font-bold uppercase tracking-tighter leading-none">Insights<span className="text-luxury-gold">.</span></h1>
+                    <h1 className="text-6xl font-syncopate font-bold uppercase tracking-tighter leading-none">Analytics</h1>
                     <p className="text-white/30 font-plus text-xl mt-6 max-w-2xl leading-relaxed">
-                        Processing high-fidelity telemetry from your digital estate in real-time.
+                        Performance metrics and traffic analysis.
                     </p>
                 </div>
-
-                <div className="flex gap-4">
-                    <div className="px-6 py-4 bg-white/[0.02] border border-white/5 rounded-[2rem] flex items-center gap-4 group hover:border-luxury-gold/30 ">
-                        <div className="w-10 h-10 bg-luxury-gold/10 rounded-xl flex items-center justify-center text-luxury-gold">
-                            <Lock size={18} />
-                        </div>
-                        <div className="text-left">
-                            <div className="text-[8px] font-syncopate text-white/20 uppercase tracking-widest">Data Stream</div>
-                            <div className="text-xs font-syncopate font-bold text-white uppercase tracking-tight">Authenticated</div>
-                        </div>
-                    </div>
+                <div className="flex items-center gap-3 px-6 py-3 bg-luxury-gold/5 rounded-full border border-luxury-gold/10">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10b981]" />
+                    <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] text-luxury-gold">Status: Live</span>
                 </div>
             </header>
 
@@ -199,15 +191,13 @@ const Insights = () => {
 
             {/* Categorical Engagement Distribution */}
             <Card className="p-10 border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-all duration-700">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-16">
-                    <div className="flex items-center gap-5">
-                        <div className="w-14 h-14 bg-luxury-gold/10 rounded-2xl flex items-center justify-center text-luxury-gold">
-                            <Activity size={28} strokeWidth={1.5} />
-                        </div>
-                        <div>
-                            <h3 className="text-2xl font-syncopate font-bold uppercase tracking-tight text-white">Neural Distribution</h3>
-                            <p className="text-[10px] text-white/30 font-syncopate uppercase tracking-[0.3em] mt-1">Overall architectural engagement matrix</p>
-                        </div>
+                <div className="flex items-center justify-between mb-12">
+                    <div>
+                        <h2 className="text-2xl font-syncopate font-bold text-white mb-2 uppercase tracking-tight">Engagement Overview</h2>
+                        <p className="text-white/40 font-plus text-sm">Traffic breakdown by category</p>
+                    </div>
+                    <div className="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-syncopate uppercase tracking-widest text-white/40">
+                        Live Data
                     </div>
                 </div>
 
@@ -264,19 +254,14 @@ const Insights = () => {
             </Card>
             {/* Node Performance Intelligence */}
             <div className="pt-16 border-t border-white/5">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-16">
+                <div className="flex items-center justify-between mb-12">
                     <div>
-                        <div className="flex items-center gap-3 mb-4">
-                            <Activity className="text-luxury-gold w-5 h-5" />
-                            <span className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-luxury-gold">Active Intelligence</span>
-                        </div>
-                        <h2 className="text-4xl font-syncopate font-bold uppercase tracking-tighter">Engagement Matrix<span className="text-luxury-gold">.</span></h2>
-                        <p className="text-white/30 font-plus text-sm mt-4 uppercase tracking-[0.2em]">Detailed audit of every digital node in your estate</p>
+                        <h2 className="text-2xl font-syncopate font-bold text-white mb-2 uppercase tracking-tight">Link Performance</h2>
+                        <p className="text-white/40 font-plus text-sm">Performance metrics for individual links</p>
                     </div>
-
-                    <div className="flex items-center gap-4 bg-white/[0.02] border border-white/5 rounded-2xl px-6 py-3">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[9px] font-syncopate text-white/40 uppercase tracking-widest">Live Flow Tracking Active</span>
+                    <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-[10px] font-syncopate uppercase tracking-widest text-emerald-500">Real-time Tracking Active</span>
                     </div>
                 </div>
 
@@ -367,13 +352,17 @@ const Insights = () => {
                 {linkIntelligence.length === 0 && (
                     <div className="py-32 border border-dashed border-white/5 rounded-[4rem] flex flex-col items-center justify-center bg-white/[0.01]">
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="text-center"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="text-center py-20 border border-dashed border-white/10 rounded-[2rem]"
                         >
-                            <MousePointer2 size={64} strokeWidth={1} className="text-white/5 mb-8 mx-auto" />
-                            <h4 className="text-lg font-syncopate font-bold text-white/20 uppercase tracking-[0.5em]">No Intelligence Detected</h4>
-                            <p className="text-[10px] font-plus text-white/10 uppercase tracking-[0.2em] mt-2">Deploy your content nodes to begin tracking flow</p>
+                            <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <Activity className="text-white/20" size={32} />
+                            </div>
+                            <h3 className="text-xl font-syncopate font-bold text-white mb-2">No Data Available</h3>
+                            <p className="text-white/40 font-plus max-w-sm mx-auto">
+                                Share links to start tracking performance.
+                            </p>
                         </motion.div>
                     </div>
                 )}

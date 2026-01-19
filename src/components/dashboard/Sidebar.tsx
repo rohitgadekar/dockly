@@ -11,7 +11,8 @@ import {
     Sparkles,
     Palette,
     Music,
-    Fingerprint
+    Fingerprint,
+    Users
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -19,14 +20,15 @@ import { supabase } from "@/lib/supabase";
 import { useDashboard } from "@/hooks/useDashboard";
 
 const sidebarItems = [
-    { icon: Fingerprint, label: "Identity", path: "/dashboard/identity" },
-    { icon: LayoutDashboard, label: "Command Deck", path: "/dashboard" },
-    { icon: FolderGit2, label: "Ventures", path: "/dashboard/ventures" },
-    { icon: Palette, label: "Personas", path: "/dashboard/atmospherics" },
-    { icon: Share2, label: "Network", path: "/dashboard/socials" },
-    { icon: Music, label: "Anthem", path: "/dashboard/sonic" },
-    { icon: ShoppingBag, label: "Boutique", path: "/dashboard/marketplace" },
-    { icon: TrendingUp, label: "Insights", path: "/dashboard/insights" },
+    { icon: Fingerprint, label: "Brand", path: "/dashboard/identity" },
+    { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
+    { icon: FolderGit2, label: "Projects", path: "/dashboard/ventures" },
+    { icon: Palette, label: "Themes", path: "/dashboard/atmospherics" },
+    { icon: Users, label: "Leads", path: "/dashboard/audience" },
+    { icon: Share2, label: "Socials", path: "/dashboard/socials" },
+    { icon: Music, label: "Music", path: "/dashboard/sonic" },
+    { icon: ShoppingBag, label: "Store", path: "/dashboard/marketplace" },
+    { icon: TrendingUp, label: "Analytics", path: "/dashboard/insights" },
 ];
 
 export const DashboardSidebar = () => {
@@ -60,7 +62,7 @@ export const DashboardSidebar = () => {
 
             <nav className="flex-1 flex flex-col gap-1.5 relative z-10 overflow-y-auto scrollbar-none pr-2">
                 <div className="text-[9px] font-syncopate text-white/20 uppercase tracking-[0.4em] mb-4 ml-4">Architecture</div>
-                {sidebarItems.map((item) => {
+                {sidebarItems.filter(item => item.label !== "Leads" || data?.profile?.newsletter_enabled).map((item) => {
                     const isActive = location.pathname === item.path;
                     return (
                         <Link

@@ -21,6 +21,7 @@ import Insights from "@/pages/dashboard/Insights";
 import Atmospherics from "@/pages/dashboard/Atmospherics";
 import Sonic from "@/pages/dashboard/Sonic";
 import Identity from "@/pages/dashboard/Identity";
+import Audience from "@/pages/dashboard/Audience";
 import Protocol from "@/pages/Protocol";
 
 const queryClient = new QueryClient();
@@ -86,21 +87,24 @@ function App() {
                             position="bottom-right"
                             expand={true}
                             richColors
-                            closeButton
+                            // closeButton
                             toastOptions={{
+                                classNames: {
+                                    icon: "scale-[1.4] opacity-100 mr-4",
+                                },
                                 style: {
-                                    background: 'rgba(5, 5, 5, 0.98)',
-                                    border: '1px solid rgba(212, 175, 55, 0.4)',
-                                    backdropFilter: 'blur(30px)',
-                                    borderRadius: '12px',
-                                    padding: '18px 28px',
-                                    color: '#D4AF37',
+                                    background: '#080808',
+                                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                                    backdropFilter: 'blur(16px)',
+                                    borderRadius: '1.2rem',
+                                    padding: '16px 24px',
+                                    color: '#F5F5F5',
                                     fontFamily: 'Syncopate, sans-serif',
-                                    fontSize: '9px',
-                                    letterSpacing: '0.25em',
+                                    fontSize: '11px',
+                                    letterSpacing: '0.1em',
                                     textTransform: 'uppercase',
-                                    fontWeight: '700',
-                                    boxShadow: '0 0 40px rgba(212, 175, 55, 0.15)',
+                                    fontWeight: '600',
+                                    boxShadow: '0 20px 40px -10px rgba(0,0,0,0.8), 0 0 20px -5px rgba(212, 175, 55, 0.1)',
                                 },
                             }}
                         />
@@ -119,6 +123,7 @@ function App() {
                                 <Route path="insights" element={<Insights />} />
                                 <Route path="atmospherics" element={<Atmospherics />} />
                                 <Route path="sonic" element={<Sonic />} />
+                                <Route path="audience" element={<Audience />} />
                             </Route>
                             <Route path="/preview" element={<PreviewRedirect />} />
                             <Route path="/protocol/:id" element={<Protocol />} />

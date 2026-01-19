@@ -15,9 +15,13 @@ import {
     VolumeX,
     Maximize,
     Minimize,
-    ExternalLink
+    ExternalLink,
+    Loader2,
+    Mail
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 import { CiCircleCheck } from "react-icons/ci";
 import {
     SiTidal,
@@ -100,6 +104,44 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
     const [isScrubbing, setIsScrubbing] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const playerContainerRef = useRef<HTMLDivElement>(null);
+
+    // Newsletter State
+    const [subscriberEmail, setSubscriberEmail] = useState("");
+    const [subscriberName, setSubscriberName] = useState("");
+    const [isSubscribing, setIsSubscribing] = useState(false);
+    const [subscribed, setSubscribed] = useState(false);
+
+    const handleSubscribe = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!subscriberEmail || !subscriberName) return;
+
+        setIsSubscribing(true);
+        try {
+            const { error } = await supabase.from('newsletter_subscribers').insert({
+                profile_id: user.id,
+                email: subscriberEmail,
+                name: subscriberName
+            });
+
+            if (error) {
+                if (error.code === '23505') {
+                    toast.error("You are already subscribed to this dossier.");
+                } else {
+                    throw error;
+                }
+            } else {
+                toast.success("Access Granted. You are on the list.");
+                setSubscribed(true);
+                setSubscriberEmail("");
+                setSubscriberName("");
+            }
+        } catch (error) {
+            console.error("Subscription error:", error);
+            toast.error("Transmission failed. Please retry.");
+        } finally {
+            setIsSubscribing(false);
+        }
+    };
 
 
     const getInitials = (name: string) => {
@@ -607,11 +649,11 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
 
                             <div className="flex flex-col items-center gap-4">
                                 <span className="text-[11px] font-syncopate uppercase tracking-[0.6em] font-black" style={{ color: theme.primary }}>
-                                    {user.role || 'Digital Architect'}
+                                    {user.role || 'Creator'}
                                 </span>
 
                                 <p className="max-w-xl text-lg md:text-2xl font-light italic leading-relaxed opacity-60 px-4 md:px-6">
-                                    {user.bio || 'Architecting digital sovereignty for the global elite.'}
+                                    {user.bio || 'Welcome to my profile.'}
                                 </p>
                             </div>
                         </div>
@@ -623,7 +665,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                         {/* Social Ecosystem */}
                         <section className="flex flex-col items-center pt-8 md:pt-16">
                             <div className="flex flex-col items-center mb-12 md:mb-20">
-                                <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em] opacity-40 text-center truncate max-w-full px-4">Social Ecosystem</span>
+                                <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em] opacity-40 text-center truncate max-w-full px-4">Socials</span>
                             </div>
                             <div className="flex flex-wrap justify-center gap-6 max-w-2xl px-6">
                                 {(user.socials?.filter((s: any) => !s.platform.startsWith('custom:')) || []).map((link: any, idx: number) => {
@@ -668,7 +710,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                             }}
                                         >
                                             <div className="text-left flex-1 min-w-0 pr-4">
-                                                <span className="text-[10px] font-syncopate tracking-[0.3em] opacity-40 block mb-2 uppercase">Protocol Link</span>
+                                                <span className="text-[10px] font-syncopate tracking-[0.3em] opacity-40 block mb-2 uppercase">Custom Link</span>
                                                 <h4 className="text-lg md:text-xl font-bold uppercase tracking-tighter truncate" style={{ fontFamily: theme.font }}>
                                                     {link.platform.replace('custom:', '')}
                                                 </h4>
@@ -692,7 +734,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                         {user.top_tracks && user.top_tracks.length > 0 && (
                             <section className="relative">
                                 <div className="flex flex-col items-center mb-10 md:mb-20">
-                                    <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em] opacity-40 text-center truncate max-w-full px-4">Auditory Atmosphere</span>
+                                    <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em] opacity-40 text-center truncate max-w-full px-4">Music</span>
                                 </div>
 
                                 <div className="flex flex-col gap-8 items-center w-full">
@@ -722,7 +764,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                         {playingPreview === user.top_tracks[0].previewUrl ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />}
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <span className="text-[10px] font-syncopate tracking-[0.4em] uppercase opacity-60 mb-2 block">Primary Anthem</span>
+                                                        <span className="text-[10px] font-syncopate tracking-[0.4em] uppercase opacity-60 mb-2 block">Top Track</span>
                                                         <h3 className="text-3xl md:text-5xl font-bold tracking-tight mb-2 leading-none uppercase truncate">{user.top_tracks[0].title}</h3>
                                                         <p className="text-base md:text-xl opacity-40 font-light italic truncate">{user.top_tracks[0].artist}</p>
                                                     </div>
@@ -784,7 +826,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                         {user.youtube_channel_id && ytVideos.length > 0 && (
                             <section className="relative">
                                 <div className="flex flex-col items-center mb-10 md:mb-20">
-                                    <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em] opacity-40 text-center truncate max-w-full px-4">Visual Transmission</span>
+                                    <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em] opacity-40 text-center truncate max-w-full px-4">Videos</span>
                                 </div>
 
                                 <div className="flex flex-col gap-8 items-center w-full">
@@ -814,12 +856,12 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                         <Play size={32} fill="currentColor" className="ml-1" />
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <span className="text-[10px] font-syncopate tracking-[0.4em] uppercase opacity-60 mb-2 block">Latest Premiere</span>
+                                                        <span className="text-[10px] font-syncopate tracking-[0.4em] uppercase opacity-60 mb-2 block">Latest Video</span>
                                                         <h3 className="text-3xl md:text-5xl font-bold tracking-tight mb-2 leading-none uppercase truncate">{ytVideos[0].title}</h3>
                                                         <div className="flex items-center gap-2">
                                                             <div className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
                                                             <p className="text-[9px] font-syncopate uppercase tracking-widest text-white/40">
-                                                                {ytVideos[0].published ? formatDistanceToNow(new Date(ytVideos[0].published), { addSuffix: true }) : 'Live Signal'}
+                                                                {ytVideos[0].published ? formatDistanceToNow(new Date(ytVideos[0].published), { addSuffix: true }) : 'Live'}
                                                             </p>
                                                         </div>
                                                     </div>
@@ -881,7 +923,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                             className="group relative px-12 py-6 rounded-full text-[10px] font-syncopate tracking-[0.4em] uppercase border-white/10 hover:border-luxury-gold/40 bg-white/[0.02] hover:bg-white/[0.05] transition-all duration-700"
                                         >
                                             <span className="relative z-10 flex items-center gap-4">
-                                                Access Full Archive <ArrowUpRight size={16} className="transition-transform duration-500 group-hover:translate-x-1 group-hover:-translate-y-1" />
+                                                View Channel <ArrowUpRight size={16} className="transition-transform duration-500 group-hover:translate-x-1 group-hover:-translate-y-1" />
                                             </span>
                                         </Button>
                                     </div>
@@ -894,7 +936,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                         {user.ventures?.length > 0 && (
                             <section className="space-y-20">
                                 <div className="flex flex-col items-center">
-                                    <span className="text-[11px] font-syncopate uppercase tracking-[1em] opacity-40 font-black">Digital Products</span>
+                                    <span className="text-[11px] font-syncopate uppercase tracking-[1em] opacity-40 font-black">Projects</span>
                                 </div>
 
                                 <div className="space-y-12 md:space-y-24">
@@ -913,7 +955,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                 <div className="space-y-6 max-w-2xl w-full">
                                                     <div className="flex items-center justify-center gap-4">
                                                         <span className="text-[9px] font-syncopate tracking-[0.5em] px-4 py-1.5 rounded-full border" style={{ borderColor: cardBorder, color: theme.primary, backgroundColor: isLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.03)' }}>
-                                                            Entry {idx + 1}
+                                                            Project {idx + 1}
                                                         </span>
                                                         <Zap size={14} className="opacity-20 translate-y-[-1px]" style={{ color: theme.primary }} />
                                                     </div>
@@ -921,7 +963,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                         {project.title}
                                                     </h3>
                                                     <p className="text-lg md:text-2xl font-light italic opacity-50 line-clamp-2 md:line-clamp-none">
-                                                        {project.description || 'A flagship deployment of architectural digital excellence.'}
+                                                        {project.description || 'Brief description of the project.'}
                                                     </p>
                                                 </div>
 
@@ -942,7 +984,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                     }}
                                                     onClick={() => handleLinkClick('venture', project.id, project.url)}
                                                 >
-                                                    Explore Deeply <ArrowUpRight size={16} />
+                                                    View Project <ArrowUpRight size={16} />
                                                 </Button>
                                             </div>
                                         </div>
@@ -955,7 +997,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                         {user.products?.length > 0 && (
                             <section className="space-y-20">
                                 <div className="flex flex-col items-center">
-                                    <span className="text-[11px] font-syncopate uppercase tracking-[1em] opacity-40 font-black">Curated Vault</span>
+                                    <span className="text-[11px] font-syncopate uppercase tracking-[1em] opacity-40 font-black">Store</span>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -1004,22 +1046,165 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                             </section>
                         )}
 
+
+                        {/* Exclusive Access / Newsletter */}
+                        {user.newsletter_enabled && (
+                            <section className="relative w-full flex flex-col items-center">
+                                <div className="flex flex-col items-center mb-10 md:mb-16">
+                                    <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em] opacity-40 text-center truncate max-w-full px-4">Newsletter</span>
+                                </div>
+
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.8 }}
+                                    className="w-full max-w-4xl relative"
+                                >
+                                    {/* Architectural Glow */}
+                                    <div
+                                        className="absolute -inset-2 blur-3xl opacity-30"
+                                        style={{
+                                            background: `linear-gradient(to right, ${theme.primary}0D, ${isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'}, ${theme.primary}0D)`
+                                        }}
+                                    />
+
+                                    <div
+                                        className="relative backdrop-blur-2xl border rounded-[2.5rem] p-8 md:p-12 overflow-hidden group transition-colors duration-500"
+                                        style={{
+                                            backgroundColor: isLight ? 'rgba(255,255,255,0.6)' : 'rgba(5,5,5,0.6)',
+                                            borderColor: cardBorder
+                                        }}
+                                    >
+                                        {/* Decorative Elements */}
+                                        <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity duration-1000 transform rotate-12">
+                                            <Mail size={120} strokeWidth={0.5} style={{ color: textPrimary }} />
+                                        </div>
+                                        <div
+                                            className="absolute bottom-0 left-0 w-32 h-32 blur-3xl rounded-full pointer-events-none"
+                                            style={{ backgroundColor: `${theme.primary}0D` }}
+                                        />
+
+                                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-12 relative z-10">
+
+                                            {/* Text Content */}
+                                            <div className="flex-1 space-y-4 md:max-w-md text-center md:text-left">
+                                                <div>
+                                                    <div className="flex items-center justify-center md:justify-start gap-2 mb-2 opacity-60">
+                                                        <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: theme.primary }} />
+                                                        <span className="text-[9px] font-syncopate uppercase tracking-widest" style={{ color: theme.primary }}>Newsletter</span>
+                                                    </div>
+                                                    <h3 className="text-3xl md:text-4xl font-bold uppercase tracking-tight leading-none" style={{ color: textPrimary }}>
+                                                        Subscribe
+                                                    </h3>
+                                                </div>
+                                                <p className="text-base font-light leading-relaxed opacity-50" style={{ color: textPrimary }}>
+                                                    Receive updates, news, and exclusive content directly from {user.full_name || 'the source'}.
+                                                </p>
+                                            </div>
+
+                                            {/* Interaction Zone */}
+                                            <div className="flex-1 w-full md:max-w-md">
+                                                {subscribed ? (
+                                                    <motion.div
+                                                        initial={{ opacity: 0, x: 20 }}
+                                                        animate={{ opacity: 1, x: 0 }}
+                                                        className="h-[140px] flex flex-col items-center justify-center border rounded-[2rem] text-center p-6"
+                                                        style={{
+                                                            backgroundColor: `${theme.primary}0D`,
+                                                            borderColor: `${theme.primary}33`
+                                                        }}
+                                                    >
+                                                        <CiCircleCheck size={40} className="mb-3" style={{ color: theme.primary }} />
+                                                        <span className="text-xs font-syncopate font-bold uppercase tracking-[0.2em]" style={{ color: theme.primary }}>Subscribed</span>
+                                                        <span className="text-[10px] opacity-40 mt-1 uppercase tracking-widest" style={{ color: textPrimary }}>You are on the list.</span>
+                                                    </motion.div>
+                                                ) : (
+                                                    <form onSubmit={handleSubscribe} className="space-y-4">
+                                                        <div className="space-y-3">
+                                                            <div className="relative group/input">
+                                                                <input
+                                                                    type="text"
+                                                                    required
+                                                                    value={subscriberName}
+                                                                    onChange={(e) => setSubscriberName(e.target.value)}
+                                                                    placeholder="Name"
+                                                                    className="w-full border rounded-2xl px-6 py-4 text-sm md:text-base focus:outline-none transition-all font-syncopate tracking-wider text-center md:text-left placeholder:opacity-30"
+                                                                    style={{
+                                                                        backgroundColor: isLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.03)',
+                                                                        borderColor: cardBorder,
+                                                                        color: textPrimary,
+                                                                        fontFamily: theme.font
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                            <div className="relative group/input flex items-center gap-2">
+                                                                <div className="relative flex-1">
+                                                                    <input
+                                                                        type="email"
+                                                                        required
+                                                                        value={subscriberEmail}
+                                                                        onChange={(e) => setSubscriberEmail(e.target.value)}
+                                                                        placeholder="Email"
+                                                                        className="w-full border rounded-2xl px-6 py-4 text-sm md:text-base focus:outline-none transition-all font-syncopate tracking-wider text-center md:text-left placeholder:opacity-30"
+                                                                        style={{
+                                                                            backgroundColor: isLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.03)',
+                                                                            borderColor: cardBorder,
+                                                                            color: textPrimary,
+                                                                            fontFamily: theme.font
+                                                                        }}
+                                                                    />
+                                                                </div>
+                                                                <button
+                                                                    type="submit"
+                                                                    disabled={isSubscribing}
+                                                                    className="w-14 h-14 rounded-2xl flex items-center justify-center hover:scale-105 transition-all duration-300 shadow-xl disabled:opacity-50 disabled:cursor-not-allowed group/btn shrink-0"
+                                                                    style={{
+                                                                        backgroundColor: isLight ? '#000000' : '#FFFFFF',
+                                                                        color: isLight ? '#FFFFFF' : '#000000'
+                                                                    }}
+                                                                >
+                                                                    {isSubscribing ? (
+                                                                        <Loader2 size={20} className="animate-spin" />
+                                                                    ) : (
+                                                                        <ArrowUpRight size={24} className="group-hover/btn:rotate-45 transition-transform duration-300" />
+                                                                    )}
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            </section>
+                        )}
+
                     </div>
 
                     {/* Prestige Footer */}
-                    <footer className="mt-24 md:mt-48 flex flex-col items-center gap-12 md:gap-16 w-full px-6">
+                    <footer className="mt-24 md:mt-48 flex flex-col items-center gap-10 w-full px-6">
 
+                        {/* Starlight Divider */}
+                        <div className="flex items-center gap-6 opacity-50 mb-4">
+                            <div className="h-px w-16 md:w-32 bg-gradient-to-r from-transparent to-current" style={{ color: theme.primary }} />
+                            <div className="relative flex items-center justify-center">
+                                <div className="w-2 h-2 rotate-45 bg-current" style={{ backgroundColor: theme.primary }} />
+                            </div>
+                            <div className="h-px w-16 md:w-32 bg-gradient-to-l from-transparent to-current" style={{ color: theme.primary }} />
+                        </div>
 
-                        <div className="text-center space-y-10">
-                            <div className="flex flex-wrap items-center justify-center gap-4 text-xs md:text-sm font-syncopate tracking-[0.4em] md:tracking-[0.8em] transition-opacity uppercase"
+                        <div className="text-center space-y-8">
+                            <div className="flex flex-wrap items-center justify-center gap-3 text-[10px] md:text-xs font-syncopate tracking-[0.3em] md:tracking-[0.6em] uppercase opacity-60"
                                 style={{ color: textMuted }}>
-                                Projected by  Citadel v4.2
+                                Powered by <span className="font-bold flex items-center mx-2 gap-2" style={{ color: theme.primary }}>Docked</span>
                             </div>
 
-                            <div className="space-y-4 text-xs md:text-sm font-syncopate tracking-[0.5em] md:tracking-[1em] uppercase leading-loose"
+                            <div className="space-y-4 text-[10px] md:text-xs font-syncopate tracking-[0.4em] md:tracking-[0.8em] uppercase leading-loose opacity-40"
                                 style={{ color: textMuted }}>
                                 <p>© 2026 EAGLES</p>
-                                <p className="hidden md:block">Global Sovereignty Secured</p>
+                                <p className="hidden md:block">All Rights Reserved</p>
                             </div>
 
                             {/* Luxury Profile Barcode */}
@@ -1044,7 +1229,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                     </span>
 
                                     <span className="text-[10px] md:text-xs font-syncopate tracking-[0.6em] md:tracking-[1em] uppercase" style={{ color: theme.primary }}>
-                                        Authenticity Verified
+                                        Verified Profile
                                     </span>
                                 </div>
                             </div>
@@ -1174,7 +1359,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                     <span className="text-[8px] font-syncopate uppercase tracking-widest">
                                                         {user.stories[activeStoryIndex || 0].created_at
                                                             ? formatDistanceToNow(new Date(user.stories[activeStoryIndex || 0].created_at), { addSuffix: true })
-                                                            : "Active Instance"}
+                                                            : "Just Now"}
                                                     </span>
                                                 </div>
                                             </div>
@@ -1301,7 +1486,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                 </button>
 
                                                 <div className="hidden md:flex flex-col">
-                                                    <span className="text-[9px] font-syncopate uppercase tracking-[0.2em] text-white/40 mb-1">Current Transmission</span>
+                                                    <span className="text-[9px] font-syncopate uppercase tracking-[0.2em] text-white/40 mb-1">Now Playing</span>
                                                     <h4 className="text-lg font-bold uppercase tracking-tight text-white line-clamp-1 max-w-md">
                                                         {ytVideos.find(v => v.id === activeVideoId)?.title}
                                                     </h4>
@@ -1349,7 +1534,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                 {/* Minimal Status Bar */}
                                 <div className="absolute top-10 left-10 z-20 flex items-center gap-4 opacity-40">
                                     <div className="w-2 h-2 rounded-full bg-luxury-gold animate-pulse" />
-                                    <span className="text-[8px] font-syncopate uppercase tracking-[0.4em] text-white">Quantum Encryption Active</span>
+                                    <span className="text-[8px] font-syncopate uppercase tracking-[0.4em] text-white">Secure Connection</span>
                                 </div>
                             </motion.div>
 

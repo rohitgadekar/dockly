@@ -21,7 +21,7 @@ import {
 import { useTitle } from "@/hooks/useTitle";
 
 const Sonic = () => {
-    useTitle("Auditory Signature");
+    useTitle("Music");
     const { data } = useDashboard();
     const [isManagerOpen, setIsManagerOpen] = useState(false);
     const [playingPreview, setPlayingPreview] = useState<string | null>(null);
@@ -51,13 +51,13 @@ const Sonic = () => {
                 <div>
                     <div className="flex items-center gap-3 mb-4">
                         <SiSpotify className="text-[#1DB954] w-6 h-6" />
-                        <span className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-[#1DB954] opacity-80">Sonic Identity Matrix</span>
+                        <span className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-[#1DB954] opacity-80">Music</span>
                     </div>
                     <h1 className="text-6xl font-syncopate font-bold uppercase tracking-tighter leading-none">
-                        Anthem<span className="text-[#1DB954]">.</span>
+                        Music<span className="text-[#1DB954]">.</span>
                     </h1>
                     <p className="text-white/30 font-plus text-xl mt-6 max-w-2xl leading-relaxed">
-                        Curate the auditory landscape of your digital persona. Broadcast your sonic aesthetic to the network.
+                        Curate your digital playlist and share your favorite tracks.
                     </p>
                 </div>
 
@@ -75,7 +75,7 @@ const Sonic = () => {
                         className={`gap-3 px-10 py-6 rounded-[2rem] shadow-[0_0_30px_rgba(29,185,84,0.2)] text-sm tracking-widest font-syncopate uppercase transition-all ${isManagerOpen ? 'bg-white/10 text-white' : 'bg-[#1DB954] text-black hover:bg-[#1efc6e]'} border-none`}
                     >
                         {isManagerOpen ? <X size={20} /> : <Plus size={20} />}
-                        {isManagerOpen ? "Close Matrix" : "Manage Matrix"}
+                        {isManagerOpen ? "Close Music" : "Manage Music"}
                     </Button>
                 </div>
             </header>
@@ -100,7 +100,7 @@ const Sonic = () => {
                                 <div className="flex items-center justify-between">
                                     <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-[#1DB954]/10 border border-[#1DB954]/20 rounded-full backdrop-blur-xl">
                                         <div className="w-2 h-2 rounded-full bg-[#1DB954] animate-pulse shadow-[0_0_10px_#1DB954]" />
-                                        <span className="text-[11px] font-syncopate text-[#1DB954] uppercase tracking-[0.3em] font-bold">Primary Resonance</span>
+                                        <span className="text-[11px] font-syncopate text-[#1DB954] uppercase tracking-[0.3em] font-bold">Top Track</span>
                                     </div>
                                     {tracks[0].previewUrl && (
                                         <button
@@ -124,7 +124,7 @@ const Sonic = () => {
                                 <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-12 pt-16 border-t border-white/10">
                                     <div className="flex items-center gap-12">
                                         <div className="flex flex-col">
-                                            <span className="text-[10px] font-syncopate text-white/20 uppercase tracking-[0.3em] mb-4">Engagement Statistics</span>
+                                            <span className="text-[10px] font-syncopate text-white/20 uppercase tracking-[0.3em] mb-4">Plays</span>
                                             <div className="flex items-center gap-4 text-[#1DB954]">
                                                 <BarChart3 size={24} />
                                                 <span className="text-4xl font-mono font-bold tracking-tight">2.4B</span>
@@ -132,7 +132,7 @@ const Sonic = () => {
                                         </div>
                                         <div className="w-px h-16 bg-white/10" />
                                         <div className="flex flex-col">
-                                            <span className="text-[10px] font-syncopate text-white/20 uppercase tracking-[0.3em] mb-4">Atmospheric Performance</span>
+                                            <span className="text-[10px] font-syncopate text-white/20 uppercase tracking-[0.3em] mb-4">Rank</span>
                                             <div className="flex items-center gap-4 text-white/60">
                                                 <Music size={24} />
                                                 <span className="text-4xl font-mono font-bold tracking-tight">#01</span>
@@ -144,7 +144,7 @@ const Sonic = () => {
                                         variant="ghost"
                                         className="h-16 px-10 rounded-full border border-white/10 hover:border-[#1DB954]/40 hover:bg-[#1DB954]/5 text-white/60 hover:text-[#1DB954] gap-4 font-syncopate uppercase tracking-[0.2em] text-[11px] "
                                     >
-                                        <ExternalLink size={18} /> Deep Analysis
+                                        <ExternalLink size={18} /> View Details
                                     </Button>
                                 </div>
                             </div>
@@ -154,12 +154,12 @@ const Sonic = () => {
                             <div className="w-24 h-24 rounded-full bg-[#1DB954]/5 flex items-center justify-center mb-8 border border-[#1DB954]/20 animate-pulse">
                                 <SiSpotify size={48} className="text-[#1DB954]" />
                             </div>
-                            <h3 className="text-2xl font-syncopate font-bold text-white mb-2">Sonic Void Detected</h3>
+                            <h3 className="text-2xl font-syncopate font-bold text-white mb-2">No Music Found</h3>
                             <p className="text-white/40 font-plus max-w-md mx-auto mb-8">
-                                Your auditory signature is currently offline. Initialize the matrix to broadcast your identity.
+                                Your music library is currently empty. Add tracks to your profile.
                             </p>
                             <Button variant="luxury" onClick={() => setIsManagerOpen(true)} className="bg-[#1DB954] text-black border-none">
-                                Initialize Matrix
+                                Add Music
                             </Button>
                         </div>
                     )}
@@ -169,7 +169,7 @@ const Sonic = () => {
                 <div className="space-y-8">
                     <div className="flex items-center justify-between pb-6 border-b border-white/5">
                         <div className="flex items-center gap-4">
-                            <span className="text-xs font-syncopate uppercase tracking-[0.5em] text-white/20">The Collective Matrix</span>
+                            <span className="text-xs font-syncopate uppercase tracking-[0.5em] text-white/20">Top Tracks</span>
                             <div className="h-1px w-12 bg-white/10" />
                         </div>
                         <span className="text-xs font-mono text-[#1DB954] bg-[#1DB954]/10 px-4 py-1.5 rounded-full border border-[#1DB954]/20">

@@ -23,7 +23,7 @@ import { DeleteDialog } from "@/components/ui/DeleteDialog";
 import { useTitle } from "@/hooks/useTitle";
 
 const Marketplace = () => {
-    useTitle("Curated Vault");
+    useTitle("Store");
     const { data, isLoading } = useDashboard();
     const [isAdding, setIsAdding] = useState(false);
     const [title, setTitle] = useState("");
@@ -63,7 +63,7 @@ const Marketplace = () => {
                     })
                     .eq("id", editId);
                 if (error) throw error;
-                toast.success("Asset configuration updated.");
+                toast.success("Product Updated.");
             } else {
                 const { error } = await supabase.from("curated_products").insert([
                     {
@@ -76,7 +76,7 @@ const Marketplace = () => {
                     }
                 ]);
                 if (error) throw error;
-                toast.success("Asset integrated into boutique.");
+                toast.success("Product Added.");
             }
 
             resetForm();
@@ -108,7 +108,7 @@ const Marketplace = () => {
         try {
             const { error } = await supabase.from("curated_products").delete().eq("id", deleteId);
             if (error) throw error;
-            toast.success("Asset removed.");
+            toast.success("Product Removed.");
             queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
             setDeleteId(null);
         } catch (error: any) {
@@ -122,7 +122,7 @@ const Marketplace = () => {
         return (
             <div className="h-[70vh] flex flex-col items-center justify-center gap-6">
                 <Loader2 className="animate-spin text-luxury-gold" size={48} />
-                <p className="text-white/20 font-syncopate uppercase tracking-[0.5em] text-[10px]">Accessing Boutique Registry...</p>
+                <p className="text-white/20 font-syncopate uppercase tracking-[0.5em] text-[10px]">Loading Store...</p>
             </div>
         );
     }
@@ -135,17 +135,17 @@ const Marketplace = () => {
                 <div>
                     <div className="flex items-center gap-3 mb-4">
                         <Sparkles className="text-luxury-gold w-5 h-5 opacity-50" />
-                        <span className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-luxury-gold opacity-60">Elite Commerce Node</span>
+                        <span className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-luxury-gold opacity-60">Products</span>
                     </div>
-                    <h1 className="text-6xl font-syncopate font-bold uppercase tracking-tighter leading-none">Boutique</h1>
+                    <h1 className="text-6xl font-syncopate font-bold uppercase tracking-tighter leading-none">Store</h1>
                     <p className="text-white/30 font-plus text-xl mt-6 max-w-2xl leading-relaxed">
-                        Curate and manage your high-end modular products and premium recommendations for the global elite.
+                        Curate and manage your high-end products and recommendations.
                     </p>
                 </div>
 
                 {!isAdding && (
                     <Button variant="luxury" onClick={() => setIsAdding(true)} className="gap-3 px-10 py-6 rounded-[2rem] shadow-[0_0_30px_rgba(212,175,55,0.2)] text-sm tracking-widest font-syncopate uppercase">
-                        <Plus size={20} /> Establish Asset
+                        <Plus size={20} /> Add Product
                     </Button>
                 )}
             </header>
@@ -167,10 +167,10 @@ const Marketplace = () => {
                                     </div>
                                     <div>
                                         <h2 className="text-2xl font-syncopate font-bold uppercase tracking-tight text-white">
-                                            {editId ? "Asset Modification" : "Asset Registration"}
+                                            {editId ? "Edit Product" : "Add Product"}
                                         </h2>
                                         <p className="text-xs text-white/20 font-syncopate uppercase tracking-widest mt-1">
-                                            {editId ? "Update Product Specifications" : "Define Product Specifications"}
+                                            {editId ? "Update Product Details" : "Enter Product Details"}
                                         </p>
                                     </div>
                                 </div>
@@ -178,17 +178,17 @@ const Marketplace = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                                     <div className="space-y-10">
                                         <div className="space-y-3">
-                                            <label className="text-[10px] font-syncopate uppercase tracking-[0.3em] text-white/40 ml-2">Product Designation</label>
+                                            <label className="text-[10px] font-syncopate uppercase tracking-[0.3em] text-white/40 ml-2">Product Name</label>
                                             <input
                                                 required
                                                 value={title}
                                                 onChange={(e) => setTitle(e.target.value)}
-                                                placeholder="Ex. 24K Gold Mechanical Key"
+                                                placeholder="Ex. Mechanical Keyboard"
                                                 className="w-full bg-white/[0.03] border border-white/10 rounded-[2rem] py-5 px-8 outline-none focus:border-luxury-gold/40 focus:bg-white/[0.05] transition-all duration-500 font-plus text-lg text-white font-medium"
                                             />
                                         </div>
                                         <div className="space-y-3">
-                                            <label className="text-[10px] font-syncopate uppercase tracking-[0.3em] text-white/40 ml-2">Market Valuation (Price)</label>
+                                            <label className="text-[10px] font-syncopate uppercase tracking-[0.3em] text-white/40 ml-2">Price</label>
                                             <div className="relative">
                                                 <div className="absolute left-6 top-1/2 -translate-y-1/2 text-luxury-gold/40 font-syncopate font-bold text-lg pointer-events-none">
                                                     {data?.profile?.currency === 'INR' ? '₹' :
@@ -209,24 +209,24 @@ const Marketplace = () => {
 
                                     <div className="space-y-10">
                                         <div className="space-y-3">
-                                            <label className="text-[10px] font-syncopate uppercase tracking-[0.3em] text-white/40 ml-2">Commerce Portal (URL)</label>
+                                            <label className="text-[10px] font-syncopate uppercase tracking-[0.3em] text-white/40 ml-2">Product URL</label>
                                             <input
                                                 required
                                                 type="url"
                                                 value={url}
                                                 onChange={(e) => setUrl(e.target.value)}
-                                                placeholder="https://exclusive-portal.pro/asset"
+                                                placeholder="https://shop.com/product"
                                                 className="w-full bg-white/[0.03] border border-white/10 rounded-[2rem] py-5 px-8 outline-none focus:border-luxury-gold/40 focus:bg-white/[0.05] transition-all duration-500 font-plus text-lg text-white"
                                             />
                                         </div>
                                         <div className="space-y-3">
-                                            <label className="text-[10px] font-syncopate uppercase tracking-[0.3em] text-white/40 ml-2">Visual ID (Image Vector URL)</label>
+                                            <label className="text-[10px] font-syncopate uppercase tracking-[0.3em] text-white/40 ml-2">Image URL</label>
                                             <div className="relative">
                                                 <input
                                                     type="url"
                                                     value={imageUrl}
                                                     onChange={(e) => setImageUrl(e.target.value)}
-                                                    placeholder="https://storage.pro/visual.jpg"
+                                                    placeholder="https://images.com/product.jpg"
                                                     className="w-full bg-white/[0.03] border border-white/10 rounded-[2rem] py-5 px-8 outline-none focus:border-luxury-gold/40 focus:bg-white/[0.05] transition-all duration-500 font-plus text-lg text-white"
                                                 />
                                                 <Camera className="absolute right-6 top-1/2 -translate-y-1/2 text-white/10" size={20} />
@@ -236,10 +236,10 @@ const Marketplace = () => {
                                 </div>
 
                                 <div className="flex justify-end gap-6 pt-10 border-t border-white/5">
-                                    <Button type="button" variant="ghost" className="px-10 h-16 text-xs font-syncopate uppercase tracking-widest" onClick={resetForm}>Abort Registration</Button>
+                                    <Button type="button" variant="ghost" className="px-10 h-16 text-xs font-syncopate uppercase tracking-widest" onClick={resetForm}>Cancel</Button>
                                     <Button type="submit" variant="luxury" disabled={loading} className="px-12 h-16 rounded-[2rem] gap-3 text-sm font-syncopate uppercase tracking-widest shadow-2xl">
                                         {loading ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
-                                        {editId ? "Sychronize Asset Updates" : "Establish Asset"}
+                                        {editId ? "Save Changes" : "Add Product"}
                                     </Button>
                                 </div>
                             </form>
@@ -260,8 +260,8 @@ const Marketplace = () => {
                             <div className="w-24 h-24 bg-white/[0.02] rounded-full flex items-center justify-center mx-auto mb-10 border border-white/5 group-hover:border-luxury-gold/20 ">
                                 <Search size={40} className="text-white/5 group-hover:text-luxury-gold group-hover:scale-110 " strokeWidth={1} />
                             </div>
-                            <h3 className="text-2xl font-syncopate font-bold text-white/40 mb-4 uppercase tracking-tighter">Boutique Inactive</h3>
-                            <p className="text-white/20 font-plus text-lg mb-10 max-w-sm mx-auto uppercase tracking-widest text-[10px]">Your elite commercial assets are currently offline.</p>
+                            <h3 className="text-2xl font-syncopate font-bold text-white/40 mb-4 uppercase tracking-tighter">No Products Found</h3>
+                            <p className="text-white/20 font-plus text-lg mb-10 max-w-sm mx-auto uppercase tracking-widest text-[10px]">Your store is currently empty.</p>
 
                         </div>
                     </motion.div>
@@ -306,7 +306,7 @@ const Marketplace = () => {
                                     <div className="absolute bottom-6 left-6">
                                         <div className="px-4 py-1.5 bg-black/40 backdrop-blur-md border border-luxury-gold/20 rounded-full flex items-center gap-2">
                                             <Sparkles size={10} className="text-luxury-gold" />
-                                            <span className="text-[9px] font-syncopate uppercase tracking-widest text-luxury-gold">Elite Asset</span>
+                                            <span className="text-[9px] font-syncopate uppercase tracking-widest text-luxury-gold">Featured</span>
                                         </div>
                                     </div>
                                 </div>
@@ -323,7 +323,7 @@ const Marketplace = () => {
 
                                         <div className="flex items-end justify-between mb-10">
                                             <div className="flex flex-col">
-                                                <span className="text-[9px] font-syncopate text-white/10 uppercase tracking-[0.2em] mb-1">Valuation</span>
+                                                <span className="text-[9px] font-syncopate text-white/10 uppercase tracking-[0.2em] mb-1">Price</span>
                                                 <span className="text-3xl font-syncopate font-bold text-white tracking-tighter">
                                                     {data?.profile?.currency === "INR" ? "₹" : data?.profile?.currency === "EUR" ? "€" : data?.profile?.currency === "GBP" ? "£" : data?.profile?.currency === "JPY" ? "¥" : data?.profile?.currency === "AED" ? "د.إ" : "$"}{product.price || "0.00"}
                                                 </span>
@@ -335,7 +335,7 @@ const Marketplace = () => {
                                     <a href={product.url} target="_blank" rel="noopener noreferrer">
                                         <Button variant="outline" className="w-full py-6 rounded-[2rem] gap-3 group/btn border-white/5 hover:border-luxury-gold/40 hover:bg-luxury-gold/[0.02] text-xs font-syncopate uppercase tracking-widest">
                                             <ExternalLink size={16} className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform duration-500" />
-                                            Inspect Acquisition
+                                            View Product
                                         </Button>
                                     </a>
                                 </div>
@@ -349,8 +349,8 @@ const Marketplace = () => {
                 onClose={() => setDeleteId(null)}
                 onConfirm={confirmDelete}
                 isDeleting={deleting}
-                title="Remove Boutique Asset"
-                description="This high-value item will be permanently removed from your curated collection."
+                title="Remove Product"
+                description="This will permanently remove this product from your store."
             />
         </div>
     );

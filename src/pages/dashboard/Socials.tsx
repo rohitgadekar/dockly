@@ -92,7 +92,7 @@ const platformIcons: Record<string, any> = {
 import { useTitle } from "@/hooks/useTitle";
 
 const Socials = () => {
-    useTitle("Grid Synchronization");
+    useTitle("Socials");
     const { data, isLoading } = useDashboard();
     const [isAdding, setIsAdding] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -151,7 +151,7 @@ const Socials = () => {
                 }).eq('id', editingId);
 
                 if (error) throw error;
-                toast.success("Identity Node Re-calibrated.");
+                toast.success("Social Link Updated.");
             } else {
                 const { error } = await supabase.from("social_links").insert([
                     {
@@ -163,7 +163,7 @@ const Socials = () => {
                 ]);
 
                 if (error) throw error;
-                toast.success(nodeType === 'standard' ? "Identity Node Synchronized." : "Digital Asset Securely Vaulted.");
+                toast.success("Social Link Added.");
             }
 
             handleCancel();
@@ -185,7 +185,7 @@ const Socials = () => {
         try {
             const { error } = await supabase.from("social_links").delete().eq("id", deleteId);
             if (error) throw error;
-            toast.success("Node Purged from Grid.");
+            toast.success("Social Link Removed.");
             queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
             setDeleteId(null);
         } catch (error: any) {
@@ -199,7 +199,7 @@ const Socials = () => {
         return (
             <div className="h-[70vh] flex flex-col items-center justify-center gap-6">
                 <Loader2 className="animate-spin text-luxury-gold" size={48} />
-                <p className="text-white/20 font-syncopate uppercase tracking-[0.5em] text-[10px]">Synchronizing Matrix...</p>
+                <p className="text-white/20 font-syncopate uppercase tracking-[0.5em] text-[10px]">Loading Socials...</p>
             </div>
         );
     }
@@ -212,17 +212,17 @@ const Socials = () => {
                 <div>
                     <div className="flex items-center gap-3 mb-4">
                         <Sparkles className="text-luxury-gold w-5 h-5 opacity-50" />
-                        <span className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-luxury-gold opacity-60">Global Presence Sync</span>
+                        <span className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-luxury-gold opacity-60">Connections</span>
                     </div>
-                    <h1 className="text-6xl font-syncopate font-bold uppercase tracking-tighter leading-none">Network Hub</h1>
+                    <h1 className="text-6xl font-syncopate font-bold uppercase tracking-tighter leading-none">Socials</h1>
                     <p className="text-white/30 font-plus text-xl mt-6 max-w-2xl leading-relaxed">
-                        Centralize and synchronize your digital presence and downloadable assets across the global matrix.
+                        Centralize and synchronize your digital presence and downloadable assets.
                     </p>
                 </div>
 
                 {!isAdding && (
                     <Button variant="luxury" onClick={() => setIsAdding(true)} className="gap-3 px-10 py-6 rounded-[2rem] shadow-[0_0_30px_rgba(212,175,55,0.2)] text-sm tracking-widest font-syncopate uppercase">
-                        <Plus size={20} /> Initialize Node
+                        <Plus size={20} /> Add Social
                     </Button>
                 )}
             </header>
@@ -246,10 +246,10 @@ const Socials = () => {
                                         </div>
                                         <div>
                                             <h2 className="text-2xl font-syncopate font-bold uppercase tracking-tight text-white">
-                                                {editingId ? 'Re-calibrate Node' : 'Node Initialization'}
+                                                {editingId ? 'Edit Social Link' : 'Add Social Link'}
                                             </h2>
                                             <p className="text-xs text-white/20 font-syncopate uppercase tracking-widest mt-1">
-                                                {editingId ? 'Modify Channel Vectors' : 'Select Vector Type'}
+                                                {editingId ? 'Modify details below' : 'Select link type'}
                                             </p>
                                         </div>
                                     </div>
@@ -259,14 +259,14 @@ const Socials = () => {
                                             onClick={() => setNodeType('standard')}
                                             className={`px-6 py-2 rounded-full text-[10px] font-syncopate uppercase tracking-widest transition-all ${nodeType === 'standard' ? 'bg-luxury-gold text-black font-bold' : 'text-white/40 hover:text-white'}`}
                                         >
-                                            Social Channel
+                                            Social Link
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() => setNodeType('custom')}
                                             className={`px-6 py-2 rounded-full text-[10px] font-syncopate uppercase tracking-widest transition-all ${nodeType === 'custom' ? 'bg-luxury-gold text-black font-bold' : 'text-white/40 hover:text-white'}`}
                                         >
-                                            Digital Asset
+                                            Custom Link
                                         </button>
                                     </div>
                                 </div>
@@ -274,14 +274,14 @@ const Socials = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
                                     <div className="space-y-3">
                                         <label className="text-[10px] font-syncopate uppercase tracking-[0.3em] text-white/40 ml-2">
-                                            {nodeType === 'standard' ? 'Channel Vector' : 'Asset Label'}
+                                            {nodeType === 'standard' ? 'Select Platform' : 'Label Name'}
                                         </label>
                                         {nodeType === 'standard' ? (
                                             <LuxeSelect
                                                 options={socialOptions}
                                                 value={platform}
                                                 onChange={setPlatform}
-                                                placeholder="Select Channel"
+                                                placeholder="Select Platform"
                                             />
                                         ) : (
                                             <input
@@ -289,31 +289,31 @@ const Socials = () => {
                                                 type="text"
                                                 value={customLabel}
                                                 onChange={(e) => setCustomLabel(e.target.value)}
-                                                placeholder="e.g. Portfolio 2026"
+                                                placeholder="e.g. My Portfolio"
                                                 className="w-full bg-white/[0.03] border border-white/10 rounded-[2rem] py-5 px-8 outline-none focus:border-luxury-gold/40 focus:bg-white/[0.05] transition-all duration-500 font-plus text-lg text-white"
                                             />
                                         )}
                                     </div>
                                     <div className="space-y-3">
                                         <label className="text-[10px] font-syncopate uppercase tracking-[0.3em] text-white/40 ml-2">
-                                            {nodeType === 'standard' ? 'Vector Address (URL)' : 'Download Link (URL)'}
+                                            {nodeType === 'standard' ? 'Link URL' : 'Link URL'}
                                         </label>
                                         <input
                                             required
                                             type="url"
                                             value={url}
                                             onChange={(e) => setUrl(e.target.value)}
-                                            placeholder={nodeType === 'standard' ? "https://..." : "https://resume.pdf..."}
+                                            placeholder={nodeType === 'standard' ? "https://..." : "https://..."}
                                             className="w-full bg-white/[0.03] border border-white/10 rounded-[2rem] py-5 px-8 outline-none focus:border-luxury-gold/40 focus:bg-white/[0.05] transition-all duration-500 font-plus text-lg text-white"
                                         />
                                     </div>
                                 </div>
 
                                 <div className="flex justify-end gap-4">
-                                    <Button type="button" variant="ghost" className="px-8 h-[60px] text-xs font-syncopate uppercase tracking-widest rounded-[2rem]" onClick={handleCancel}>Abort</Button>
+                                    <Button type="button" variant="ghost" className="px-8 h-[60px] text-xs font-syncopate uppercase tracking-widest rounded-[2rem]" onClick={handleCancel}>Cancel</Button>
                                     <Button type="submit" variant="luxury" disabled={loading} className="px-12 h-[60px] rounded-[2rem] gap-3 text-xs font-syncopate uppercase tracking-widest shadow-2xl">
                                         {loading ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
-                                        {editingId ? 'Update' : 'Sync'}
+                                        {editingId ? 'Update Link' : 'Add Link'}
                                     </Button>
                                 </div>
                             </form>
@@ -334,8 +334,8 @@ const Socials = () => {
                             <div className="w-24 h-24 bg-white/[0.02] rounded-full flex items-center justify-center mx-auto mb-10 border border-white/5 group-hover:border-luxury-gold/20 ">
                                 <Search size={40} className="text-white/5 group-hover:text-luxury-gold group-hover:scale-110 " strokeWidth={1} />
                             </div>
-                            <h3 className="text-2xl font-syncopate font-bold text-white/40 mb-4 uppercase tracking-tighter">No Active Nodes</h3>
-                            <p className="text-white/20 font-plus text-lg mb-10 max-w-sm mx-auto uppercase tracking-widest text-[10px]">Your social grid is currently dormant.</p>
+                            <h3 className="text-2xl font-syncopate font-bold text-white/40 mb-4 uppercase tracking-tighter">No Socials Found</h3>
+                            <p className="text-white/20 font-plus text-lg mb-10 max-w-sm mx-auto uppercase tracking-widest text-[10px]">Your social grid is currently empty.</p>
 
                         </div>
                     </motion.div>
@@ -366,7 +366,7 @@ const Socials = () => {
                                                     <div className="flex items-center gap-2 shrink-0">
                                                         <div className={`w-1.5 h-1.5 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)] ${isCustom ? 'bg-blue-500 shadow-blue-500/50' : 'bg-emerald-500'}`} />
                                                         <span className={`text-[8px] font-syncopate uppercase tracking-widest ${isCustom ? 'text-blue-500/60' : 'text-emerald-500/60'}`}>
-                                                            {isCustom ? 'Asset Linked' : 'Active'}
+                                                            {isCustom ? 'Link Active' : 'Active'}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -412,15 +412,14 @@ const Socials = () => {
                             <div className="p-2 bg-luxury-gold/10 rounded-lg">
                                 <Globe size={20} className="text-luxury-gold" />
                             </div>
-                            <h4 className="text-lg font-syncopate font-bold uppercase tracking-widest text-white/90">Global Grid Status</h4>
+                            <h4 className="text-lg font-syncopate font-bold uppercase tracking-widest text-white/90">Global Visibility</h4>
                         </div>
                         <p className="text-md text-white/20 font-plus leading-relaxed">
                             All established social nodes are instantly projected onto your public domain.
-                            <span className="text-luxury-gold/40 block mt-2">Privacy settings can be configured within the Identity Vault for complete stealth.</span>
                         </p>
                     </div>
                     <Button variant="outline" className="px-10 py-5 rounded-xl border-white/5 hover:border-luxury-gold/30 text-[10px] font-syncopate uppercase tracking-[0.3em]">
-                        View Public Matrix <ArrowUpRight size={14} className="ml-2" />
+                        View Public Profile <ArrowUpRight size={14} className="ml-2" />
                     </Button>
                 </div>
             </Card>
@@ -430,8 +429,8 @@ const Socials = () => {
                 onClose={() => setDeleteId(null)}
                 onConfirm={confirmDelete}
                 isDeleting={deleting}
-                title="Terminate Node"
-                description="This action will permanently remove this connection from your global matrix. This cannot be undone."
+                title="Remove Link"
+                description="This action will permanently remove this link from your profile. This cannot be undone."
             />
         </div>
     );
