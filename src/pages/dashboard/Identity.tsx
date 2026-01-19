@@ -27,7 +27,7 @@ const PremiumQR = ({ url }: { url: string }) => {
             width: 400,
             height: 400,
             data: url,
-            margin: 0,
+            margin: 12,
             qrOptions: {
                 typeNumber: 0,
                 mode: 'Byte',
