@@ -1,5 +1,5 @@
 {
-  "name": "docked-pro",
+  "name": "dockly-pro",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react-swc": "^4.2.2",
@@ -30,6 +31,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
+    "crypto-js": "^4.2.0",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.25.0",
     "html-to-image": "^1.11.13",

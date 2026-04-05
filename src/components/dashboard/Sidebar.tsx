@@ -53,7 +53,7 @@ export const DashboardSidebar = () => {
                 </div>
                 <div>
                     <div className="text-xl font-syncopate font-bold tracking-tighter text-white">
-                        DOCKED<span className="text-luxury-gold">.</span>PRO
+                        DOCKLY<span className="text-luxury-gold">.</span>PRO
                     </div>
                     <div className="flex items-center gap-2">
                         <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />

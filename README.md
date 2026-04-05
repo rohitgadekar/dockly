@@ -1,11 +1,11 @@
-# DOCKED.PRO - High Performance Digital Estate
+# DOCKLY.PRO - High Performance Digital Estate
 
 > **"Elevate Your Digital Estate"**
 
-Docked Pro is an ultra-luxury, high-performance CRM and digital identity platform designed for individuals of distinction. Built with a "Maison Archive" aesthetic, it combines surgical precision, sovereign data control, and kinetic UI design to deliver a premium "Command Deck" experience.
+Dockly Pro is an ultra-luxury, high-performance CRM and digital identity platform designed for individuals of distinction. Built with a "Maison Archive" aesthetic, it combines surgical precision, sovereign data control, and kinetic UI design to deliver a premium "Command Deck" experience.
 
 ## 🌌 The Vision
-Docked Pro transforms a standard portfolio into a high-authority **Digital Estate**. It is not just a link-in-bio; it is a sovereign node managed through a tactical dashboard, offering zero-latency delivery and military-grade encryption.
+Dockly Pro transforms a standard portfolio into a high-authority **Digital Estate**. It is not just a link-in-bio; it is a sovereign node managed through a tactical dashboard, offering zero-latency delivery and military-grade encryption.
 
 ---
 

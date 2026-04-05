@@ -13,7 +13,7 @@ const generateWelcomeEmail = (name?: string) => `
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Welcome to Docked.Pro</title>
+  <title>Welcome to Dockly.Pro</title>
   <style>
     body { background-color: #050505; color: #ffffff; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
     .wrapper { background-color: #050505; width: 100%; padding: 40px 0; }
@@ -62,7 +62,7 @@ const generateWelcomeEmail = (name?: string) => `
       
       <!-- Distinct Header Block -->
       <div class="header-box">
-        <a href="https://docked.pro" class="logo">DOCKED<span class="dot">.</span>PRO</a>
+        <a href="https://dockly.pro" class="logo">DOCKLY<span class="dot">.</span>PRO</a>
       </div>
       
       <div class="card">
@@ -107,13 +107,13 @@ const generateWelcomeEmail = (name?: string) => `
         </div>
 
         <div class="btn-container">
-          <a href="https://docked.pro/dashboard" class="btn">Enter Command Deck</a>
+          <a href="https://dockly.pro/dashboard" class="btn">Enter Command Deck</a>
         </div>
 
         <!-- Founder's Note -->
         <div class="founder-note">
            <div class="founder-quote">
-            Your identity is an archival asset, not just a profile. We built Docked to give you absolute sovereignty over how you present your life's work to the world. Welcome to the Citadel.
+            Your identity is an archival asset, not just a profile. We built Dockly to give you absolute sovereignty over how you present your life's work to the world. Welcome to the Citadel.
            </div>
            
            <div class="signature-area">
@@ -127,7 +127,7 @@ const generateWelcomeEmail = (name?: string) => `
       </div>
 
       <div class="footer">
-        Docked  • All Sovereignty Reserved
+        Dockly  • All Sovereignty Reserved
         <br/><br/>
         House of Eagles
       </div>
@@ -150,9 +150,9 @@ serve(async (req) => {
     }
 
     const data = await resend.emails.send({
-      from: 'Docked Pro <team@docked.pro>',
+      from: 'Dockly Pro <team@dockly.pro>',
       to: email,
-      subject: 'Identity Node Initialized | Docked.Pro',
+      subject: 'Identity Node Initialized | Dockly.Pro',
       html: generateWelcomeEmail(name),
     });
 

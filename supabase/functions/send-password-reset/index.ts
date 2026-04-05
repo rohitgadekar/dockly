@@ -57,7 +57,7 @@ const generateResetEmail = (resetLink: string) => `
     <div class="container">
       
       <div class="header-box">
-        <a href="https://docked.pro" class="logo">DOCKED<span class="dot">.</span>PRO</a>
+        <a href="https://dockly.pro" class="logo">DOCKLY<span class="dot">.</span>PRO</a>
       </div>
       
       <div class="card">
@@ -103,7 +103,7 @@ const generateResetEmail = (resetLink: string) => `
       </div>
 
       <div class="footer">
-        Docked • All Sovereignty Reserved
+        Dockly • All Sovereignty Reserved
         <br/><br/>
         House of Eagles
       </div>
@@ -131,7 +131,7 @@ serve(async (req) => {
       throw new Error('Email is required');
     }
 
-    const finalRedirect = redirectTo || 'https://docked.pro/auth/update-password';
+    const finalRedirect = redirectTo || 'https://dockly.pro/auth/update-password';
     console.log(`Generating recovery link with redirect to: ${finalRedirect}`);
 
     // Generate the recovery link
@@ -150,9 +150,9 @@ serve(async (req) => {
 
     console.log(`Sending email via Resend to ${email} with tracking disabled...`);
     const { data, error: emailError } = await resend.emails.send({
-      from: 'Docked Pro <team@docked.pro>',
+      from: 'Dockly Pro <team@dockly.pro>',
       to: email,
-      subject: 'Security Protocol: Access Recovery | Docked.Pro',
+      subject: 'Security Protocol: Access Recovery | Dockly.Pro',
       html: generateResetEmail(linkData.properties.action_link),
       // CRITICAL: Disable all tracking to prevent link consumption
       tracking: {

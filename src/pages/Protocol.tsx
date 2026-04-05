@@ -25,7 +25,7 @@ const protocols: Record<string, ProtocolContent> = {
             },
             {
                 heading: "Zero-Knowledge Identity",
-                content: "Docked utilizes holographic encryption for all identity nodes. We do not track your movement across the network. Your 'Command Deck' telemetry is processed locally and discarded upon session termination."
+                content: "Dockly utilizes holographic encryption for all identity nodes. We do not track your movement across the network. Your 'Command Deck' telemetry is processed locally and discarded upon session termination."
             },
             {
                 heading: "Universal Encryption",
@@ -40,7 +40,7 @@ const protocols: Record<string, ProtocolContent> = {
         sections: [
             {
                 heading: "Establishment of Tenure",
-                content: "By establishing a node on Docked.Pro, you agree to maintain the high-fidelity standards of the ecosystem. Intellectual property within your estate remains your sovereign asset."
+                content: "By establishing a node on Dockly.Pro, you agree to maintain the high-fidelity standards of the ecosystem. Intellectual property within your estate remains your sovereign asset."
             },
             {
                 heading: "Operational Integrity",

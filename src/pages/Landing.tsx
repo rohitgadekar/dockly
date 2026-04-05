@@ -184,7 +184,7 @@ const Landing = () => {
         );
     };
 
-    useTitle("Premium Creator Presence | Docked");
+    useTitle("Premium Creator Presence | Dockly");
     const navigate = useNavigate();
 
     return (
@@ -197,7 +197,7 @@ const Landing = () => {
                     className="glass rounded-full px-8 py-3 flex items-center gap-12 border-white/5"
                 >
                     <div className="text-2xl font-syncopate font-bold tracking-tighter cursor-pointer" onClick={() => navigate('/')}>
-                        DOCKED<span className="text-luxury-gold">.</span>PRO
+                        DOCKLY<span className="text-luxury-gold">.</span>PRO
                     </div>
                     <div className="hidden md:flex items-center gap-8 font-plus text-sm uppercase tracking-widest text-white/60">
                         <a href="#features" className="hover:text-white transition-colors">Features</a>
@@ -405,7 +405,7 @@ const Landing = () => {
                                 quote: "The architectural precision of platform has transformed my digital presence from a standard portfolio into a high authority archival estate.",
                                 author: "Rohit Gadekar",
                                 role: "Founder & CEO / Eagle LABS",
-                                profile: "docked.pro/rohit",
+                                profile: "dockly.pro/rohit",
                                 delay: 0.2
                             },
 
@@ -413,7 +413,7 @@ const Landing = () => {
                                 quote: "Finally, a platform that understands that identity is an asset, not just a profile. The Citadel security architecture is absolutely unmatched.",
                                 author: "Claire Bennett",
                                 role: "Chief Technology Officer / Eagle LABS",
-                                profile: "docked.pro/claire",
+                                profile: "dockly.pro/claire",
                                 delay: 0.6
                             }, {
                                 quote: "100ms delivery combined with the Sovereign Vault protocol gives me complete confidence in my global digital footprint. Everything feels fast, secure.",
@@ -717,7 +717,7 @@ const Landing = () => {
                         {/* Brand Pillar */}
                         <div className="col-span-1 md:col-span-2 space-y-8">
                             <div className="text-3xl font-syncopate font-bold tracking-tighter cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-                                DOCKED<span className="text-luxury-gold">.</span>PRO
+                                DOCKLY<span className="text-luxury-gold">.</span>PRO
                             </div>
                             <p className="text-white/30 font-plus text-sm max-w-sm leading-relaxed uppercase tracking-wider">
                                 The ultimate premium link for creators.
@@ -752,12 +752,12 @@ const Landing = () => {
                             <h4 className="text-[10px] font-syncopate text-luxury-gold uppercase tracking-[0.5em] font-bold">Connect</h4>
                             <ul className="space-y-4">
                                 <li>
-                                    <a href="https://instagram.com/docked.pro" target="_blank" rel="noopener noreferrer" className="text-xs font-plus text-white/30 hover:text-white transition-colors uppercase tracking-[0.2em] flex items-center gap-2">
+                                    <a href="https://instagram.com/dockly.pro" target="_blank" rel="noopener noreferrer" className="text-xs font-plus text-white/30 hover:text-white transition-colors uppercase tracking-[0.2em] flex items-center gap-2">
                                         Instagram
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="https://www.youtube.com/@docked-pro" target="_blank" rel="noopener noreferrer" className="text-xs font-plus text-white/30 hover:text-white transition-colors uppercase tracking-[0.2em] flex items-center gap-2">
+                                    <a href="https://www.youtube.com/@dockly-pro" target="_blank" rel="noopener noreferrer" className="text-xs font-plus text-white/30 hover:text-white transition-colors uppercase tracking-[0.2em] flex items-center gap-2">
                                         YouTube
                                     </a>
                                 </li>
@@ -781,7 +781,7 @@ const Landing = () => {
 
                     <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
                         <div className="text-[10px] font-syncopate text-white/30 uppercase tracking-[0.6em] font-medium">
-                            © 2026 DOCKED.PRO • ALL RIGHTS RESERVED
+                            © 2026 DOCKLY.PRO • ALL RIGHTS RESERVED
                         </div>
                         <div className="flex gap-8 group">
                             <span className="text-[9px] font-syncopate text-white/30 uppercase tracking-[0.4em]">Secure Platform</span>

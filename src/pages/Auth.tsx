@@ -61,7 +61,7 @@ const Auth = () => {
                         <Shield size={24} className="text-luxury-gold" />
                     </div>
                     <h1 className="text-3xl font-syncopate font-bold tracking-tight text-white mb-3">
-                        DOCKED<span className="text-luxury-gold"> PRO</span>
+                        DOCKLY<span className="text-luxury-gold"> PRO</span>
                     </h1>
                     <p className="text-base text-white/50 font-plus tracking-wide">
                         The elite creator gateway
@@ -166,7 +166,7 @@ const Auth = () => {
 
                 {/* Bottom Copyright */}
                 <p className="text-center mt-10 text-[10px] text-white/10 font-syncopate uppercase tracking-[0.4em]">
-                    © 2026 Docked Private Registry
+                    © 2026 Dockly Private Registry
                 </p>
             </motion.div>
         </div>

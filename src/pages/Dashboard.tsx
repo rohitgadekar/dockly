@@ -41,7 +41,7 @@ const Dashboard = () => {
                         </h1>
 
                         <p className="text-white/60 font-plus leading-relaxed mb-6">
-                            The Docked.Pro Dashboard is optimized for desktop experiences only. Please access from a desktop or laptop computer for the full command interface.
+                            The Dockly.Pro Dashboard is optimized for desktop experiences only. Please access from a desktop or laptop computer for the full command interface.
                         </p>
 
                         <div className="pt-6 border-t border-white/10">
