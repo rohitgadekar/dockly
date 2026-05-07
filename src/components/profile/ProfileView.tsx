@@ -711,7 +711,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                             }}
                                         >
                                             <div className="text-left flex-1 min-w-0 pr-4">
-                                                <span className="text-[10px] font-syncopate tracking-[0.3em] opacity-40 block mb-2 uppercase">Custom Link</span>
+                                                {/* <span className="text-[10px] font-syncopate tracking-[0.3em] opacity-40 block mb-2 uppercase">Custom Link</span> */}
                                                 <h4 className="text-lg md:text-xl font-bold uppercase tracking-tighter truncate" style={{ fontFamily: theme.font }}>
                                                     {link.platform.replace('custom:', '')}
                                                 </h4>
@@ -937,7 +937,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                         {user.ventures?.length > 0 && (
                             <section className="space-y-20">
                                 <div className="flex flex-col items-center">
-                                    <span className="text-[11px] font-syncopate uppercase tracking-[1em] opacity-40 font-black">Projects</span>
+                                    <span className="text-[11px] font-syncopate uppercase tracking-[1em] opacity-40 font-black">Workspace</span>
                                 </div>
 
                                 <div className="space-y-12 md:space-y-24">
@@ -955,10 +955,9 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                             >
                                                 <div className="space-y-6 max-w-2xl w-full">
                                                     <div className="flex items-center justify-center gap-4">
-                                                        <span className="text-[9px] font-syncopate tracking-[0.5em] px-4 py-1.5 rounded-full border" style={{ borderColor: cardBorder, color: theme.primary, backgroundColor: isLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.03)' }}>
-                                                            Project {idx + 1}
+                                                        <span className="text-[12px] font-syncopate tracking-[0.5em] px-4 py-1.5 rounded-full border uppercase" style={{ borderColor: cardBorder, color: theme.primary, backgroundColor: isLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.03)' }}>
+                                                            #{idx + 1}
                                                         </span>
-                                                        <Zap size={14} className="opacity-20 translate-y-[-1px]" style={{ color: theme.primary }} />
                                                     </div>
                                                     <h3 className="text-3xl md:text-7xl font-bold uppercase tracking-[-0.04em] leading-tight truncate px-4" style={{ fontFamily: theme.font }}>
                                                         {project.title}
@@ -985,7 +984,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                     }}
                                                     onClick={() => handleLinkClick('venture', project.id, project.url)}
                                                 >
-                                                    View Project <ArrowUpRight size={16} />
+                                                    View  <ArrowUpRight size={16} />
                                                 </Button>
                                             </div>
                                         </div>
