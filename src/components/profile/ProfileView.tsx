@@ -1197,34 +1197,13 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                             </section>
                         )}
 
-                        
+
 
                     </div>
 
                     {/* Prestige Footer */}
-                    <footer className="mt-24 md:mt-48 flex flex-col items-center gap-10 w-full px-6">
-
-                        {/* Starlight Divider */}
-                        <div className="flex items-center gap-6 opacity-50 mb-4">
-                            <div className="h-px w-16 md:w-32 bg-gradient-to-r from-transparent to-current" style={{ color: theme.primary }} />
-                            <div className="relative flex items-center justify-center">
-                                <div className="w-2 h-2 rotate-45 bg-current" style={{ backgroundColor: theme.primary }} />
-                            </div>
-                            <div className="h-px w-16 md:w-32 bg-gradient-to-l from-transparent to-current" style={{ color: theme.primary }} />
-                        </div>
-
+                    <footer className="mt-24 md:mt-24 flex flex-col items-center gap-10 w-full px-6">
                         <div className="text-center space-y-8">
-                            <div className="flex flex-wrap items-center justify-center gap-3 text-[10px] md:text-xs font-syncopate tracking-[0.3em] md:tracking-[0.6em] uppercase opacity-60"
-                                style={{ color: textMuted }}>
-                                Powered by <span className="font-bold flex items-center mx-2 gap-2" style={{ color: theme.primary }}>Citadel v4.2</span>
-                            </div>
-
-                            <div className="space-y-4 text-[10px] md:text-xs font-syncopate tracking-[0.4em] md:tracking-[0.8em] uppercase leading-loose "
-                                style={{ color: textMuted }}>
-                                <p>© 2026 EAGLES</p>
-                                <p className="hidden md:block">All Rights Reserved</p>
-                            </div>
-
                             {/* Luxury Profile Barcode */}
                             <div className="pt-12 md:pt-24 flex flex-col items-center gap-8 md:gap-10 transition-opacity duration-1000">
                                 <div className="flex gap-[3px] md:gap-[5px] h-28 md:h-28 items-end" style={{ color: textMuted }}>
@@ -1246,7 +1225,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                         {user.username?.toUpperCase() || 'ANONYMOUS'}-{Math.random().toString(36).substring(2, 8).toUpperCase()}
                                     </span>
 
-                                    <span className="text-[10px] md:text-xs font-syncopate tracking-[0.6em] md:tracking-[1em] uppercase" style={{ color: theme.primary }}>
+                                    <span className="text-[8px] md:text-xs font-syncopate tracking-[0.6em] md:tracking-[0.6em] uppercase" style={{ color: theme.primary }}>
                                         Verified Profile
                                     </span>
                                 </div>
