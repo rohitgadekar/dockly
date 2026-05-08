@@ -19,6 +19,7 @@ import {
     Loader2,
     Mail
 } from "lucide-react";
+import { MdVerified } from "react-icons/md";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
@@ -46,6 +47,9 @@ import {
     FaGlobe,
     FaInstagram
 } from "react-icons/fa";
+import QRCodeStyling from "qr-code-styling";
+
+
 declare global {
     interface Window {
         YT: any;
@@ -57,6 +61,55 @@ declare global {
         };
     }
 }
+
+const PremiumQR = ({ url }: { url: string }) => {
+    const qrRef = useRef<HTMLDivElement>(null);
+    const qrCode = useRef<QRCodeStyling | null>(null);
+
+    useEffect(() => {
+        qrCode.current = new QRCodeStyling({
+            width: 400,
+            height: 400,
+            data: url,
+            margin: 12,
+            qrOptions: {
+                typeNumber: 0,
+                mode: 'Byte',
+                errorCorrectionLevel: 'H'
+            },
+            dotsOptions: {
+                type: 'classy-rounded',
+                color: 'rgba(255,255,255,0.3)',
+            },
+            backgroundOptions: {
+                color: 'transparent',
+            },
+            cornersSquareOptions: {
+                type: 'extra-rounded',
+                color: 'rgba(255,255,255,0.3)',
+            },
+            cornersDotOptions: {
+                type: 'dot',
+                color: 'rgba(255,255,255,0.3)',
+            }
+        });
+
+        if (qrRef.current) {
+            qrRef.current.innerHTML = '';
+            qrCode.current.append(qrRef.current);
+        }
+    }, [url]);
+
+    return (
+        <div className="relative group/qr">
+            <div className="absolute -inset-1  rounded-xl blur-md opacity-0 group-hover/qr:opacity-100 transition-opacity duration-500" />
+            <div
+                ref={qrRef}
+                className="relative w-20 h-20 rounded-xl flex items-center justify-center overflow-hidden [&>canvas]:w-full [&>canvas]:h-full"
+            />
+        </div>
+    );
+};
 
 const platformIcons: Record<string, any> = {
     Twitter: FaTwitter,
@@ -582,7 +635,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                     user.stories?.length > 0 ? " ring-4 ring-luxury-gold/20 cursor-pointer" : ""
                                 )}
                                 style={{
-                                    background: `linear-gradient(135deg, ${theme.primary}66, transparent, ${theme.primary}22)`,
+                                    // background: `linear-gradient(135deg, ${theme.primary}66, transparent, ${theme.primary}22)`,
                                     boxShadow: `0 30px 60px -12px rgba(0,0,0,0.5), 0 0 0 1px ${theme.primary}20`
                                 }}
                             >
@@ -619,17 +672,17 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                 initial={{ opacity: 0, y: 10, x: "-50%" }}
                                 animate={{ opacity: 1, y: 0, x: "-50%" }}
                                 transition={{ delay: 0.8 }}
-                                className="absolute -bottom-8 left-1/2 flex items-center gap-2 px-3 py-2.5 rounded-full backdrop-blur-2xl border bg-black/40 shadow-2xl z-20"
+                                className="absolute -bottom-8 left-1/2 flex items-center gap-2 px-2 py-2 rounded-full backdrop-blur-2xl border bg-black/40 shadow-2xl z-20"
                                 style={{ borderColor: `${theme.primary}33` }}
                             >
                                 {user.stories?.length > 0 ? (
                                     <Radio size={16} className="text-luxury-gold animate-pulse" />
                                 ) : (
-                                    <CiCircleCheck size={20} style={{ color: theme.primary }} />
+                                    <MdVerified size={20} style={{ color: theme.primary }} />
                                 )}
-                                <span className="text-[10px] font-syncopate font-bold uppercase tracking-[0.2em]" style={{ color: theme.primary }}>
+                                {/* <span className="text-[10px] font-syncopate font-bold uppercase tracking-[0.2em]" style={{ color: theme.primary }}>
                                     {user.stories?.length > 0 ? "Live" : "Verified"}
-                                </span>
+                                </span> */}
                             </motion.div>
                         </motion.div>
 
@@ -678,8 +731,8 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                             initial={{ opacity: 0 }}
                                             animate={{ opacity: 1 }}
                                             whileHover={{ y: -8, scale: 1.1 }}
-                                            transition={{ delay: idx * 0.05, type: "spring", stiffness: 200 }}
-                                            className="w-14 h-14 md:w-20 md:h-20 rounded-2xl md:rounded-[2rem] flex items-center justify-center border  hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)]"
+                                            transition={{ delay: idx * 0.08, type: "spring", stiffness: 200 }}
+                                            className="w-14 h-14 md:w-20 md:h-20 rounded-full md:rounded-full flex items-center justify-center border  hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)]"
                                             style={{
                                                 borderColor: cardBorder,
                                                 backgroundColor: isLight ? 'rgba(0,0,0,0.02)' : 'rgba(255,255,255,0.02)',
@@ -704,7 +757,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                         <div
                                             key={link.id}
                                             onClick={() => handleLinkClick('social', link.id, link.url)}
-                                            className="flex items-center justify-between p-6 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border group transition-all duration-700"
+                                            className="flex items-center justify-between p-6 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border group transition-all duration-700 hover:cursor-pointer"
                                             style={{
                                                 borderColor: cardBorder,
                                                 backgroundColor: isLight ? 'rgba(0,0,0,0.01)' : 'rgba(255,255,255,0.01)'
@@ -765,7 +818,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                         {playingPreview === user.top_tracks[0].previewUrl ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />}
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <span className="text-[10px] font-syncopate tracking-[0.4em] uppercase opacity-60 mb-2 block">Top Track</span>
+                                                        <span className="text-[10px] font-syncopate tracking-[0.4em] uppercase opacity-60 mb-2 block">Listening To</span>
                                                         <h3 className="text-3xl md:text-5xl font-bold tracking-tight mb-2 leading-none uppercase truncate">{user.top_tracks[0].title}</h3>
                                                         <p className="text-base md:text-xl opacity-40 font-light italic truncate">{user.top_tracks[0].artist}</p>
                                                     </div>
@@ -1206,7 +1259,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                             {/* Luxury Profile Barcode */}
                             <div className="pt-12 md:pt-24 flex flex-col items-center gap-8 md:gap-10 transition-opacity duration-1000">
                                 <div className="flex gap-[3px] md:gap-[5px] h-28 md:h-28 items-end" style={{ color: textMuted }}>
-                                    {[...Array(48)].map((_, i) => (
+                                    {/* {[...Array(48)].map((_, i) => (
                                         <motion.div
                                             key={i}
                                             className="bg-current"
@@ -1217,14 +1270,16 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                 opacity: 0.2 + (Math.random() * 0.4)
                                             }}
                                         />
-                                    ))}
+                                    ))} */}
+
+                                    <PremiumQR url={"https://dockly.pro/" + user.username} />
                                 </div>
                                 <div className="flex flex-col items-center gap-3">
-                                    <span className="text-[11px] md:text-sm font-syncopate tracking-[0.4em] md:tracking-[0.6em] uppercase" style={{ color: textMuted }}>
+                                    {/* <span className="text-[11px] md:text-sm font-syncopate tracking-[0.4em] md:tracking-[0.6em] uppercase" style={{ color: textMuted }}>
                                         {user.username?.toUpperCase() || 'ANONYMOUS'}-{Math.random().toString(36).substring(2, 8).toUpperCase()}
-                                    </span>
+                                    </span> */}
 
-                                    <span className="text-[8px] md:text-xs font-syncopate tracking-[0.6em] md:tracking-[0.6em] uppercase" style={{ color: theme.primary }}>
+                                    <span className="text-[8px] md:text-[8px] font-syncopate tracking-[0.6em] md:tracking-[0.6em] uppercase" style={{ color: textMuted }}>
                                         Verified Profile
                                     </span>
                                 </div>
