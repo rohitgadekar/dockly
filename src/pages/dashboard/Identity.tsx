@@ -34,19 +34,19 @@ const PremiumQR = ({ url }: { url: string }) => {
                 errorCorrectionLevel: 'H'
             },
             dotsOptions: {
-                type: 'rounded',
-                color: '#D4AF37',
+                type: 'classy-rounded',
+                color: 'rgba(255,255,255,0.3)',
             },
             backgroundOptions: {
                 color: 'transparent',
             },
             cornersSquareOptions: {
                 type: 'extra-rounded',
-                color: '#D4AF37',
+                color: 'rgba(255,255,255,0.3)',
             },
             cornersDotOptions: {
                 type: 'dot',
-                color: '#D4AF37',
+                color: 'rgba(255,255,255,0.3)',
             }
         });
 
@@ -55,6 +55,7 @@ const PremiumQR = ({ url }: { url: string }) => {
             qrCode.current.append(qrRef.current);
         }
     }, [url]);
+
 
     return (
         <div className="relative group/qr">
@@ -121,10 +122,10 @@ const Identity = () => {
                 }
             });
             const link = document.createElement("a");
-            link.download = `${data?.profile?.username || 'user'}-brand-card.png`;
+            link.download = `${data?.profile?.username || 'user'}-.png`;
             link.href = dataUrl;
             link.click();
-            toast.success("Brand Card downloaded.");
+            toast.success("Pass downloaded.");
         } catch (err) {
             console.error(err);
             toast.error("Download failed.");
@@ -155,10 +156,10 @@ const Identity = () => {
                         <span className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/40">Download Card</span>
                     </div>
                     <h1 className="text-5xl font-syncopate font-bold uppercase tracking-tighter text-white">
-                        Brand <span className="text-luxury-gold">Card</span>
+                        DOCKLY <span className="text-luxury-gold">Pass</span>
                     </h1>
                     <p className="text-white/40 font-plus italic mt-4">
-                        Download your branded profile card to share with the world.
+                        Download your Dockly pass to share with the world.
                     </p>
                 </div>
 
@@ -205,49 +206,49 @@ const Identity = () => {
                         <div className="absolute top-0 bottom-0 w-32 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent -skew-x-12 pointer-events-none left-[10%]" />
 
                         {/* Card Content */}
-                        <div className="relative h-full flex flex-col p-8 z-10" style={{ transform: "translateZ(50px)" }}>
+                        <div className="relative h-full bg-gradient-to-l from-cyan-400/20 via-cyan-400/40 to-cyan-400/20   flex flex-col p-8 z-10" style={{ transform: "translateZ(50px)" }}>
                             {/* Header Architecture */}
-                            <div className="flex justify-between items-start mb-6">
+                            {/* <div className="flex justify-between items-start mb-6">
                                 <div className="space-y-1">
-                                    <div className="text-[9px] font-syncopate font-bold text-luxury-gold uppercase tracking-[0.4em] drop-shadow-[0_0_8px_rgba(212,175,55,0.4)]">Brand Card</div>
-                                    <div className="text-[7px] font-syncopate text-white/20 uppercase tracking-[0.2em]">Digital ID v4.2</div>
+                                    <div className="text-[10px] font-syncopate font-bold text-luxury-gold uppercase tracking-[0.4em] drop-shadow-[0_0_8px_rgba(212,175,55,0.4)]">Dockly</div>
+                                    <div className="text-[7px] font-syncopate text-white/20 uppercase tracking-[0.2em]">Verified profile</div>
                                 </div>
-                                <div className="w-10 h-10 rounded-xl bg-luxury-gold/5 border border-luxury-gold/20 flex items-center justify-center">
-                                    <Zap size={16} className="text-luxury-gold opacity-40 shadow-[0_0_10px_rgba(212,175,55,0.2)]" />
+                                <div className="w-12 text-xl h-12 bg-luxury-gold rounded-[1.5rem] flex items-center justify-center font-bold text-black font-syncopate shadow-[0_0_20px_rgba(212,175,55,0.3)]">
+                                    D
                                 </div>
-                            </div>
+                            </div> */}
 
                             {/* Profile Visual (Avatar) */}
-                            <div className="relative mb-6 self-center">
-                                <div className="absolute -inset-1 bg-gradient-to-tr from-luxury-gold/30 via-transparent to-luxury-gold/30 rounded-[2.5rem] blur-sm opacity-50" />
-                                <div className="relative w-40 h-40 rounded-[2.2rem] overflow-hidden shadow-2xl">
-                                    <div className="w-full h-full rounded-[2.2rem] overflow-hidden">
+                            <div className="relative mt-6 mb-6 self-center">
+                                {/* <div className="absolute -inset-1 bg-gradient-to-tr from-luxury-gold/30 via-transparent to-luxury-gold/30 rounded-[2rem] blur-sm opacity-50" /> */}
+                                <div className="relative w-40 h-40  overflow-hidden  p-1">
+                                    <div className="w-full h-full rounded-[2em] overflow-hidden">
                                         <img
                                             src={data.profile.avatar_url || "/dp.png"}
                                             alt="Avatar"
                                             crossOrigin="anonymous"
-                                            className="w-full h-full object-cover"
+                                            className="w-full h-full object-cover "
                                         />
                                     </div>
                                 </div>
                                 {/* HUD Accents */}
-                                <div className="absolute -top-2 -left-2 w-8 h-8 border-t border-l border-luxury-gold rounded-tl-[2.5rem]" />
-                                <div className="absolute -bottom-2 -right-2 w-8 h-8 border-b border-r border-luxury-gold rounded-br-[2.5rem]" />
+                                {/* <div className="absolute -top-2 -left-2 w-8 h-8 border-t border-l border-[rgba(255,255,255,0.1)] rounded-tl-[2.5rem]" /> */}
+                                {/* <div className="absolute -bottom-2 -right-2 w-8 h-8 border-b border-r border-[rgba(255,255,255,0.1)] rounded-br-[2.5rem]" /> */}
                             </div>
 
                             {/* Brand Persona */}
                             <div className="text-center space-y-3 mb-6 flex-1 flex flex-col justify-center">
-                                <h2 className="text-3xl font-syncopate font-bold text-white tracking-tighter uppercase leading-none">
+                                <h2 className="text-3xl font-syncopate font-bold text-white tracking-normal  uppercase leading-none">
                                     {data.profile.full_name}
                                 </h2>
+
                                 <div className="inline-flex self-center items-center gap-3 px-3 py-1 bg-white/[0.03] border border-white/5 rounded-full mb-2">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-luxury-gold shadow-[0_0_8px_#D4AF37]" />
-                                    <span className="text-[8px] font-syncopate text-white/40 uppercase tracking-[0.3em]">
+                                    <span className="text-xs   font-outfit  text-white/60 uppercase tracking-[0.1em]">
                                         {data.profile.role || "Visual Architect"}
                                     </span>
                                 </div>
                                 {data.profile.bio && (
-                                    <p className="text-[12px] text-white/30 font-plus italic max-w-[280px] mx-auto leading-relaxed line-clamp-2">
+                                    <p className="text-md text-white/60 font-plus  max-w-[280px] mx-auto leading-relaxed line-clamp-2">
                                         {data.profile.bio}
                                     </p>
                                 )}
@@ -257,13 +258,15 @@ const Identity = () => {
                             <div className="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
                                 <div className="flex items-center gap-6">
                                     <PremiumQR url={profileUrl} />
-                                    <div className="space-y-1">
-                                        <div className="text-[8px] font-syncopate text-luxury-gold uppercase tracking-[0.4em] font-bold">Scan to View</div>
-                                        <div className="text-[6px] font-mono text-luxury-gold tracking-[0.3em] uppercase">Auth: {data.profile.username?.toUpperCase()}</div>
-                                    </div>
                                 </div>
-
-                                <div className="flex flex-col items-end gap-2">
+                                <div className="space-y-1 text-center">
+                                    <div className="text-[10px] font-mono text-white/40 tracking-[0.3em] uppercase">{data.profile?.id?.slice(0, 8)}</div>
+                                    <div className="text-[8px] font-syncopate text-white/40 uppercase tracking-[0.4em] font-bold">/dockly</div>
+                                </div>
+                                <div className="w-12 text-xl h-12 bg-[rgba(255,255,255,0.1)] rounded-[1.5rem] flex items-center justify-center font-bold text-white/40 font-syncopate shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                                    D
+                                </div>
+                                {/* <div className="flex flex-col items-end gap-2">
                                     <div className="flex gap-1">
                                         {[...Array(24)].map((_, i) => (
                                             <div
@@ -276,7 +279,7 @@ const Identity = () => {
                                         ))}
                                     </div>
                                     <div className="text-[6px] font-syncopate text-luxury-gold uppercase tracking-[0.5em]">Signature ID</div>
-                                </div>
+                                </div> */}
                             </div>
 
                             {/* Prismatic Detailing */}
@@ -385,22 +388,7 @@ const Identity = () => {
                         </Card>
                     </div>
 
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        className="p-8 bg-luxury-gold/[0.02] border border-luxury-gold/5 rounded-[2.5rem] flex items-center gap-8 mt-4 group hover:bg-luxury-gold/[0.04] "
-                    >
-                        <div className="w-16 h-16 bg-luxury-gold/10 rounded-2xl flex items-center justify-center text-luxury-gold shrink-0 border border-luxury-gold/20 ">
-                            <Fingerprint size={32} strokeWidth={1} />
-                        </div>
-                        <div className="space-y-2">
-                            <div className="text-[10px] font-syncopate font-bold text-luxury-gold uppercase tracking-[0.3em]">Verified Brand</div>
-                            <p className="text-[9px] text-white/30 font-syncopate uppercase tracking-widest leading-relaxed">
-                                Your premium brand profile is active. Professional identity verified.
-                            </p>
-                        </div>
-                        <div className="ml-auto w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
-                    </motion.div>
+
                 </div>
 
             </div>

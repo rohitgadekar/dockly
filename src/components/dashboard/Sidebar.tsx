@@ -21,7 +21,7 @@ import { supabase } from "@/lib/supabase";
 import { useDashboard } from "@/hooks/useDashboard";
 
 const sidebarItems = [
-    { icon: Fingerprint, label: "Brand", path: "/dashboard/identity" },
+    { icon: Fingerprint, label: "Pass", path: "/dashboard/identity" },
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
     { icon: FolderGit2, label: "Projects", path: "/dashboard/ventures" },
     { icon: Palette, label: "Themes", path: "/dashboard/atmospherics" },

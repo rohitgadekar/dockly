@@ -1158,10 +1158,6 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                             {/* Text Content */}
                                             <div className="flex-1 space-y-4 md:max-w-md text-center md:text-left">
                                                 <div>
-                                                    <div className="flex items-center justify-center md:justify-start gap-2 mb-2 opacity-60">
-                                                        <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: theme.primary }} />
-                                                        <span className="text-[9px] font-syncopate uppercase tracking-widest" style={{ color: theme.primary }}>Newsletter</span>
-                                                    </div>
                                                     <h3 className="text-3xl md:text-4xl font-bold uppercase tracking-tight leading-none" style={{ color: textPrimary }}>
                                                         Subscribe
                                                     </h3>
