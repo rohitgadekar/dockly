@@ -206,7 +206,7 @@ const Identity = () => {
                         <div className="absolute top-0 bottom-0 w-32 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent -skew-x-12 pointer-events-none left-[10%]" />
 
                         {/* Card Content */}
-                        <div className="relative h-full bg-gradient-to-l from-cyan-400/20 via-cyan-400/40 to-cyan-400/20   flex flex-col p-8 z-10" style={{ transform: "translateZ(50px)" }}>
+                        <div className="relative h-full bg-gradient-to-l from-gray-800/20 via-gray-800/40 to-gray-800/20   flex flex-col p-8 z-10" style={{ transform: "translateZ(50px)" }}>
                             {/* Header Architecture */}
                             {/* <div className="flex justify-between items-start mb-6">
                                 <div className="space-y-1">

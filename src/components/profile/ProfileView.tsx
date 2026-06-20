@@ -818,7 +818,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                         {playingPreview === user.top_tracks[0].previewUrl ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />}
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <span className="text-[10px] font-syncopate tracking-[0.4em] uppercase opacity-60 mb-2 block">Listening To</span>
+                                                        {/* <span className="text-[10px] font-syncopate tracking-[0.4em] uppercase opacity-60 mb-2 block">Listening To</span> */}
                                                         <h3 className="text-3xl md:text-5xl font-bold tracking-tight mb-2 leading-none uppercase truncate">{user.top_tracks[0].title}</h3>
                                                         <p className="text-base md:text-xl opacity-40 font-light italic truncate">{user.top_tracks[0].artist}</p>
                                                     </div>
@@ -990,7 +990,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                         {user.ventures?.length > 0 && (
                             <section className="space-y-20">
                                 <div className="flex flex-col items-center">
-                                    <span className="text-[11px] font-syncopate uppercase tracking-[1em] opacity-40 font-black">Workspace</span>
+                                    <span className="text-[11px] font-syncopate uppercase tracking-[1em] opacity-40 font-black">Work</span>
                                 </div>
 
                                 <div className="space-y-12 md:space-y-24">
@@ -1050,7 +1050,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                         {user.products?.length > 0 && (
                             <section className="space-y-20">
                                 <div className="flex flex-col items-center">
-                                    <span className="text-[11px] font-syncopate uppercase tracking-[1em] opacity-40 font-black">Store</span>
+                                    <span className="text-[11px] font-syncopate uppercase tracking-[1em] opacity-40 font-black">Picks</span>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
