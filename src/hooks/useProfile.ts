@@ -20,11 +20,12 @@ export const useProfile = (username: string | undefined) => {
       if (!profile) return null;
 
       // Concurrent fetching of all content sections
-      const [ventures, socials, products, stories] = await Promise.all([
+      const [ventures, socials, products, stories, endorsements] = await Promise.all([
         supabase.from("ventures").select("*").eq("profile_id", profile.id).order("order_index", { ascending: true }),
         supabase.from("social_links").select("*").eq("profile_id", profile.id).order("order_index", { ascending: true }),
         supabase.from("curated_products").select("*").eq("profile_id", profile.id).order("order_index", { ascending: true }),
-        supabase.from("stories").select("*").eq("profile_id", profile.id).gt("expires_at", new Date().toISOString()).order("created_at", { ascending: false })
+        supabase.from("stories").select("*").eq("profile_id", profile.id).gt("expires_at", new Date().toISOString()).order("created_at", { ascending: false }),
+        supabase.from("endorsements").select("*").eq("profile_id", profile.id).order("order_index", { ascending: true })
       ]);
 
       // Helper to generate long-lived URLs (1 year) for avatars to prevent expiration
@@ -55,6 +56,7 @@ export const useProfile = (username: string | undefined) => {
         socials: socials.data || [],
         products: resolvedProducts,
         stories: resolvedStories,
+        endorsements: endorsements.data || [],
       };
     },
     enabled: !!username,
@@ -106,6 +108,11 @@ export const useProfile = (username: string | undefined) => {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'curated_products', filter: `profile_id=eq.${query.data.id}` },
+        () => queryClient.invalidateQueries({ queryKey: ["profile", username] })
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'endorsements', filter: `profile_id=eq.${query.data.id}` },
         () => queryClient.invalidateQueries({ queryKey: ["profile", username] })
       )
       .on(

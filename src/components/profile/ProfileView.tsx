@@ -17,13 +17,16 @@ import {
     Minimize,
     ExternalLink,
     Loader2,
-    Mail
+    Mail,
+    Calendar
 } from "lucide-react";
 import { MdVerified } from "react-icons/md";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { InquiryForm } from "@/components/profile/InquiryForm";
+import { BookingModal } from "@/components/profile/BookingModal";
+import { EndorsementsSection } from "@/components/profile/EndorsementsSection";
 import { CiCircleCheck } from "react-icons/ci";
 import {
     SiTidal,
@@ -148,6 +151,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
     const [imageLoaded, setImageLoaded] = useState(false);
     const [ytVideos, setYtVideos] = useState<any[]>([]);
     const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
+    const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
     // Custom Player States
     const [player, setPlayer] = useState<any>(null);
@@ -709,6 +713,70 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                 <p className="max-w-xl text-lg md:text-2xl font-light italic leading-relaxed opacity-60 px-4 md:px-6">
                                     {user.bio || 'Welcome to my profile.'}
                                 </p>
+
+                                {/* Live Availability & Tactical Booking Hero Badge */}
+                                {(user.availability_text || user.booking_enabled || user.availability_status) && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.5 }}
+                                        className="flex flex-wrap items-center justify-center gap-3 pt-2"
+                                    >
+                                        <div
+                                            className={cn(
+                                                "inline-flex items-center gap-2.5 px-4 py-2 rounded-full border text-[10px] md:text-xs font-syncopate uppercase tracking-wider backdrop-blur-xl transition-all duration-300 shadow-lg",
+                                                user.availability_status === 'limited'
+                                                    ? "border-amber-500/30 bg-amber-500/5 text-amber-300"
+                                                    : user.availability_status === 'busy'
+                                                        ? "border-rose-500/30 bg-rose-500/5 text-rose-300"
+                                                        : user.availability_status === 'offline'
+                                                            ? "border-white/10 bg-white/5 text-white/50"
+                                                            : "border-emerald-500/30 bg-emerald-500/5 text-emerald-300"
+                                            )}
+                                        >
+                                            <span className="relative flex h-2 w-2">
+                                                {user.availability_status !== 'offline' && (
+                                                    <span className={cn(
+                                                        "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
+                                                        user.availability_status === 'limited' ? "bg-amber-400" :
+                                                        user.availability_status === 'busy' ? "bg-rose-400" : "bg-emerald-400"
+                                                    )} />
+                                                )}
+                                                <span className={cn(
+                                                    "relative inline-flex rounded-full h-2 w-2",
+                                                    user.availability_status === 'limited' ? "bg-amber-400" :
+                                                    user.availability_status === 'busy' ? "bg-rose-400" :
+                                                    user.availability_status === 'offline' ? "bg-white/40" : "bg-emerald-400"
+                                                )} />
+                                            </span>
+                                            <span>
+                                                {user.availability_text || (
+                                                    user.availability_status === 'limited' ? 'Limited Capacity' :
+                                                    user.availability_status === 'busy' ? 'High Demand' :
+                                                    user.availability_status === 'offline' ? 'Stealth Protocol' : 'Available for Work'
+                                                )}
+                                            </span>
+                                        </div>
+
+                                        {user.booking_enabled && user.booking_url && (
+                                            <motion.button
+                                                whileHover={{ scale: 1.05 }}
+                                                whileTap={{ scale: 0.96 }}
+                                                onClick={() => setIsBookingModalOpen(true)}
+                                                className="inline-flex items-center gap-2 px-5 py-2 rounded-full border text-[10px] md:text-xs font-syncopate font-bold uppercase tracking-wider shadow-xl transition-all duration-300"
+                                                style={{
+                                                    borderColor: `${theme.primary}50`,
+                                                    backgroundColor: `${theme.primary}18`,
+                                                    color: isLight ? theme.primary : "#FFFFFF"
+                                                }}
+                                            >
+                                                <Calendar size={13} style={{ color: theme.primary }} />
+                                                <span>{user.booking_button_text || "Schedule Session"}</span>
+                                                <ArrowUpRight size={13} className="opacity-70" />
+                                            </motion.button>
+                                        )}
+                                    </motion.div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -1099,6 +1167,14 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                             </section>
                         )}
 
+                        {/* Client Endorsements / Wall of Distinction */}
+                        <EndorsementsSection
+                            endorsements={user.endorsements || []}
+                            theme={theme}
+                            isLight={isLight}
+                            textPrimary={textPrimary}
+                            cardBorder={cardBorder}
+                        />
 
                         {/* Brand Inquiries Form */}
                         {user.accepting_inquiries && (
@@ -1590,6 +1666,15 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                         </motion.div>
                     )}
                 </AnimatePresence>
+
+                {/* Tactical Booking Modal */}
+                <BookingModal
+                    isOpen={isBookingModalOpen}
+                    onClose={() => setIsBookingModalOpen(false)}
+                    user={user}
+                    theme={theme}
+                    isLight={isLight}
+                />
 
             </div>
         </>

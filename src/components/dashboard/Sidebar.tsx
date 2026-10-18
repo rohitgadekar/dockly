@@ -13,7 +13,8 @@ import {
     Music,
     Fingerprint,
     Users,
-    Briefcase
+    Briefcase,
+    Award
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -24,6 +25,7 @@ const sidebarItems = [
     { icon: Fingerprint, label: "Pass", path: "/dashboard/identity" },
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
     { icon: FolderGit2, label: "Projects", path: "/dashboard/ventures" },
+    { icon: Award, label: "Endorsements", path: "/dashboard/endorsements" },
     { icon: Palette, label: "Themes", path: "/dashboard/atmospherics" },
     { icon: Users, label: "Leads", path: "/dashboard/audience" },
     { icon: Briefcase, label: "Inquiries", path: "/dashboard/inquiries" },

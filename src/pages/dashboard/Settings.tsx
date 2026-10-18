@@ -20,7 +20,10 @@ import {
     X,
     Volume2,
     VolumeX,
-    Lock
+    Lock,
+    Calendar,
+    CheckCircle2,
+    ArrowUpRight
 } from "lucide-react";
 import { useDashboard } from "@/hooks/useDashboard";
 import { supabase } from "@/lib/supabase";
@@ -52,6 +55,12 @@ const Settings = () => {
     const [role, setRole] = useState("");
     const [newsletterEnabled, setNewsletterEnabled] = useState(false);
     const [acceptingInquiries, setAcceptingInquiries] = useState(false);
+    const [availabilityStatus, setAvailabilityStatus] = useState("available");
+    const [availabilityText, setAvailabilityText] = useState("");
+    const [bookingEnabled, setBookingEnabled] = useState(false);
+    const [bookingUrl, setBookingUrl] = useState("");
+    const [bookingButtonText, setBookingButtonText] = useState("Schedule Session");
+    const [savingAvailability, setSavingAvailability] = useState(false);
     const [loading, setLoading] = useState(false);
     const [uploadingStory, setUploadingStory] = useState(false);
     const [updatingPassword, setUpdatingPassword] = useState(false);
@@ -76,6 +85,11 @@ const Settings = () => {
             setRole(data.profile.role || "Creator");
             setNewsletterEnabled(data.profile.newsletter_enabled || false);
             setAcceptingInquiries(data.profile.accepting_inquiries || false);
+            setAvailabilityStatus(data.profile.availability_status || "available");
+            setAvailabilityText(data.profile.availability_text || "");
+            setBookingEnabled(data.profile.booking_enabled || false);
+            setBookingUrl(data.profile.booking_url || "");
+            setBookingButtonText(data.profile.booking_button_text || "Schedule Session");
         }
     }, [data?.profile]);
 
@@ -196,6 +210,34 @@ const Settings = () => {
             toast.error(error.message);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleSaveAvailability = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSavingAvailability(true);
+
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error("Unauthorized");
+
+            const { error } = await supabase.from("profiles").update({
+                availability_status: availabilityStatus,
+                availability_text: availabilityText,
+                booking_enabled: bookingEnabled,
+                booking_url: bookingUrl,
+                booking_button_text: bookingButtonText,
+                updated_at: new Date().toISOString()
+            }).eq("id", user.id);
+
+            if (error) throw error;
+
+            toast.success("Availability matrix & booking synchronized.");
+            queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+        } catch (error: any) {
+            toast.error(error.message || "Failed to update availability");
+        } finally {
+            setSavingAvailability(false);
         }
     };
 
@@ -527,6 +569,171 @@ const Settings = () => {
                             <div className={`absolute top-1 left-1 w-7 h-7 rounded-full bg-white transition-all duration-500 shadow-[0_0_15px_rgba(255,255,255,0.3)] ${acceptingInquiries ? 'translate-x-10 bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.6)]' : 'translate-x-0 opacity-40'}`} />
                         </button>
                     </div>
+                </Card>
+
+                {/* Section 4: Live Availability & Tactical Booking */}
+                <Card className="p-16 border-white/5 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-luxury-gold/[0.02] blur-[120px] -mr-48 -mt-48 pointer-events-none" />
+
+                    <div className="flex flex-col md:flex-row items-center gap-12 border-b border-white/5 pb-16 mb-12">
+                        <div className="w-20 h-20 bg-luxury-gold/5 rounded-[1.5rem] flex items-center justify-center text-luxury-gold border border-luxury-gold/10 shrink-0">
+                            <Calendar size={32} strokeWidth={1} />
+                        </div>
+                        <div className="text-center md:text-left">
+                            <h2 className="text-3xl font-syncopate font-bold uppercase tracking-tight text-white">Live Availability & Booking</h2>
+                            <p className="text-[10px] text-white/20 font-syncopate uppercase tracking-[0.4em] mt-2">Broadcast real-time capacity and direct calendar scheduling</p>
+                        </div>
+                    </div>
+
+                    <form onSubmit={handleSaveAvailability} className="space-y-12">
+                        {/* Status Matrix */}
+                        <div className="space-y-4">
+                            <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/40 ml-2">Current Capacity Status</label>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                {[
+                                    { id: "available", label: "Available", dot: "bg-emerald-400", border: "border-emerald-500/30", text: "Available for projects & advisory" },
+                                    { id: "limited", label: "Limited", dot: "bg-amber-400", border: "border-amber-500/30", text: "Limited capacity / 1 spot open" },
+                                    { id: "busy", label: "High Demand", dot: "bg-rose-400", border: "border-rose-500/30", text: "Fully booked until next quarter" },
+                                    { id: "offline", label: "Stealth", dot: "bg-white/40", border: "border-white/20", text: "Stealth protocol active" },
+                                ].map((status) => {
+                                    const isSelected = availabilityStatus === status.id;
+                                    return (
+                                        <button
+                                            key={status.id}
+                                            type="button"
+                                            onClick={() => {
+                                                setAvailabilityStatus(status.id);
+                                                if (!availabilityText || availabilityText === status.text) {
+                                                    setAvailabilityText(status.text);
+                                                }
+                                            }}
+                                            className={`p-6 rounded-2xl border text-left flex flex-col justify-between transition-all duration-300 relative overflow-hidden ${
+                                                isSelected
+                                                    ? `bg-white/[0.04] ${status.border} shadow-[0_0_20px_rgba(212,175,55,0.1)]`
+                                                    : "bg-white/[0.01] border-white/5 opacity-50 hover:opacity-100 hover:border-white/10"
+                                            }`}
+                                        >
+                                            <div className="flex items-center gap-2 mb-3">
+                                                <div className={`w-2 h-2 rounded-full ${status.dot} ${status.id === 'available' ? 'animate-pulse' : ''}`} />
+                                                <span className="text-xs font-syncopate font-bold uppercase tracking-wider text-white">
+                                                    {status.label}
+                                                </span>
+                                            </div>
+                                            <p className="text-[11px] text-white/40 font-plus leading-snug">
+                                                {status.text}
+                                            </p>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* Custom Status Note */}
+                        <div className="space-y-4">
+                            <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/40 ml-2">Public Status Message</label>
+                            <input
+                                value={availabilityText}
+                                onChange={(e) => setAvailabilityText(e.target.value)}
+                                placeholder="Ex. Available for Q3 Advisory & Architecture"
+                                className="w-full bg-white/[0.02] border border-white/5 rounded-[2rem] py-6 px-10 outline-none focus:border-luxury-gold/40 focus:bg-white/[0.04] transition-all duration-700 font-plus text-lg text-white"
+                            />
+                        </div>
+
+                        {/* Booking Integration Toggle */}
+                        <div className="flex flex-col md:flex-row items-center justify-between p-8 bg-white/[0.02] border border-white/5 rounded-[2rem] gap-8">
+                            <div className="max-w-xl">
+                                <label className="text-xs font-syncopate uppercase tracking-[0.2em] text-white block mb-3">Direct Calendar Booking</label>
+                                <p className="text-sm text-white/40 font-plus leading-relaxed">
+                                    Display a 1-click booking action on your profile that launches your scheduling matrix (Cal.com, Calendly, or custom link) inside an ultra-luxury modal.
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setBookingEnabled(!bookingEnabled)}
+                                className={`w-20 h-10 rounded-full relative transition-all duration-500 ease-out border-2 ${bookingEnabled ? 'bg-luxury-gold/10 border-luxury-gold' : 'bg-white/5 border-white/10'}`}
+                            >
+                                <div className={`absolute top-1 left-1 w-7 h-7 rounded-full bg-white transition-all duration-500 shadow-[0_0_15px_rgba(255,255,255,0.3)] ${bookingEnabled ? 'translate-x-10 bg-luxury-gold shadow-[0_0_20px_rgba(212,175,55,0.6)]' : 'translate-x-0 opacity-40'}`} />
+                            </button>
+                        </div>
+
+                        {/* Booking URL & Button Text */}
+                        {bookingEnabled && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4"
+                            >
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/40 ml-2">Calendar Booking Link (Cal.com / Calendly / Custom)</label>
+                                    <input
+                                        value={bookingUrl}
+                                        onChange={(e) => setBookingUrl(e.target.value)}
+                                        placeholder="https://cal.com/your-name or https://calendly.com/..."
+                                        className="w-full bg-white/[0.02] border border-white/5 rounded-[2rem] py-6 px-10 outline-none focus:border-luxury-gold/40 focus:bg-white/[0.04] transition-all duration-700 font-plus text-base text-white"
+                                    />
+                                    <p className="text-[9px] font-syncopate uppercase tracking-widest text-white/20 ml-4 italic">
+                                        Cal.com and Calendly links embed directly into your profile modal.
+                                    </p>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/40 ml-2">CTA Button Label</label>
+                                    <input
+                                        value={bookingButtonText}
+                                        onChange={(e) => setBookingButtonText(e.target.value)}
+                                        placeholder="Ex. Schedule Briefing"
+                                        className="w-full bg-white/[0.02] border border-white/5 rounded-[2rem] py-6 px-10 outline-none focus:border-luxury-gold/40 focus:bg-white/[0.04] transition-all duration-700 font-plus text-base text-white"
+                                    />
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {/* Live Preview Pill */}
+                        <div className="p-8 rounded-[2rem] border border-white/5 bg-white/[0.01] space-y-4">
+                            <span className="text-[9px] font-syncopate uppercase tracking-[0.3em] text-white/30 block">
+                                Live Profile Hero Preview
+                            </span>
+                            <div className="flex flex-wrap items-center gap-4 pt-2">
+                                <div className={`inline-flex items-center gap-2.5 px-4 py-2 rounded-full border text-xs font-syncopate uppercase tracking-wider backdrop-blur-xl ${
+                                    availabilityStatus === 'available'
+                                        ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-400'
+                                        : availabilityStatus === 'limited'
+                                            ? 'border-amber-500/30 bg-amber-500/5 text-amber-400'
+                                            : availabilityStatus === 'busy'
+                                                ? 'border-rose-500/30 bg-rose-500/5 text-rose-400'
+                                                : 'border-white/10 bg-white/5 text-white/50'
+                                }`}>
+                                    <div className={`w-2 h-2 rounded-full ${
+                                        availabilityStatus === 'available' ? 'bg-emerald-400 animate-ping' :
+                                        availabilityStatus === 'limited' ? 'bg-amber-400' :
+                                        availabilityStatus === 'busy' ? 'bg-rose-400' : 'bg-white/40'
+                                    }`} />
+                                    <span>{availabilityText || (availabilityStatus === 'available' ? 'Available for Work' : availabilityStatus)}</span>
+                                </div>
+
+                                {bookingEnabled && (
+                                    <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-luxury-gold/40 bg-luxury-gold/10 text-luxury-gold text-xs font-syncopate font-bold uppercase tracking-wider">
+                                        <Calendar size={13} />
+                                        <span>{bookingButtonText || "Schedule Session"}</span>
+                                        <ArrowUpRight size={13} />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <Button
+                            type="submit"
+                            variant="luxury"
+                            disabled={savingAvailability}
+                            className="w-full py-8 text-xs tracking-[0.4em] uppercase font-syncopate transition-all duration-1000 overflow-hidden relative group"
+                        >
+                            <motion.div
+                                className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"
+                            />
+                            {savingAvailability ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
+                            Synchronize Availability & Booking
+                        </Button>
+                    </form>
                 </Card>
 
                 {/* Section 4: Stories */}
