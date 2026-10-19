@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
 import {
@@ -14,6 +14,8 @@ import {
 import { FaXTwitter, FaLinkedinIn, FaWhatsapp, FaTelegram } from "react-icons/fa6";
 import { toast } from "sonner";
 import { downloadVCard } from "@/lib/vcard";
+import QRCodeStyling from "qr-code-styling";
+
 
 interface ShareModalProps {
     isOpen: boolean;
@@ -78,6 +80,55 @@ export const ShareModal = ({
         } catch {
             toast.error("Failed to copy link.");
         }
+    };
+
+    const PremiumQR = ({ url }: { url: string }) => {
+        const qrRef = useRef<HTMLDivElement>(null);
+        const qrCode = useRef<QRCodeStyling | null>(null);
+
+        useEffect(() => {
+            qrCode.current = new QRCodeStyling({
+                width: 400,
+                height: 400,
+                data: url,
+                margin: 1,
+                qrOptions: {
+                    typeNumber: 0,
+                    mode: 'Byte',
+                    errorCorrectionLevel: 'H'
+                },
+                dotsOptions: {
+                    type: 'classy-rounded',
+                    color: 'rgba(255,255,255,0.3)',
+                },
+                backgroundOptions: {
+                    color: 'transparent',
+                },
+                cornersSquareOptions: {
+                    type: 'extra-rounded',
+                    color: 'rgba(255,255,255,0.3)',
+                },
+                cornersDotOptions: {
+                    type: 'dot',
+                    color: 'rgba(255,255,255,0.3)',
+                }
+            });
+
+            if (qrRef.current) {
+                qrRef.current.innerHTML = '';
+                qrCode.current.append(qrRef.current);
+            }
+        }, [url]);
+
+        return (
+            <div className="relative group/qr">
+                <div className="absolute -inset-1  rounded-xl blur-md opacity-0 group-hover/qr:opacity-100 transition-opacity duration-500" />
+                <div
+                    ref={qrRef}
+                    className="relative w-20 h-20 rounded-xl flex items-center justify-center overflow-hidden [&>canvas]:w-full [&>canvas]:h-full"
+                />
+            </div>
+        );
     };
 
     const handleSaveContact = () => {
@@ -253,7 +304,6 @@ export const ShareModal = ({
                                         >
                                             {user.full_name || user.username}
                                         </h4>
-                                        <Sparkles size={10} style={{ color: theme.primary }} />
                                     </div>
                                     <p className="text-[9px] font-syncopate uppercase tracking-wider opacity-40 truncate">
                                         @{user.username || "sovereign"} • {user.role || "Creator"}
@@ -310,20 +360,14 @@ export const ShareModal = ({
                             {/* QR Code Presentation (Lightweight Medium-Redundancy Matrix) */}
                             <div className="flex flex-col items-center justify-center py-1">
                                 <div
-                                    className="p-3.5 rounded-[1.8rem] border shadow-xl relative min-h-[148px] min-w-[148px] flex items-center justify-center"
+                                    className="rounded-[1.8rem] shadow-xl relative min-h-[148px] min-w-[148px] flex items-center justify-center"
                                     style={{
                                         borderColor: `${theme.primary}30`,
                                         backgroundColor: isLight ? "#FFFFFF" : "#050505",
                                     }}
                                 >
                                     {qrReady ? (
-                                        <QRCodeSVG
-                                            value={profileUrl}
-                                            size={135}
-                                            level="M"
-                                            fgColor={isLight ? "#050505" : "#F5F5F5"}
-                                            bgColor="transparent"
-                                        />
+                                        <PremiumQR url={"https://dockly.pro/" + user.username} />
                                     ) : (
                                         <div className="w-[135px] h-[135px] rounded-2xl flex items-center justify-center bg-white/[0.02]">
                                             <Sparkles size={16} className="text-luxury-gold/40 animate-pulse" />
