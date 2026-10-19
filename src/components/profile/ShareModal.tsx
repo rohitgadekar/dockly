@@ -9,7 +9,8 @@ import {
     UserPlus,
     Sparkles,
     ExternalLink,
-    Smartphone
+    Smartphone,
+    Download
 } from "lucide-react";
 import { FaXTwitter, FaLinkedinIn, FaWhatsapp, FaTelegram } from "react-icons/fa6";
 import { toast } from "sonner";
@@ -82,51 +83,109 @@ export const ShareModal = ({
         }
     };
 
+    const textPrimary = isLight ? "#1E293B" : "#FFFFFF";
+
     const PremiumQR = ({ url }: { url: string }) => {
         const qrRef = useRef<HTMLDivElement>(null);
         const qrCode = useRef<QRCodeStyling | null>(null);
+        const [qrError, setQrError] = useState(false);
+
+        const qrDotColor = isLight ? "#111111" : "#F4F4F5";
+        const qrCornerColor = theme.primary || (isLight ? "#000000" : "#D4AF37");
 
         useEffect(() => {
-            qrCode.current = new QRCodeStyling({
-                width: 400,
-                height: 400,
-                data: url,
-                margin: 1,
-                qrOptions: {
-                    typeNumber: 0,
-                    mode: 'Byte',
-                    errorCorrectionLevel: 'H'
-                },
-                dotsOptions: {
-                    type: 'classy-rounded',
-                    color: 'rgba(255,255,255,0.3)',
-                },
-                backgroundOptions: {
-                    color: 'transparent',
-                },
-                cornersSquareOptions: {
-                    type: 'extra-rounded',
-                    color: 'rgba(255,255,255,0.3)',
-                },
-                cornersDotOptions: {
-                    type: 'dot',
-                    color: 'rgba(255,255,255,0.3)',
-                }
-            });
+            try {
+                qrCode.current = new QRCodeStyling({
+                    type: "svg",
+                    width: 320,
+                    height: 320,
+                    data: url,
+                    margin: 4,
+                    qrOptions: {
+                        typeNumber: 0,
+                        mode: 'Byte',
+                        errorCorrectionLevel: 'H'
+                    },
+                    dotsOptions: {
+                        type: 'classy-rounded',
+                        color: qrDotColor,
+                    },
+                    backgroundOptions: {
+                        color: 'transparent',
+                    },
+                    cornersSquareOptions: {
+                        type: 'extra-rounded',
+                        color: qrCornerColor,
+                    },
+                    cornersDotOptions: {
+                        type: 'dot',
+                        color: qrCornerColor,
+                    }
+                });
 
-            if (qrRef.current) {
-                qrRef.current.innerHTML = '';
-                qrCode.current.append(qrRef.current);
+                if (qrRef.current) {
+                    qrRef.current.innerHTML = '';
+                    qrCode.current.append(qrRef.current);
+                }
+            } catch (err) {
+                console.error("QRCodeStyling error, using fallback:", err);
+                setQrError(true);
             }
-        }, [url]);
+        }, [url, qrDotColor, qrCornerColor]);
+
+        const handleDownloadQR = (e: React.MouseEvent) => {
+            e.stopPropagation();
+            try {
+                if (qrCode.current) {
+                    qrCode.current.download({
+                        name: `${user.username || 'sovereign'}-docked-qr`,
+                        extension: 'png'
+                    });
+                    toast.success("High-res QR Matrix saved.");
+                }
+            } catch {
+                toast.error("Failed to export QR.");
+            }
+        };
 
         return (
-            <div className="relative group/qr">
-                <div className="absolute -inset-1  rounded-xl blur-md opacity-0 group-hover/qr:opacity-100 transition-opacity duration-500" />
-                <div
-                    ref={qrRef}
-                    className="relative w-20 h-20 rounded-xl flex items-center justify-center overflow-hidden [&>canvas]:w-full [&>canvas]:h-full"
-                />
+            <div className="flex flex-col items-center">
+                <div className="relative group/qr p-2">
+                    <div
+                        className="absolute -inset-1 rounded-2xl blur-md opacity-0 group-hover/qr:opacity-100 transition-opacity duration-500 pointer-events-none"
+                        style={{ backgroundColor: `${theme.primary}20` }}
+                    />
+                    {qrError ? (
+                        <div className="w-[130px] h-[130px] flex items-center justify-center">
+                            <QRCodeSVG
+                                value={url}
+                                size={125}
+                                level="M"
+                                fgColor={qrDotColor}
+                                bgColor="transparent"
+                            />
+                        </div>
+                    ) : (
+                        <div
+                            ref={qrRef}
+                            className="relative w-[130px] h-[130px] rounded-xl flex items-center justify-center overflow-hidden [&>svg]:w-full [&>svg]:h-full [&>canvas]:w-full [&>canvas]:h-full"
+                        />
+                    )}
+                </div>
+                <button
+                    onClick={handleDownloadQR}
+                    type="button"
+                    className="mt-2.5 px-3 py-1 rounded-full border text-[7.5px] font-syncopate uppercase tracking-widest flex items-center gap-1.5 opacity-60 hover:opacity-100 transition-all duration-300 active:scale-95 touch-manipulation"
+                    style={{
+                        borderColor: isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)",
+                        backgroundColor: isLight ? "rgba(0,0,0,0.03)" : "rgba(255,255,255,0.03)",
+                        color: textPrimary
+                    }}
+                    title="Download High-Res QR"
+                >
+                    <Download size={10} style={{ color: theme.primary }} />
+                    <span>Download QR</span>
+                </button>
             </div>
         );
     };
@@ -360,16 +419,16 @@ export const ShareModal = ({
                             {/* QR Code Presentation (Lightweight Medium-Redundancy Matrix) */}
                             <div className="flex flex-col items-center justify-center py-1">
                                 <div
-                                    className="rounded-[1.8rem] shadow-xl relative min-h-[148px] min-w-[148px] flex items-center justify-center"
+                                    className="p-3 rounded-[2rem] border shadow-xl relative flex flex-col items-center justify-center"
                                     style={{
                                         borderColor: `${theme.primary}30`,
-                                        backgroundColor: isLight ? "#FFFFFF" : "#050505",
+                                        backgroundColor: isLight ? "#FFFFFF" : "#080808",
                                     }}
                                 >
                                     {qrReady ? (
-                                        <PremiumQR url={"https://dockly.pro/" + user.username} />
+                                        <PremiumQR url={profileUrl} />
                                     ) : (
-                                        <div className="w-[135px] h-[135px] rounded-2xl flex items-center justify-center bg-white/[0.02]">
+                                        <div className="w-[140px] h-[140px] rounded-2xl flex items-center justify-center bg-white/[0.02]">
                                             <Sparkles size={16} className="text-luxury-gold/40 animate-pulse" />
                                         </div>
                                     )}

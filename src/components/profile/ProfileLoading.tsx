@@ -29,16 +29,14 @@ export const ProfileLoading = ({ theme, title = "PERSONA" }: ProfileLoadingProps
 
                 {/* Theme-aware background glows */}
                 <div className="absolute inset-0 overflow-hidden">
-                    {theme?.id === "royale" ? (
-                        <>
-                            <div className="absolute top-[-20%] right-[-10%] w-[100vw] h-[100vw] bg-luxury-gold/[0.05] blur-[150px] rounded-full animate-pulse" />
-                            <div className="absolute bottom-[-20%] left-[-10%] w-[100vw] h-[100vw] bg-white/[0.02] blur-[180px] rounded-full animate-pulse" style={{ animationDuration: '4s' }} />
-                        </>
-                    ) : theme?.id === "emerald" ? (
-                        <div className="absolute inset-0 bg-emerald-950/10 blur-[120px] rounded-full animate-pulse" />
-                    ) : (
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] bg-white/[0.01] blur-[200px] rounded-full" />
-                    )}
+                    <div
+                        className="absolute top-[-20%] right-[-10%] w-[100vw] h-[100vw] blur-[160px] rounded-full animate-pulse"
+                        style={{ backgroundColor: `${primaryColor}10` }}
+                    />
+                    <div
+                        className="absolute bottom-[-20%] left-[-10%] w-[100vw] h-[100vw] blur-[180px] rounded-full animate-pulse"
+                        style={{ backgroundColor: `${primaryColor}06`, animationDuration: '4s' }}
+                    />
                 </div>
             </div>
 

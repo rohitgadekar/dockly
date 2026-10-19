@@ -308,7 +308,15 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
         font: "Syncopate"
     };
 
-    const isLight = theme.id === "etheric" || theme.id === "ivory";
+    const isLight = Boolean(
+        theme.isLight ||
+        theme.id === "etheric" ||
+        theme.id === "ivory" ||
+        theme.id === "sahara" ||
+        theme.bg === "#F8FAFC" ||
+        theme.bg === "#FAF8F5" ||
+        theme.bg === "#FFFDF5"
+    );
     const textPrimary = isLight ? "#1E293B" : "#FFFFFF";
     const textMuted = isLight ? "#94A3B8" : "rgba(255,255,255,0.3)";
     const cardBorder = isLight ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.04)";
@@ -602,14 +610,30 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                 <div className="fixed inset-0 pointer-events-none z-0">
                     <div className="absolute inset-0 noise opacity-[0.03] mix-blend-overlay" />
                     <div className="absolute inset-0">
+                        {/* Dynamic Aura Shader adapting to theme.primary */}
+                        <div
+                            className="absolute top-[-10%] right-[-5%] w-[80vw] h-[80vw] blur-[180px] rounded-full pointer-events-none opacity-40 animate-pulse"
+                            style={{
+                                backgroundColor: `${theme.primary}12`,
+                                animationDuration: '8s'
+                            }}
+                        />
+                        <div
+                            className="absolute bottom-[-15%] left-[-10%] w-[85vw] h-[85vw] blur-[220px] rounded-full pointer-events-none opacity-25 animate-pulse"
+                            style={{
+                                backgroundColor: isLight ? 'rgba(0,0,0,0.03)' : `${theme.primary}08`,
+                                animationDuration: '12s'
+                            }}
+                        />
+
                         {theme.id === "royale" && (
                             <>
                                 <div className="absolute top-[-10%] right-[-5%] w-[80vw] h-[80vw] bg-luxury-gold/[0.07] blur-[180px] rounded-full animate-pulse" style={{ animationDuration: '8s' }} />
                                 <div className="absolute bottom-[-15%] left-[-10%] w-[90vw] h-[90vw] bg-white/[0.03] blur-[220px] rounded-full animate-pulse" style={{ animationDuration: '12s' }} />
                             </>
                         )}
-                        {theme.id === "etheric" && (
-                            <div className="absolute inset-0 bg-gradient-to-tr from-blue-50/20 via-white/40 to-purple-50/20" />
+                        {(theme.id === "etheric" || theme.id === "sahara") && (
+                            <div className="absolute inset-0 bg-gradient-to-tr from-blue-50/20 via-white/40 to-amber-50/20" />
                         )}
                         {theme.id === "emerald" && (
                             <>
@@ -722,11 +746,14 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                             <h1
                                 className={cn(
                                     "text-4xl md:text-8xl font-bold uppercase tracking-[-0.04em] mb-4 md:mb-6 leading-[0.9]",
-                                    theme.id === "royale" ? "bg-gradient-to-b from-white via-white to-luxury-gold/50 bg-clip-text text-transparent" : ""
+                                    !isLight ? "bg-clip-text text-transparent" : ""
                                 )}
                                 style={{
                                     fontFamily: theme.font,
-                                    color: theme.id === "royale" ? undefined : textPrimary
+                                    backgroundImage: !isLight
+                                        ? `linear-gradient(to bottom, #FFFFFF 65%, ${theme.primary}99 100%)`
+                                        : undefined,
+                                    color: isLight ? textPrimary : undefined
                                 }}
                             >
                                 {user.full_name || 'Anonymous'}
