@@ -29,7 +29,7 @@ function Counter({ end, suffix = "" }: { end: number; suffix?: string }) {
 }
 
 /* ─── Marquee strip ─── */
-const MARQUEE = ["Executive CV", "Tech Arsenal", "Career Milestones", "Endorsements", "Spotify Sync", "Live Analytics", "Ephemeral Stories", "Brand Card", "Booking Portal", "Curated Links"];
+const MARQUEE = ["Resume & CV", "Skills & Tools", "Career Story", "Reviews", "Spotify Music", "Visitor Stats", "Stories", "Brand Card", "Book a Call", "Your Links"];
 
 function Marquee() {
     return (
@@ -50,24 +50,24 @@ function Marquee() {
 }
 
 /* ─── Word cycle ─── */
-const WORDS = ["Founders", "Engineers", "Creators", "Advisors", "Builders"];
+const WORDS = ["Founders", "Engineers", "Creators", "Freelancers", "Builders"];
 
 /* ─── Features ─── */
 const FEATURES = [
-    { id: "dossier", no: "01", label: "Executive Dossier", icon: <FileText size={16} />, color: "#F59E0B", headline: "Your Confidential CV, Secured.", body: "Gate your institutional track record, equity exits, and board credentials behind a private passcode vault. Enable one-click PDF download for VCs, recruiters, and strategic partners.", pills: ["Passcode Encryption", "PDF Export", "Equity History", "Advisory Boards"] },
-    { id: "skills", no: "02", label: "Tech Arsenal", icon: <Cpu size={16} />, color: "#06B6D4", headline: "Display Engineering Depth.", body: "Categorise your full technical stack across languages, distributed systems, AI pipelines, and cloud infrastructure. Each skill carries verified experience depth and proficiency tier.", pills: ["Category Filters", "Years of Depth", "Stack Icons", "Proficiency Tiers"] },
-    { id: "milestones", no: "03", label: "Career Trajectory", icon: <Compass size={16} />, color: "#A855F7", headline: "Chronicle Every Breakthrough.", body: "Map your journey from founding moments to liquidity events on an elegant chronological timeline. Tag funding rounds, keynote summits, and acquisitions with verification links.", pills: ["Chronological Timeline", "Venture Categories", "External Links", "Badge System"] },
-    { id: "endorsements", no: "04", label: "Wall of Distinction", icon: <Star size={16} />, color: "#F43F5E", headline: "Let Reputation Speak First.", body: "Curate accredited appraisals from venture partners, engineering VPs, and clients. Company badges and 5-star ratings convert prospective collaborators on sight.", pills: ["VC Appraisals", "Verified Clients", "Star Ratings", "Company Badges"] },
-    { id: "analytics", no: "05", label: "Live Intelligence", icon: <BarChart3 size={16} />, color: "#10B981", headline: "Know Your High-Intent Audience.", body: "Real-time, privacy-first analytics reveal where investors, recruiters, and partners discover your estate. No tracking cookies, just clean attribution.", pills: ["Zero Cookies", "Live Telemetry", "Traffic Sources", "Link Conversion"] },
-    { id: "music", no: "06", label: "Sonic Identity", icon: <Music size={16} />, color: "#1DB954", headline: "Soundtrack Your Digital Presence.", body: "Imbue your estate with auditory character. Sync Spotify top tracks, latest releases, or podcasts directly on-page with native audio preview — no redirect.", pills: ["Spotify Integration", "Audio Previews", "Top Tracks", "Direct Route"] },
-    { id: "stories", no: "07", label: "Ephemeral Stories", icon: <Radio size={16} />, color: "#D4AF37", headline: "Broadcast & Disappear in 24h.", body: "Post spontaneous dispatches, behind-the-scenes moments, and thought leadership in full-screen stories that vanish after 24 hours — keeping your estate perpetually fresh.", pills: ["24-Hour Vault", "Cinematic Viewer", "Photo & Video", "Auto-Expiry"] },
+    { id: "dossier", no: "01", label: "Resume & CV", icon: <FileText size={16} />, color: "#F59E0B", headline: "Share Your CV Privately.", body: "Add your resume or CV behind a password so only the right people can see it. Anyone with the code can download it as a PDF in one click — perfect for job applications and client pitches.", pills: ["Password Protected", "PDF Download", "Work History", "Easy to Update"] },
+    { id: "skills", no: "02", label: "Skills & Tools", icon: <Cpu size={16} />, color: "#06B6D4", headline: "Show Off What You Know.", body: "List all the tools, languages, and technologies you work with. Organise them by category, add how long you've been using each one, and let your skills do the talking.", pills: ["Sort by Category", "Years of Experience", "Tool Icons", "Skill Levels"] },
+    { id: "milestones", no: "03", label: "Career Story", icon: <Compass size={16} />, color: "#A855F7", headline: "Tell Your Career Story.", body: "Add the big moments from your career on a clean, easy-to-read timeline — jobs, projects, achievements, launches. Visitors can see at a glance how far you've come.", pills: ["Timeline View", "Custom Categories", "Add Links", "Badges"] },
+    { id: "endorsements", no: "04", label: "Reviews", icon: <Star size={16} />, color: "#F43F5E", headline: "Let Others Vouch For You.", body: "Collect reviews and recommendations from people you've worked with — clients, managers, and teammates. Star ratings and company logos help build trust before anyone even reaches out.", pills: ["Client Reviews", "Verified People", "Star Ratings", "Company Logos"] },
+    { id: "analytics", no: "05", label: "Visitor Stats", icon: <BarChart3 size={16} />, color: "#10B981", headline: "See Who's Visiting Your Page.", body: "Get simple, real-time stats on who's viewing your profile, where they're coming from, and which links they click — all without tracking cookies or complex dashboards.", pills: ["No Tracking Cookies", "Live Visitors", "Where They Come From", "Link Clicks"] },
+    { id: "music", no: "06", label: "Music", icon: <Music size={16} />, color: "#1DB954", headline: "Share Your Spotify Music.", body: "Connect your Spotify and show your favourite songs, latest tracks, or playlists right on your profile. Visitors can listen to a preview without leaving your page.", pills: ["Spotify Connected", "Audio Previews", "Top Tracks", "Playlists"] },
+    { id: "stories", no: "07", label: "Stories", icon: <Radio size={16} />, color: "#D4AF37", headline: "Post Updates That Disappear.", body: "Share quick updates, behind-the-scenes moments, or announcements as full-screen stories. They automatically disappear after 24 hours — so your page always stays fresh.", pills: ["Gone in 24 Hours", "Full Screen", "Photos & Videos", "Auto Delete"] },
 ];
 
 /* ─── Testimonials ─── */
 const TESTIMONIALS = [
-    { quote: "The architectural precision of this platform transformed my digital presence into a high-authority archival estate. There is nothing else like it.", name: "Rohit Gadekar", role: "Founder & CEO", company: "Eagle LABS", initial: "RG" },
-    { quote: "Finally, a platform that understands identity is an asset. The dossier vault and endorsement system are genuinely unmatched.", name: "Claire Bennett", role: "Chief Technology Officer", company: "Eagle LABS", initial: "CB" },
-    { quote: "100ms delivery, institutional typography, and a CV vault that actually converts — this is the only link-in-bio tool built for serious operators.", name: "Akhil Singh", role: "Director of Growth", company: "Eagle LABS", initial: "AS" },
+    { quote: "I used to send people three different links. Now I send one and it has everything — my resume, reviews, skills, and more. It's genuinely the best tool for anyone building their personal brand.", name: "Rohit Gadekar", role: "Founder & CEO", company: "Eagle LABS", initial: "RG" },
+    { quote: "Setting up my profile took less than 10 minutes and it looks completely professional. My clients actually comment on how clean and impressive it looks.", name: "Claire Bennett", role: "Chief Technology Officer", company: "Eagle LABS", initial: "CB" },
+    { quote: "I love that I can password-protect my CV and only share it with the right people. The visitor stats are super useful too — I can see exactly who's checking out my page.", name: "Akhil Singh", role: "Director of Growth", company: "Eagle LABS", initial: "AS" },
 ];
 
 /* ════════════════════════════════════════ */
@@ -77,7 +77,7 @@ export default function Landing() {
     const [activeF, setActiveF] = useState(0);
     const [tIdx, setTIdx] = useState(0);
     const [mobileNav, setMobileNav] = useState(false);
-    useTitle("Dockly Pro — Sovereign Digital Estate");
+    useTitle("Dockly Pro — Your Personal Profile, All in One Link");
 
     useEffect(() => {
         const t = setInterval(() => setWordIdx(p => (p + 1) % WORDS.length), 2600);
@@ -158,7 +158,7 @@ export default function Landing() {
                     className="inline-flex items-center gap-2 mb-6 sm:mb-8 px-3 py-1.5 border border-luxury-gold/30 rounded-full bg-luxury-gold/5"
                 >
                     <span className="w-1.5 h-1.5 rounded-full bg-luxury-gold animate-pulse flex-shrink-0" />
-                    <span className="text-[9px] sm:text-[10px] font-syncopate uppercase tracking-[0.3em] text-luxury-gold">Sovereign Digital Estate</span>
+                    <span className="text-[9px] sm:text-[10px] font-syncopate uppercase tracking-[0.3em] text-luxury-gold">Your personal link-in-bio</span>
                 </motion.div>
 
                 {/* Headline — static lines */}
@@ -204,7 +204,7 @@ export default function Landing() {
                     transition={{ delay: 0.4 }}
                     className="mt-6 sm:mt-8 text-base sm:text-lg text-white/45 leading-relaxed max-w-xs sm:max-w-md lg:max-w-xl mx-auto"
                 >
-                    The architectural link-in-bio for serious operators — executive CV, tech stack, milestones, endorsements, and content, all behind one sovereign URL.
+                    One link that has everything — your resume, skills, career story, reviews, music, and more. Share it anywhere and let people know exactly who you are.
                 </motion.p>
 
                 {/* CTAs */}
@@ -218,7 +218,7 @@ export default function Landing() {
                         onClick={() => navigate("/auth")}
                         className="group w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-luxury-gold text-black font-syncopate font-bold text-[11px] sm:text-[12px] uppercase tracking-widest px-7 sm:px-8 py-3.5 sm:py-4 rounded-2xl transition-all hover:shadow-[0_0_40px_rgba(212,175,55,0.45)] hover:scale-[1.02] active:scale-95"
                     >
-                        Claim Your Estate
+                        Get Started Free
                         <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                     </button>
                     <a
@@ -247,7 +247,7 @@ export default function Landing() {
                         <div className="flex items-center gap-0.5 mb-0.5">
                             {[...Array(5)].map((_, i) => <Star key={i} size={10} className="text-luxury-gold fill-luxury-gold" />)}
                         </div>
-                        <p className="text-[9px] text-white/35 font-syncopate uppercase tracking-wider">Trusted by 2,400+ Founders</p>
+                        <p className="text-[9px] text-white/35 font-syncopate uppercase tracking-wider">Loved by 2,400+ people</p>
                     </div>
                 </motion.div>
 
@@ -287,10 +287,10 @@ export default function Landing() {
                 <div className="max-w-7xl mx-auto">
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/5 rounded-2xl sm:rounded-3xl overflow-hidden">
                         {[
-                            { value: 2400, suffix: "+", label: "Active Estates" },
+                            { value: 2400, suffix: "+", label: "People Using It" },
                             { value: 48, suffix: "M+", label: "Profile Views" },
-                            { value: 99, suffix: "%", label: "Uptime SLA" },
-                            { value: 7, suffix: "", label: "Feature Pillars" },
+                            { value: 99, suffix: "%", label: "Always Online" },
+                            { value: 7, suffix: "", label: "Built-in Features" },
                         ].map(({ value, suffix, label }) => (
                             <div key={label} className="bg-[#06060a] px-6 py-8 sm:px-8 sm:py-10 text-center hover:bg-white/[0.02] transition-colors">
                                 <div className="text-3xl sm:text-4xl lg:text-5xl font-syncopate font-bold text-white mb-1.5">
@@ -309,17 +309,17 @@ export default function Landing() {
 
                     {/* Section header */}
                     <div className="mb-10 sm:mb-16">
-                        <div className="text-[9px] sm:text-[10px] font-syncopate uppercase tracking-[0.4em] text-luxury-gold mb-3 sm:mb-4">Capability Index</div>
+                        <div className="text-[9px] sm:text-[10px] font-syncopate uppercase tracking-[0.4em] text-luxury-gold mb-3 sm:mb-4">What You Get</div>
                         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-syncopate font-bold uppercase tracking-tighter leading-[0.92]">
-                                SEVEN<br className="sm:hidden" /> ARCHITECTURAL
+                                SEVEN<br className="sm:hidden" /> THINGS YOUR
                                 <br />
                                 <span style={{ background: "linear-gradient(135deg,#D4AF37,#F5F5DC,#D4AF37)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                                    PILLARS
+                                    PAGE CAN DO
                                 </span>
                             </h2>
                             <p className="text-sm text-white/35 max-w-[260px] leading-relaxed">
-                                Each feature crafted with institutional-grade precision.
+                                Click any feature below to learn more about it.
                             </p>
                         </div>
                     </div>
@@ -416,21 +416,21 @@ export default function Landing() {
 
                         {/* Left: text */}
                         <div className="flex-1 min-w-0">
-                            <div className="text-[9px] sm:text-[10px] font-syncopate uppercase tracking-[0.4em] text-luxury-gold mb-3 sm:mb-4">Live Profile</div>
+                            <div className="text-[9px] sm:text-[10px] font-syncopate uppercase tracking-[0.4em] text-luxury-gold mb-3 sm:mb-4">See It In Action</div>
                             <h2 className="text-3xl sm:text-4xl md:text-5xl font-syncopate font-bold uppercase tracking-tighter leading-[0.92] mb-4 sm:mb-6">
-                                YOUR ESTATE,<br />
+                                YOUR PAGE,<br />
                                 <span style={{ background: "linear-gradient(135deg,#D4AF37,#F5F5DC,#D4AF37)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                                    ALWAYS LIVE.
+                                    ALWAYS READY.
                                 </span>
                             </h2>
                             <p className="text-sm sm:text-base text-white/40 leading-relaxed mb-6 sm:mb-8 max-w-sm">
-                                Your public profile is a living, breathing institution — always synced, always professional, always yours. Share one link. Impress everyone.
+                                Your profile is always up to date and ready to share. Whether you're job hunting, pitching a client, or growing your audience — one link says it all.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-3">
                                 {[
-                                    { icon: <Activity size={14} />, text: "Real-time sync across all sections" },
-                                    { icon: <Shield size={14} />, text: "Institutional-grade uptime & security" },
-                                    { icon: <Globe size={14} />, text: "Custom domain & vanity URL support" },
+                                    { icon: <Activity size={14} />, text: "Updates across all sections instantly" },
+                                    { icon: <Shield size={14} />, text: "Secure & always online, 99% of the time" },
+                                    { icon: <Globe size={14} />, text: "Use your own custom domain" },
                                 ].map(({ icon, text }) => (
                                     <div key={text} className="flex items-center gap-2.5 text-[11px] text-white/40 font-syncopate uppercase tracking-wider">
                                         <span className="text-luxury-gold/60 shrink-0">{icon}</span>
@@ -459,7 +459,7 @@ export default function Landing() {
                                         </div>
                                         <h2 className="font-syncopate font-bold text-xs sm:text-sm uppercase tracking-widest text-white mb-0.5">Harrison Quill</h2>
                                         <p className="text-[10px] sm:text-[11px] text-luxury-gold/70 font-syncopate uppercase tracking-[0.15em] sm:tracking-[0.2em]">Founder & Systems Architect</p>
-                                        <p className="text-[10px] text-white/35 mt-1.5 max-w-[200px] leading-relaxed">Building sovereign-grade distributed infrastructure at the edge.</p>
+                                        <p className="text-[10px] text-white/35 mt-1.5 max-w-[200px] leading-relaxed">Building tools that help teams move faster.</p>
                                     </div>
 
                                     {/* Stats */}
@@ -484,7 +484,7 @@ export default function Landing() {
                                     {/* Buttons */}
                                     <div className="flex flex-col gap-1.5 sm:gap-2">
                                         <div className="flex items-center justify-between p-2.5 sm:p-3 rounded-xl bg-luxury-gold/10 border border-luxury-gold/20">
-                                            <div className="flex items-center gap-2"><Lock size={11} className="text-luxury-gold" /><span className="text-[9px] sm:text-[10px] font-syncopate uppercase tracking-wider text-white">Executive CV Dossier</span></div>
+                                            <div className="flex items-center gap-2"><Lock size={11} className="text-luxury-gold" /><span className="text-[9px] sm:text-[10px] font-syncopate uppercase tracking-wider text-white">View Private CV</span></div>
                                             <ArrowRight size={11} className="text-luxury-gold/60" />
                                         </div>
                                         <div className="flex items-center justify-between p-2.5 sm:p-3 rounded-xl bg-white/[0.03] border border-white/5">
@@ -520,12 +520,12 @@ export default function Landing() {
             <section id="themes" className="py-16 sm:py-24 px-4 sm:px-6 lg:px-10 border-b border-white/5">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-10 sm:mb-14">
-                        <div className="text-[9px] sm:text-[10px] font-syncopate uppercase tracking-[0.4em] text-luxury-gold mb-3">Visual Mastery</div>
+                        <div className="text-[9px] sm:text-[10px] font-syncopate uppercase tracking-[0.4em] text-luxury-gold mb-3">Pick Your Look</div>
                         <h2 className="text-3xl sm:text-4xl md:text-5xl font-syncopate font-bold uppercase tracking-tighter leading-[0.92]">
-                            CURATED <span style={{ background: "linear-gradient(135deg,#D4AF37,#F5F5DC,#D4AF37)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>AESTHETICS</span>
+                            BEAUTIFUL <span style={{ background: "linear-gradient(135deg,#D4AF37,#F5F5DC,#D4AF37)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>THEMES</span>
                         </h2>
                         <p className="mt-4 text-sm text-white/35 max-w-sm mx-auto leading-relaxed">
-                            Premium, architectural themes — each designed to amplify authority and elevate content.
+                            Choose a look that matches your style. Switch themes any time with one click.
                         </p>
                     </div>
 
@@ -558,7 +558,7 @@ export default function Landing() {
             <section className="py-16 sm:py-24 px-4 sm:px-6 border-b border-white/5 relative overflow-hidden">
                 <div className="absolute inset-0 bg-white/[0.01] pointer-events-none" />
                 <div className="max-w-3xl mx-auto relative">
-                    <div className="text-[9px] sm:text-[10px] font-syncopate uppercase tracking-[0.4em] text-luxury-gold mb-10 sm:mb-14 text-center">Voices of Authority</div>
+                    <div className="text-[9px] sm:text-[10px] font-syncopate uppercase tracking-[0.4em] text-luxury-gold mb-10 sm:mb-14 text-center">What People Say</div>
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={tIdx}
@@ -595,22 +595,22 @@ export default function Landing() {
             <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-10 border-b border-white/5">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-10 sm:mb-14">
-                        <div className="text-[9px] sm:text-[10px] font-syncopate uppercase tracking-[0.4em] text-luxury-gold mb-3">What's Included</div>
+                        <div className="text-[9px] sm:text-[10px] font-syncopate uppercase tracking-[0.4em] text-luxury-gold mb-3">Everything Included</div>
                         <h2 className="text-3xl sm:text-4xl md:text-5xl font-syncopate font-bold uppercase tracking-tighter leading-[0.92]">
-                            EVERYTHING IN ONE <span style={{ background: "linear-gradient(135deg,#D4AF37,#F5F5DC,#D4AF37)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>ESTATE</span>
+                            ALL OF THIS IN <span style={{ background: "linear-gradient(135deg,#D4AF37,#F5F5DC,#D4AF37)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>ONE LINK</span>
                         </h2>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                         {[
-                            { icon: <FileText size={18} />, title: "Executive CV Dossier", desc: "Passcode-protected career vault with one-click PDF export.", col: "#F59E0B" },
-                            { icon: <Cpu size={18} />, title: "Technical Arsenal", desc: "Full stack display with category filters and experience depth.", col: "#06B6D4" },
-                            { icon: <Compass size={18} />, title: "Career Milestones", desc: "Chronological trajectory of ventures, exits, and keynotes.", col: "#A855F7" },
-                            { icon: <Star size={18} />, title: "Wall of Distinction", desc: "Peer and VC endorsements with corporate verification.", col: "#F43F5E" },
-                            { icon: <Activity size={18} />, title: "Live Intelligence", desc: "Zero-cookie analytics with real-time visitor telemetry.", col: "#10B981" },
-                            { icon: <SiSpotify size={18} />, title: "Sonic Identity", desc: "Spotify-synced top tracks with native audio preview.", col: "#1DB954" },
-                            { icon: <Radio size={18} />, title: "Ephemeral Stories", desc: "24-hour disappearing dispatches with cinematic viewer.", col: "#D4AF37" },
-                            { icon: <Link2 size={18} />, title: "Curated Links", desc: "Prioritised social and professional link management.", col: "#6366F1" },
-                            { icon: <Globe size={18} />, title: "Digital Brand Card", desc: "Scannable QR-code holographic identity card.", col: "#EC4899" },
+                            { icon: <FileText size={18} />, title: "Resume & CV", desc: "Password-protected resume with one-click PDF download.", col: "#F59E0B" },
+                            { icon: <Cpu size={18} />, title: "Skills & Tools", desc: "Show your tech stack, tools, and how long you've used them.", col: "#06B6D4" },
+                            { icon: <Compass size={18} />, title: "Career Story", desc: "A timeline of your jobs, projects, and big achievements.", col: "#A855F7" },
+                            { icon: <Star size={18} />, title: "Reviews", desc: "Recommendations from clients and colleagues you've worked with.", col: "#F43F5E" },
+                            { icon: <Activity size={18} />, title: "Visitor Stats", desc: "See who's visiting your page and what they're clicking on.", col: "#10B981" },
+                            { icon: <SiSpotify size={18} />, title: "Music", desc: "Show your Spotify tracks so visitors can listen right on your page.", col: "#1DB954" },
+                            { icon: <Radio size={18} />, title: "Stories", desc: "Quick updates and moments that automatically disappear after 24 hours.", col: "#D4AF37" },
+                            { icon: <Link2 size={18} />, title: "Your Links", desc: "All your important links in one clean, organised place.", col: "#6366F1" },
+                            { icon: <Globe size={18} />, title: "Brand Card", desc: "A shareable card with a QR code that links to your profile.", col: "#EC4899" },
                         ].map(({ icon, title, desc, col }, i) => (
                             <motion.div
                                 key={title}
@@ -647,18 +647,18 @@ export default function Landing() {
                     >
                         <div className="inline-flex items-center gap-2 mb-8 sm:mb-10 px-3 py-1.5 border border-luxury-gold/30 rounded-full bg-luxury-gold/5">
                             <Shield size={11} className="text-luxury-gold" />
-                            <span className="text-[9px] sm:text-[10px] font-syncopate uppercase tracking-[0.3em] text-luxury-gold">Protocol Restricted</span>
+                            <span className="text-[9px] sm:text-[10px] font-syncopate uppercase tracking-[0.3em] text-luxury-gold">Free to get started</span>
                         </div>
 
                         <h2 className="font-syncopate font-bold uppercase tracking-tighter leading-[0.85] mb-6 sm:mb-8" style={{ fontSize: "clamp(3rem, 12vw, 9rem)" }}>
-                            FOR THE<br />
+                            YOUR PROFILE,<br />
                             <span style={{ background: "linear-gradient(135deg,#D4AF37,#F5F5DC 50%,#D4AF37)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                                CURATED<br />FEW.
+                                STARTS<br />HERE.
                             </span>
                         </h2>
 
                         <p className="text-base sm:text-lg lg:text-xl text-white/40 max-w-xl mx-auto leading-relaxed mb-10 sm:mb-12">
-                            Not a standard platform. A closed ecosystem for operators who define excellence in their field.
+                            Stop sending people to five different places. Put everything about you in one link — your resume, skills, story, reviews, and more.
                         </p>
 
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -666,7 +666,7 @@ export default function Landing() {
                                 onClick={() => navigate("/auth")}
                                 className="group w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-luxury-gold text-black font-syncopate font-bold text-[11px] sm:text-[12px] uppercase tracking-widest px-8 sm:px-10 py-4 sm:py-5 rounded-2xl transition-all hover:shadow-[0_0_60px_rgba(212,175,55,0.5)] hover:scale-[1.02] active:scale-95"
                             >
-                                Claim Your Estate
+                                Get Started Free
                                 <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                             </button>
                             <button onClick={() => navigate("/auth")} className="w-full sm:w-auto font-syncopate text-[11px] uppercase tracking-widest text-white/35 hover:text-white transition-colors border border-white/8 hover:border-white/18 px-7 sm:px-8 py-4 sm:py-5 rounded-2xl">
@@ -675,7 +675,7 @@ export default function Landing() {
                         </div>
 
                         <div className="mt-12 sm:mt-14 flex flex-wrap items-center justify-center gap-4 sm:gap-8">
-                            {["Institutional Security", "Zero Tracking Cookies", "Custom Domain Ready", "Real-time Sync"].map(t => (
+                            {["Free to get started", "No tracking cookies", "Works on all devices", "Always up to date"].map(t => (
                                 <span key={t} className="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-syncopate uppercase tracking-widest text-white/20">
                                     <CheckCircle2 size={11} className="text-luxury-gold/40" />
                                     {t}
@@ -694,7 +694,7 @@ export default function Landing() {
                             <div className="text-lg font-syncopate font-bold tracking-tighter mb-1.5 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
                                 DOCKLY<span className="text-luxury-gold">.</span>PRO
                             </div>
-                            <p className="text-[10px] text-white/25 font-syncopate uppercase tracking-wider">Sovereign Digital Estate Platform</p>
+                            <p className="text-[10px] text-white/25 font-syncopate uppercase tracking-wider">Your personal link-in-bio</p>
                             <p className="text-[9px] text-white/15 font-syncopate uppercase tracking-[0.3em] mt-2">Product by Eagle LABS</p>
                         </div>
 
