@@ -8,8 +8,6 @@ import {
     Share2,
     UserPlus,
     Sparkles,
-    ExternalLink,
-    Smartphone,
     Download
 } from "lucide-react";
 import { FaXTwitter, FaLinkedinIn, FaWhatsapp, FaTelegram } from "react-icons/fa6";
@@ -85,13 +83,13 @@ export const ShareModal = ({
 
     const textPrimary = isLight ? "#1E293B" : "#FFFFFF";
 
-    const PremiumQR = ({ url }: { url: string }) => {
+    const PremiumQR = ({ url, size = 130 }: { url: string; size?: number }) => {
         const qrRef = useRef<HTMLDivElement>(null);
         const qrCode = useRef<QRCodeStyling | null>(null);
         const [qrError, setQrError] = useState(false);
 
         const qrDotColor = isLight ? "#111111" : "#F4F4F5";
-        const qrCornerColor = theme.primary || (isLight ? "#000000" : "#D4AF37");
+        const qrCornerColor = theme.primary || (isLight ? "#000000" : "#3ECF8E");
 
         useEffect(() => {
             try {
@@ -149,33 +147,36 @@ export const ShareModal = ({
         };
 
         return (
-            <div className="flex flex-col items-center">
-                <div className="relative group/qr p-2">
+            <div className="flex flex-col items-center gap-1.5 group/qr">
+                <div
+                    className="relative rounded-xl overflow-hidden cursor-pointer"
+                    style={{ width: size, height: size }}
+                    onClick={handleDownloadQR}
+                    title="Tap to download QR"
+                >
                     <div
-                        className="absolute -inset-1 rounded-2xl blur-md opacity-0 group-hover/qr:opacity-100 transition-opacity duration-500 pointer-events-none"
-                        style={{ backgroundColor: `${theme.primary}20` }}
+                        className="absolute -inset-1 rounded-xl blur-md opacity-0 group-hover/qr:opacity-60 transition-opacity duration-500 pointer-events-none"
+                        style={{ backgroundColor: `${theme.primary}30` }}
                     />
                     {qrError ? (
-                        <div className="w-[130px] h-[130px] flex items-center justify-center">
-                            <QRCodeSVG
-                                value={url}
-                                size={125}
-                                level="M"
-                                fgColor={qrDotColor}
-                                bgColor="transparent"
-                            />
-                        </div>
+                        <QRCodeSVG
+                            value={url}
+                            size={size}
+                            level="M"
+                            fgColor={qrDotColor}
+                            bgColor="transparent"
+                        />
                     ) : (
                         <div
                             ref={qrRef}
-                            className="relative w-[130px] h-[130px] rounded-xl flex items-center justify-center overflow-hidden [&>svg]:w-full [&>svg]:h-full [&>canvas]:w-full [&>canvas]:h-full"
+                            className="w-full h-full [&>svg]:w-full [&>svg]:h-full [&>canvas]:w-full [&>canvas]:h-full"
                         />
                     )}
                 </div>
-                <button
+                {/* <button
                     onClick={handleDownloadQR}
                     type="button"
-                    className="mt-2.5 px-3 py-1 rounded-full border text-[7.5px] font-syncopate uppercase tracking-widest flex items-center gap-1.5 opacity-60 hover:opacity-100 transition-all duration-300 active:scale-95 touch-manipulation"
+                    className="px-2 py-0.5 rounded-full border text-[6.5px] font-syncopate uppercase tracking-widest flex items-center gap-1 opacity-0 group-hover/qr:opacity-70 hover:!opacity-100 transition-all duration-300 active:scale-95 touch-manipulation"
                     style={{
                         borderColor: isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)",
                         backgroundColor: isLight ? "rgba(0,0,0,0.03)" : "rgba(255,255,255,0.03)",
@@ -183,9 +184,9 @@ export const ShareModal = ({
                     }}
                     title="Download High-Res QR"
                 >
-                    <Download size={10} style={{ color: theme.primary }} />
-                    <span>Download QR</span>
-                </button>
+                    <Download size={8} style={{ color: theme.primary }} />
+                    <span>Save QR</span>
+                </button> */}
             </div>
         );
     };
@@ -368,26 +369,28 @@ export const ShareModal = ({
                                         @{user.username || "sovereign"} • {user.role || "Creator"}
                                     </p>
                                 </div>
-                            </div>
-
-                            {/* Direct System Share Sheet Button (if device supports navigator.share) */}
-                            {supportsNativeShare && (
-                                <button
-                                    onClick={handleNativeShare}
-                                    className="w-full flex items-center justify-center gap-2.5 px-4 py-3 rounded-2xl font-syncopate text-[9px] font-bold uppercase tracking-[0.2em] transition-transform active:scale-95 shadow-md border"
+                                {/* Mini QR at right end */}
+                                <div
+                                    className="shrink-0 p-1 rounded-lg border"
                                     style={{
-                                        backgroundColor: isLight ? "#000000" : "#FFFFFF",
-                                        color: isLight ? "#FFFFFF" : "#000000",
-                                        borderColor: isLight ? "#000000" : "#FFFFFF",
+                                        borderColor: `${theme.primary}25`,
+                                        backgroundColor: isLight ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.4)",
                                     }}
                                 >
-                                    <Smartphone size={14} />
-                                    <span>Open System Share Sheet</span>
-                                    <ExternalLink size={12} className="opacity-60" />
-                                </button>
-                            )}
+                                    {qrReady ? (
+                                        <PremiumQR url={profileUrl} size={52} />
+                                    ) : (
+                                        <div
+                                            className="rounded-md flex items-center justify-center"
+                                            style={{ width: 52, height: 52 }}
+                                        >
+                                            <Sparkles size={10} className="animate-pulse opacity-40" style={{ color: theme.primary }} />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
 
-                            {/* Dual Tactical Actions: Save Contact & Copy Link */}
+                            {/* Actions: Save Contact & Copy Link */}
                             <div className="grid grid-cols-2 gap-2.5">
                                 <button
                                     onClick={handleSaveContact}
@@ -416,29 +419,7 @@ export const ShareModal = ({
                                 </button>
                             </div>
 
-                            {/* QR Code Presentation (Lightweight Medium-Redundancy Matrix) */}
-                            <div className="flex flex-col items-center justify-center py-1">
-                                <div
-                                    className="p-3 rounded-[2rem] border shadow-xl relative flex flex-col items-center justify-center"
-                                    style={{
-                                        borderColor: `${theme.primary}30`,
-                                        backgroundColor: isLight ? "#FFFFFF" : "#080808",
-                                    }}
-                                >
-                                    {qrReady ? (
-                                        <PremiumQR url={profileUrl} />
-                                    ) : (
-                                        <div className="w-[140px] h-[140px] rounded-2xl flex items-center justify-center bg-white/[0.02]">
-                                            <Sparkles size={16} className="animate-pulse opacity-40" style={{ color: theme.primary }} />
-                                        </div>
-                                    )}
-                                </div>
-                                <span className="text-[7px] font-syncopate uppercase tracking-[0.35em] opacity-35 mt-2">
-                                    Instant Camera Scan
-                                </span>
-                            </div>
 
-                            {/* Direct Social Channels */}
                             <div className="space-y-2 pt-1">
                                 <span className="text-[8px] font-syncopate uppercase tracking-[0.25em] opacity-40 block text-center">
                                     Share to Network

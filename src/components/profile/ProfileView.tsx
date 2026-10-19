@@ -20,7 +20,6 @@ import {
     Mail,
     Calendar,
     Share2,
-    UserPlus,
     Building2,
     FolderGit2,
     Music,
@@ -40,7 +39,6 @@ import { DossierSection } from "@/components/profile/DossierSection";
 import { TechStackSection } from "@/components/profile/TechStackSection";
 import { ShareModal } from "@/components/profile/ShareModal";
 import { resolveTheme } from "@/lib/themeRegistry";
-import { downloadVCard } from "@/lib/vcard";
 import { CiCircleCheck } from "react-icons/ci";
 import {
     SiTidal,
@@ -167,19 +165,6 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
     const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
     const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-
-    const handleDownloadVCard = () => {
-        downloadVCard({
-            fullName: user.full_name,
-            username: user.username,
-            bio: user.bio,
-            role: user.role,
-            bookingUrl: user.booking_url,
-            avatarUrl: user.avatar_url,
-            socials: user.socials,
-        });
-        toast.success("Digital Dossier vCard downloaded. Ready to add to Contacts.");
-    };
 
     // Custom Player States
     const [player, setPlayer] = useState<any>(null);
@@ -886,28 +871,13 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                     </motion.div>
                                 )}
 
-                                {/* Digital Dossier vCard & Share Matrix Tactical Actions */}
+                                {/* Share Matrix Tactical Action */}
                                 <motion.div
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.55 }}
                                     className="flex flex-wrap items-center justify-center gap-2.5 pt-2"
                                 >
-                                    <button
-                                        type="button"
-                                        onClick={handleDownloadVCard}
-                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full border text-[9px] md:text-[10px] font-syncopate font-bold uppercase tracking-wider shadow-md hover:scale-105 active:scale-95 transition-all duration-150 touch-manipulation cursor-pointer select-none"
-                                        style={{
-                                            borderColor: cardBorder,
-                                            backgroundColor: isLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.03)',
-                                            color: textPrimary
-                                        }}
-                                        title="Download .vcf Contact Card"
-                                    >
-                                        <UserPlus size={12} style={{ color: theme.primary }} />
-                                        <span>Save Contact</span>
-                                    </button>
-
                                     <button
                                         type="button"
                                         onClick={() => setIsShareModalOpen(true)}
@@ -946,11 +916,11 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                             animate={{ opacity: 1 }}
                                             whileHover={{ y: -8, scale: 1.1 }}
                                             transition={{ delay: idx * 0.08, type: "spring", stiffness: 200 }}
-                                            className="w-14 h-14 md:w-20 md:h-20 rounded-full md:rounded-full flex items-center justify-center border  hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)]"
+                                            className="w-14 h-14 md:w-20 md:h-20 rounded-full md:rounded-full flex items-center justify-center border hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)]"
                                             style={{
                                                 borderColor: cardBorder,
                                                 backgroundColor: isLight ? 'rgba(0,0,0,0.02)' : 'rgba(255,255,255,0.02)',
-                                                color: textMuted
+                                                color: theme.primary
                                             }}
                                         >
                                             <Icon size={28} />
