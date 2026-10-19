@@ -22,7 +22,8 @@ export default {
           foreground: "hsl(var(--accent-foreground))",
         },
         luxury: {
-          gold: "#D4AF37",
+          gold: "#3ECF8E",
+          emerald: "#3ECF8E",
           cream: "#F5F5DC",
           obsidian: "#0B0B0B",
           slate: "#1A1A1A",

@@ -130,7 +130,7 @@ const Insights = () => {
             { name: "Views", value: totalViews, color: "#3b82f6", displayLabel: "Profile Views" },
             { name: "Socials", value: clicksByCategory.social, color: "#a855f7", displayLabel: "Social Clicks" },
             { name: "Projects", value: clicksByCategory.venture, color: "#10b981", displayLabel: "Project Clicks" },
-            { name: "Store", value: clicksByCategory.product, color: "#D4AF37", displayLabel: "Store Clicks" }
+            { name: "Store", value: clicksByCategory.product, color: "#3ECF8E", displayLabel: "Store Clicks" }
         ];
     }, [data]);
 
@@ -206,8 +206,8 @@ const Insights = () => {
                         <AreaChart data={overallEngagement} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                             <defs>
                                 <linearGradient id="engagementGradient" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#D4AF37" stopOpacity={0.3} />
-                                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                                    <stop offset="5%" stopColor="#3ECF8E" stopOpacity={0.35} />
+                                    <stop offset="95%" stopColor="#3ECF8E" stopOpacity={0} />
                                 </linearGradient>
                             </defs>
                             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.02)" vertical={false} />
@@ -217,7 +217,7 @@ const Insights = () => {
                                 fontSize={10}
                                 tickLine={false}
                                 axisLine={false}
-                                fontFamily="Syncopate"
+                                fontFamily="JetBrains Mono"
                                 dy={15}
                             />
                             <YAxis
@@ -225,15 +225,15 @@ const Insights = () => {
                                 fontSize={10}
                                 tickLine={false}
                                 axisLine={false}
-                                fontFamily="Syncopate"
+                                fontFamily="JetBrains Mono"
                             />
                             <Tooltip
                                 contentStyle={{
                                     backgroundColor: '#050505',
-                                    border: '1px solid rgba(255,255,255,0.05)',
+                                    border: '1px solid rgba(62,207,142,0.25)',
                                     borderRadius: '1.5rem',
                                     fontSize: '10px',
-                                    fontFamily: 'Syncopate',
+                                    fontFamily: 'JetBrains Mono',
                                     padding: '1.5rem'
                                 }}
                                 formatter={(value: any, name: any, props: any) => [value, props.payload.displayLabel]}
@@ -242,7 +242,7 @@ const Insights = () => {
                             <Area
                                 type="monotone"
                                 dataKey="value"
-                                stroke="#D4AF37"
+                                stroke="#3ECF8E"
                                 strokeWidth={3}
                                 fill="url(#engagementGradient)"
                                 fillOpacity={1}
@@ -322,7 +322,7 @@ const Insights = () => {
                                                                 initial={{ width: 0 }}
                                                                 animate={{ width: `${(link.clicks / maxClicks) * 100}%` }}
                                                                 transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
-                                                                className="h-full bg-gradient-to-r from-luxury-gold/40 via-luxury-gold to-luxury-gold/40 shadow-[0_0_15px_rgba(212,175,55,0.4)]"
+                                                                className="h-full bg-gradient-to-r from-luxury-gold/40 via-luxury-gold to-luxury-gold/40 shadow-[0_0_15px_rgba(62,207,142,0.4)]"
                                                             />
                                                         </div>
                                                     </div>

@@ -14,7 +14,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             primary: "bg-white text-black hover:bg-white/90",
             secondary: "bg-white/10 text-white hover:bg-white/20",
             outline: "border border-white/20 text-white hover:bg-white/10",
-            luxury: "bg-gradient-to-r from-luxury-gold via-white to-luxury-gold bg-[length:200%_auto] text-black font-bold hover:bg-[100%_center] transition-all duration-500",
+            luxury: "bg-[#3ECF8E] hover:bg-[#34d399] text-black font-semibold shadow-lg shadow-[#3ECF8E]/20 hover:shadow-[#3ECF8E]/35 transition-all duration-300",
             ghost: "text-white/60 hover:text-white hover:bg-white/5",
         };
 

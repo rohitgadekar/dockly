@@ -142,10 +142,6 @@ export const MilestonesSection = ({
                                 <motion.div
                                     key={item.id}
                                     layout
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true, margin: "-40px" }}
-                                    transition={{ duration: 0.45, delay: idx * 0.06 }}
                                     className={cn(
                                         "relative flex flex-col md:flex-row items-start md:items-center w-full group",
                                         isEven ? "md:flex-row" : "md:flex-row-reverse"

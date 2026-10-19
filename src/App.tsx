@@ -134,6 +134,8 @@ function App() {
                                 <Route path="skills" element={<Skills />} />
                             </Route>
                             <Route path="/preview" element={<PreviewRedirect />} />
+                            <Route path="/privacy" element={<Protocol defaultId="privacy" />} />
+                            <Route path="/terms" element={<Protocol defaultId="terms" />} />
                             <Route path="/protocol/:id" element={<Protocol />} />
                             <Route path="/:username" element={<Profile />} />
                             <Route path="*" element={<NotFound />} />

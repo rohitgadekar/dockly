@@ -127,7 +127,8 @@ export function getTechIconInfo(keyOrName: string) {
     if (!keyOrName) {
         return {
             name: "Skill",
-            color: "#D4AF37",
+            key: "skill",
+            color: "#3ECF8E",
             icon: Code2,
             category: "Languages" as const,
         };
@@ -157,7 +158,8 @@ export function getTechIconInfo(keyOrName: string) {
 
     return {
         name: keyOrName,
-        color: "#D4AF37",
+        key: keyOrName.toLowerCase().replace(/[^a-z0-9]/g, ""),
+        color: "#3ECF8E",
         icon: Code2,
         category: "Languages" as const,
     };

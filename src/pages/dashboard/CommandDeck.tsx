@@ -101,7 +101,7 @@ const CommandDeck = () => {
             value: data?.analytics?.profileViews?.length || 0,
             change: isNewUser ? "Initial State" : "+12.5%",
             icon: Users,
-            color: "#D4AF37"
+            color: "#3ECF8E"
         },
         {
             label: "Active Projects",
@@ -149,7 +149,7 @@ const CommandDeck = () => {
                     <h1 className="text-4xl font-syncopate font-bold uppercase tracking-tighter text-white mb-2">
                         Dashboard
                     </h1>
-                    <p className="text-white/40 font-plus italic">
+                    <p className="text-white/40 font-plus">
                         Welcome back, <span className="text-white">{data?.profile?.full_name || "Architect"}</span>.
                     </p>
                 </div>
@@ -223,7 +223,7 @@ const CommandDeck = () => {
                                 {['1H', '24H', '7D', '30D'].map(range => (
                                     <button
                                         key={range}
-                                        className={`px-3 py-1.5 rounded-lg text-[9px] font-syncopate  border ${range === '24H' ? 'bg-luxury-gold/10 border-luxury-gold/20 text-luxury-gold' : 'border-transparent text-white/20 hover:text-white hover:bg-white/5'}`}
+                                        className={`px-3 py-1.5 rounded-lg text-[9px] font-syncopate border ${range === '24H' ? 'bg-[#3ECF8E]/10 border-[#3ECF8E]/30 text-[#3ECF8E]' : 'border-transparent text-white/20 hover:text-white hover:bg-white/5'}`}
                                     >
                                         {range}
                                     </button>
@@ -236,8 +236,8 @@ const CommandDeck = () => {
                                 <AreaChart data={realtimeData}>
                                     <defs>
                                         <linearGradient id="deckGradient" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#D4AF37" stopOpacity={0.2} />
-                                            <stop offset="95%" stopColor="#D4AF37" stopOpacity={0} />
+                                            <stop offset="5%" stopColor="#3ECF8E" stopOpacity={0.3} />
+                                            <stop offset="95%" stopColor="#3ECF8E" stopOpacity={0} />
                                         </linearGradient>
                                     </defs>
                                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" vertical={false} />
@@ -247,29 +247,29 @@ const CommandDeck = () => {
                                         fontSize={10}
                                         tickLine={false}
                                         axisLine={false}
-                                        fontFamily="Syncopate"
+                                        fontFamily="JetBrains Mono"
                                     />
                                     <YAxis
                                         stroke="rgba(255,255,255,0.1)"
                                         fontSize={10}
                                         tickLine={false}
                                         axisLine={false}
-                                        fontFamily="Syncopate"
+                                        fontFamily="JetBrains Mono"
                                     />
                                     <Tooltip
                                         contentStyle={{
                                             backgroundColor: '#050505',
-                                            border: '1px solid rgba(212,175,55,0.2)',
+                                            border: '1px solid rgba(62,207,142,0.25)',
                                             borderRadius: '1rem',
                                             fontSize: '10px',
-                                            fontFamily: 'Syncopate'
+                                            fontFamily: 'JetBrains Mono'
                                         }}
-                                        itemStyle={{ color: '#D4AF37' }}
+                                        itemStyle={{ color: '#3ECF8E' }}
                                     />
                                     <Area
                                         type="monotone"
                                         dataKey="traffic"
-                                        stroke="#D4AF37"
+                                        stroke="#3ECF8E"
                                         strokeWidth={3}
                                         fillOpacity={1}
                                         fill="url(#deckGradient)"

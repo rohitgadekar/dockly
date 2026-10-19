@@ -34,7 +34,7 @@
     @apply border-white/10;
   }
   body {
-    @apply bg-black text-white font-outfit antialiased selection:bg-luxury-gold/30 selection:text-luxury-gold;
+    @apply bg-black text-white font-plus antialiased selection:bg-[#3ECF8E]/30 selection:text-white;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -58,7 +58,7 @@
 }
 
 .gold-gradient {
-  background: linear-gradient(135deg, #D4AF37 0%, #F5F5DC 100%);
+  background: linear-gradient(135deg, #3ECF8E 0%, #2DD4BF 100%);
 }
 
 .text-gradient {
@@ -66,14 +66,14 @@
 }
 
 .gold-text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-luxury-gold via-white to-luxury-gold;
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#3ECF8E] via-teal-200 to-[#3ECF8E];
 }
 
 /* Custom Cursor */
 .custom-cursor {
   width: 20px;
   height: 20px;
-  border: 2px solid #D4AF37;
+  border: 2px solid #3ECF8E;
   border-radius: 50%;
   position: fixed;
   pointer-events: none;
@@ -99,8 +99,8 @@
 
 /* Global Custom Scrollbar - Dynamically adapts to active user theme */
 :root {
-  --scrollbar-thumb: rgba(212, 175, 55, 0.4);
-  --scrollbar-thumb-hover: rgba(212, 175, 55, 0.7);
+  --scrollbar-thumb: rgba(62, 207, 142, 0.45);
+  --scrollbar-thumb-hover: rgba(62, 207, 142, 0.8);
   --scrollbar-track: rgba(255, 255, 255, 0.02);
 }
 

@@ -53,7 +53,7 @@ export const Atmospherics = () => {
 
     const [selectedThemeId, setSelectedThemeId] = useState("royale");
     const [selectedFont, setSelectedFont] = useState("Syncopate");
-    const [customPrimary, setCustomPrimary] = useState("#D4AF37");
+    const [customPrimary, setCustomPrimary] = useState("#3ECF8E");
     const [customBg, setCustomBg] = useState("#050505");
 
     const [loading, setLoading] = useState(false);
@@ -590,7 +590,7 @@ export const Atmospherics = () => {
                                         value={customPrimary}
                                         onChange={(e) => setCustomPrimary(e.target.value)}
                                         className="bg-transparent text-sm font-mono uppercase text-white focus:outline-none w-28"
-                                        placeholder="#D4AF37"
+                                        placeholder="#3ECF8E"
                                         maxLength={7}
                                     />
                                 </div>

@@ -818,7 +818,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                     </motion.div>
                                 )}
 
-                                <p className="max-w-xl text-lg md:text-2xl font-light italic leading-relaxed opacity-60 px-4 md:px-6">
+                                <p className="max-w-xl text-lg md:text-2xl font-light uppercase leading-relaxed opacity-60 px-4 md:px-6">
                                     {user.bio || 'Welcome to my profile.'}
                                 </p>
 
@@ -847,21 +847,21 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                     <span className={cn(
                                                         "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
                                                         user.availability_status === 'limited' ? "bg-amber-400" :
-                                                        user.availability_status === 'busy' ? "bg-rose-400" : "bg-emerald-400"
+                                                            user.availability_status === 'busy' ? "bg-rose-400" : "bg-emerald-400"
                                                     )} />
                                                 )}
                                                 <span className={cn(
                                                     "relative inline-flex rounded-full h-2 w-2",
                                                     user.availability_status === 'limited' ? "bg-amber-400" :
-                                                    user.availability_status === 'busy' ? "bg-rose-400" :
-                                                    user.availability_status === 'offline' ? "bg-white/40" : "bg-emerald-400"
+                                                        user.availability_status === 'busy' ? "bg-rose-400" :
+                                                            user.availability_status === 'offline' ? "bg-white/40" : "bg-emerald-400"
                                                 )} />
                                             </span>
                                             <span>
                                                 {user.availability_text || (
                                                     user.availability_status === 'limited' ? 'Limited Capacity' :
-                                                    user.availability_status === 'busy' ? 'High Demand' :
-                                                    user.availability_status === 'offline' ? 'Stealth Protocol' : 'Available for Work'
+                                                        user.availability_status === 'busy' ? 'High Demand' :
+                                                            user.availability_status === 'offline' ? 'Stealth Protocol' : 'Available for Work'
                                                 )}
                                             </span>
                                         </div>

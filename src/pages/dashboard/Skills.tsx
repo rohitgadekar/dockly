@@ -85,7 +85,7 @@ export const Skills = () => {
     const [proficiency, setProficiency] = useState("Advanced");
     const [yearsExp, setYearsExp] = useState("");
     const [iconKey, setIconKey] = useState("");
-    const [color, setColor] = useState("#D4AF37");
+    const [color, setColor] = useState("#3ECF8E");
 
     // Filter & Search
     const [activeFilter, setActiveFilter] = useState("All");
@@ -97,7 +97,7 @@ export const Skills = () => {
         setProficiency("Advanced");
         setYearsExp("");
         setIconKey("");
-        setColor("#D4AF37");
+        setColor("#3ECF8E");
         setEditingSkill(null);
     };
 
@@ -108,7 +108,7 @@ export const Skills = () => {
         setProficiency(skill.proficiency || "Advanced");
         setYearsExp(skill.years_exp || "");
         setIconKey(skill.icon_key || "");
-        setColor(skill.color || "#D4AF37");
+        setColor(skill.color || "#3ECF8E");
         setIsAddOpen(true);
     };
 
@@ -125,7 +125,7 @@ export const Skills = () => {
             if (!user) throw new Error("Unauthorized");
 
             const autoInfo = getTechIconInfo(iconKey || name);
-            const finalColor = color && color !== "#D4AF37" ? color : autoInfo.color;
+            const finalColor = color && color !== "#3ECF8E" ? color : autoInfo.color;
             const finalIconKey = iconKey || autoInfo.name.toLowerCase().replace(/[^a-z0-9]/g, "");
 
             if (editingSkill) {
