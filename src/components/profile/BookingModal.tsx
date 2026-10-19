@@ -102,7 +102,7 @@ export const BookingModal = ({ isOpen, onClose, user, theme, isLight }: BookingM
                             <>
                                 {iframeLoading && (
                                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/60 z-10">
-                                        <Loader2 size={24} className="animate-spin text-luxury-gold" />
+                                        <Loader2 size={24} className="animate-spin" style={{ color: theme.primary }} />
                                         <span className="text-[10px] font-syncopate uppercase tracking-widest opacity-40">
                                             Connecting to Calendar...
                                         </span>

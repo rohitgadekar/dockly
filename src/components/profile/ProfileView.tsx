@@ -39,6 +39,7 @@ import { MilestonesSection } from "@/components/profile/MilestonesSection";
 import { DossierSection } from "@/components/profile/DossierSection";
 import { TechStackSection } from "@/components/profile/TechStackSection";
 import { ShareModal } from "@/components/profile/ShareModal";
+import { resolveTheme } from "@/lib/themeRegistry";
 import { downloadVCard } from "@/lib/vcard";
 import { CiCircleCheck } from "react-icons/ci";
 import {
@@ -301,28 +302,25 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
         }
     }, [isStoryViewerOpen, activeStoryIndex, user.stories]);
 
-    const theme = user.theme?.id ? user.theme : {
-        id: "royale",
-        primary: user.theme?.primary || "#D4AF37",
-        bg: "#050505",
-        font: "Syncopate"
-    };
-
-    const isLight = Boolean(
-        theme.isLight ||
-        theme.id === "etheric" ||
-        theme.id === "ivory" ||
-        theme.id === "sahara" ||
-        theme.bg === "#F8FAFC" ||
-        theme.bg === "#FAF8F5" ||
-        theme.bg === "#FFFDF5"
-    );
+    const theme = resolveTheme(user.theme);
+    const isLight = Boolean(theme.isLight);
     const textPrimary = isLight ? "#1E293B" : "#FFFFFF";
     const textMuted = isLight ? "#94A3B8" : "rgba(255,255,255,0.3)";
     const cardBorder = isLight ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.04)";
 
     useEffect(() => {
         if (isPreview) return;
+
+        // Synchronize dynamic scrollbar styling across page
+        const root = document.documentElement;
+        root.style.setProperty("--theme-primary", theme.primary);
+        root.style.setProperty("--theme-bg", theme.bg);
+        root.style.setProperty("--scrollbar-thumb", `${theme.primary}66`);
+        root.style.setProperty("--scrollbar-thumb-hover", theme.primary);
+        root.style.setProperty(
+            "--scrollbar-track",
+            isLight ? "rgba(0,0,0,0.04)" : "rgba(255,255,255,0.02)"
+        );
 
         // Update theme-color meta tag for mobile browser status bar
         let meta = document.querySelector('meta[name="theme-color"]');
@@ -344,8 +342,13 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
 
         return () => {
             meta?.setAttribute('content', '#050505');
+            root.style.removeProperty("--theme-primary");
+            root.style.removeProperty("--theme-bg");
+            root.style.removeProperty("--scrollbar-thumb");
+            root.style.removeProperty("--scrollbar-thumb-hover");
+            root.style.removeProperty("--scrollbar-track");
         };
-    }, [theme.bg, isLight, isPreview]);
+    }, [theme.primary, theme.bg, isLight, isPreview]);
 
     useEffect(() => {
         if (user.youtube_channel_id) {
@@ -628,7 +631,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
 
                         {theme.id === "royale" && (
                             <>
-                                <div className="absolute top-[-10%] right-[-5%] w-[80vw] h-[80vw] bg-luxury-gold/[0.07] blur-[180px] rounded-full animate-pulse" style={{ animationDuration: '8s' }} />
+                                <div className="absolute top-[-10%] right-[-5%] w-[80vw] h-[80vw] blur-[180px] rounded-full animate-pulse" style={{ backgroundColor: `${theme.primary}14`, animationDuration: '8s' }} />
                                 <div className="absolute bottom-[-15%] left-[-10%] w-[90vw] h-[90vw] bg-white/[0.03] blur-[220px] rounded-full animate-pulse" style={{ animationDuration: '12s' }} />
                             </>
                         )}
@@ -638,7 +641,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                         {theme.id === "emerald" && (
                             <>
                                 <div className="absolute top-[-10%] left-[-5%] w-[70vw] h-[70vw] bg-emerald-500/[0.05] blur-[150px] rounded-full animate-pulse" style={{ animationDuration: '10s' }} />
-                                <div className="absolute bottom-[-10%] right-[-5%] w-[60vw] h-[60vw] bg-luxury-gold/[0.03] blur-[120px] rounded-full" />
+                                <div className="absolute bottom-[-10%] right-[-5%] w-[60vw] h-[60vw] blur-[120px] rounded-full" style={{ backgroundColor: `${theme.primary}0a` }} />
                             </>
                         )}
                         {theme.id === "velvet" && (
@@ -650,7 +653,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                         {theme.id === "champagne" && (
                             <>
                                 <div className="absolute top-[-20%] left-[10%] w-[80vw] h-[80vw] bg-white/[0.02] blur-[200px] rounded-full" />
-                                <div className="absolute bottom-[10%] right-[20%] w-[40vw] h-[40vw] bg-luxury-gold/[0.03] blur-[150px] rounded-full animate-pulse" />
+                                <div className="absolute bottom-[10%] right-[20%] w-[40vw] h-[40vw] blur-[150px] rounded-full animate-pulse" style={{ backgroundColor: `${theme.primary}0a` }} />
                             </>
                         )}
                         {theme.id === "ivory" && (
@@ -678,7 +681,8 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                 <motion.div
                                     animate={{ rotate: 360 }}
                                     transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                                    className="absolute inset-[-12px] rounded-full border-2 border-dashed border-luxury-gold/40"
+                                    className="absolute inset-[-12px] rounded-full border-2 border-dashed pointer-events-none"
+                                    style={{ borderColor: `${theme.primary}66` }}
                                 />
                             )}
                             <div className="absolute inset-[-20px] border border-white/[0.03] rounded-full scale-[1.05] group-hover:scale-[1.07] transition-transform duration-500 pointer-events-none" />
@@ -686,12 +690,11 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
 
                             <div
                                 className={cn(
-                                    "relative w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden p-1.5 ",
-                                    user.stories?.length > 0 ? " ring-4 ring-luxury-gold/20 cursor-pointer" : ""
+                                    "relative w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden p-1.5",
+                                    user.stories?.length > 0 ? "cursor-pointer" : ""
                                 )}
                                 style={{
-                                    // background: `linear-gradient(135deg, ${theme.primary}66, transparent, ${theme.primary}22)`,
-                                    boxShadow: `0 30px 60px -12px rgba(0,0,0,0.5), 0 0 0 1px ${theme.primary}20`
+                                    boxShadow: `0 30px 60px -12px rgba(0,0,0,0.5), 0 0 0 1px ${theme.primary}20${user.stories?.length > 0 ? `, 0 0 0 4px ${theme.primary}33` : ''}`
                                 }}
                             >
                                 <div className="w-full h-full relative rounded-full overflow-hidden">
@@ -731,7 +734,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                 style={{ borderColor: `${theme.primary}33` }}
                             >
                                 {user.stories?.length > 0 ? (
-                                    <Radio size={16} className="text-luxury-gold animate-pulse" />
+                                    <Radio size={16} className="animate-pulse" style={{ color: theme.primary }} />
                                 ) : (
                                     <MdVerified size={20} style={{ color: theme.primary }} />
                                 )}
@@ -1285,7 +1288,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                         <Button
                                             variant="outline"
                                             onClick={() => window.open(`https://youtube.com/channel/${user.youtube_channel_id}`, '_blank')}
-                                            className="group relative px-8 py-4 rounded-full text-[9px] md:text-[10px] font-syncopate tracking-[0.3em] uppercase border-white/10 hover:border-luxury-gold/40 bg-white/[0.02] hover:bg-white/[0.05] transition-all duration-500"
+                                            className="group relative px-8 py-4 rounded-full text-[9px] md:text-[10px] font-syncopate tracking-[0.3em] uppercase border-white/10 hover:border-white/20 bg-white/[0.02] hover:bg-white/[0.05] transition-all duration-500"
                                         >
                                             <span className="relative z-10 flex items-center gap-3">
                                                 View Channel <ArrowUpRight size={14} className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -1636,7 +1639,8 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                     duration: (idx === (activeStoryIndex || 0) && currentDuration) ? currentDuration / 1000 : 0,
                                                     ease: "linear"
                                                 }}
-                                                className="h-full bg-luxury-gold"
+                                                className="h-full"
+                                                style={{ backgroundColor: theme.primary }}
                                             />
                                         </div>
                                     ))}
@@ -1693,7 +1697,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                 e.stopPropagation();
                                                 setIsMuted(!isMuted);
                                             }}
-                                            className="w-12 h-12 bg-black/40 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/10 text-white/60 hover:text-luxury-gold transition-colors"
+                                            className="w-12 h-12 bg-black/40 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/10 text-white/60 hover:text-white transition-colors"
                                         >
                                             {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
                                         </button>
@@ -1722,13 +1726,13 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
 
                                     <div className="absolute bottom-10 inset-x-10">
                                         <div className="flex items-center gap-4 mb-4">
-                                            <div className="w-10 h-10 rounded-full border border-luxury-gold/40 p-0.5">
+                                            <div className="w-10 h-10 rounded-full border p-0.5" style={{ borderColor: `${theme.primary}66` }}>
                                                 <img src={user.avatar_url} className="w-full h-full object-cover rounded-full" />
                                             </div>
                                             <div>
                                                 <div className="text-[10px] font-syncopate font-bold text-white uppercase tracking-tight">{user.full_name}</div>
                                                 <div className="flex items-center gap-2 text-white/40">
-                                                    <Clock size={10} className="text-luxury-gold" />
+                                                    <Clock size={10} style={{ color: theme.primary }} />
                                                     <span className="text-[8px] font-syncopate uppercase tracking-widest">
                                                         {user.stories[activeStoryIndex || 0].created_at
                                                             ? formatDistanceToNow(new Date(user.stories[activeStoryIndex || 0].created_at), { addSuffix: true })
@@ -1836,7 +1840,8 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                             />
                                             <div className="relative h-1 w-full bg-white/10 rounded-full overflow-hidden">
                                                 <motion.div
-                                                    className="absolute h-full bg-luxury-gold shadow-[0_0_20px_rgba(212,175,55,0.5)]"
+                                                    className="absolute h-full"
+                                                    style={{ backgroundColor: theme.primary, boxShadow: `0 0 20px ${theme.primary}80` }}
                                                     initial={false}
                                                     animate={{ width: `${(currentTime / (duration || 1)) * 100}%` }}
                                                     transition={{ duration: 0.1, ease: "linear" }}
@@ -1853,7 +1858,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                             <div className="flex items-center gap-10">
                                                 <button
                                                     onClick={() => isPlaying ? player?.pauseVideo() : player?.playVideo()}
-                                                    className="text-white hover:text-luxury-gold transition-colors"
+                                                    className="text-white hover:opacity-75 transition-opacity"
                                                 >
                                                     {isPlaying ? <Pause size={28} fill="currentColor" /> : <Play size={28} fill="currentColor" />}
                                                 </button>
@@ -1869,14 +1874,14 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                             <div className="flex items-center gap-8">
                                                 <button
                                                     onClick={toggleFullscreen}
-                                                    className="text-white hover:text-luxury-gold transition-colors"
+                                                    className="text-white hover:opacity-75 transition-opacity"
                                                 >
                                                     {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
                                                 </button>
 
                                                 <button
                                                     onClick={() => window.open(`https://www.youtube.com/watch?v=${activeVideoId}`, '_blank')}
-                                                    className="text-white hover:text-luxury-gold transition-colors"
+                                                    className="text-white hover:opacity-75 transition-opacity"
                                                     title="Open in YouTube"
                                                 >
                                                     <ExternalLink size={20} />
@@ -1888,7 +1893,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                         setIsPlayerMuted(newState);
                                                         newState ? player?.mute() : player?.unMute();
                                                     }}
-                                                    className="text-white hover:text-luxury-gold transition-colors"
+                                                    className="text-white hover:opacity-75 transition-opacity"
                                                 >
                                                     {isPlayerMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
                                                 </button>
@@ -1906,7 +1911,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
 
                                 {/* Minimal Status Bar */}
                                 <div className="absolute top-10 left-10 z-20 flex items-center gap-4 opacity-40">
-                                    <div className="w-2 h-2 rounded-full bg-luxury-gold animate-pulse" />
+                                    <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: theme.primary }} />
                                     <span className="text-[8px] font-syncopate uppercase tracking-[0.4em] text-white">Secure Connection</span>
                                 </div>
                             </motion.div>

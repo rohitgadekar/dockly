@@ -212,7 +212,12 @@ export const MilestonesSection = ({
 
                                                 {item.badge && (
                                                     <span
-                                                        className="px-2.5 py-0.5 rounded-full text-[8px] font-syncopate uppercase tracking-widest border border-luxury-gold/30 bg-luxury-gold/10 text-luxury-gold"
+                                                        className="px-2.5 py-0.5 rounded-full text-[8px] font-syncopate uppercase tracking-widest border"
+                                                        style={{
+                                                            borderColor: `${theme.primary}4D`,
+                                                            backgroundColor: `${theme.primary}1A`,
+                                                            color: theme.primary
+                                                        }}
                                                     >
                                                         {item.badge}
                                                     </span>

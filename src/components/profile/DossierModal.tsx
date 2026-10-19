@@ -204,7 +204,14 @@ export const DossierModal = ({
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2 mb-1">
-                                        <span className="text-[8px] font-syncopate uppercase tracking-widest px-2.5 py-0.5 rounded-full border border-luxury-gold/30 bg-luxury-gold/10 text-luxury-gold">
+                                        <span
+                                            className="text-[8px] font-syncopate uppercase tracking-widest px-2.5 py-0.5 rounded-full border"
+                                            style={{
+                                                borderColor: `${theme.primary}4D`,
+                                                backgroundColor: `${theme.primary}1A`,
+                                                color: theme.primary
+                                            }}
+                                        >
                                             {requiresPasscode && !effectiveUnlocked ? "Protected PDF" : "Official PDF"}
                                         </span>
                                     </div>
@@ -282,7 +289,7 @@ export const DossierModal = ({
                                                 } ${
                                                     error
                                                         ? "border-red-500/60 bg-red-500/5"
-                                                        : "border-white/10 bg-white/[0.03] focus-within:border-luxury-gold/50"
+                                                        : "border-white/10 bg-white/[0.03]"
                                                 }`}
                                             >
                                                 <input
@@ -327,12 +334,13 @@ export const DossierModal = ({
                                         style={{ borderColor: isLight ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.06)" }}
                                     >
                                         <p className="text-[10px] text-white/40">
-                                            Do not have clearance credentials?
+                                             Do not have clearance credentials?
                                         </p>
                                         <button
                                             type="button"
                                             onClick={handleRequestAccess}
-                                            className="text-[9px] font-syncopate uppercase tracking-widest text-luxury-gold flex items-center gap-1.5 hover:underline py-1"
+                                            className="text-[9px] font-syncopate uppercase tracking-widest flex items-center gap-1.5 hover:underline py-1"
+                                            style={{ color: theme.primary }}
                                         >
                                             <Send size={10} />
                                             <span>Request Access Clearance</span>

@@ -429,7 +429,7 @@ export const ShareModal = ({
                                         <PremiumQR url={profileUrl} />
                                     ) : (
                                         <div className="w-[140px] h-[140px] rounded-2xl flex items-center justify-center bg-white/[0.02]">
-                                            <Sparkles size={16} className="text-luxury-gold/40 animate-pulse" />
+                                            <Sparkles size={16} className="animate-pulse opacity-40" style={{ color: theme.primary }} />
                                         </div>
                                     )}
                                 </div>

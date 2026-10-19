@@ -281,3 +281,36 @@ export const ACCENT_PALETTES = [
     { label: "Platinum Titanium", hex: "#CBD5E1" },
     { label: "Pure Alabaster", hex: "#F5F5DC" }
 ];
+
+export const resolveTheme = (userTheme?: any): ThemePreset => {
+    const defaultTheme = THEME_PRESETS[0]; // royale
+    if (!userTheme) return defaultTheme;
+
+    // Find base preset if id matches
+    const preset = THEME_PRESETS.find(p => p.id === userTheme.id) || defaultTheme;
+
+    const bg = userTheme.bg || preset.bg || "#050505";
+    const isLight = Boolean(
+        userTheme.isLight !== undefined
+            ? userTheme.isLight
+            : (preset.isLight ||
+               userTheme.id === "etheric" ||
+               userTheme.id === "ivory" ||
+               userTheme.id === "sahara" ||
+               bg === "#F8FAFC" ||
+               bg === "#FAF8F5" ||
+               bg === "#FFFDF5")
+    );
+
+    return {
+        ...preset,
+        ...userTheme,
+        id: userTheme.id || preset.id,
+        name: userTheme.name || preset.name,
+        primary: userTheme.primary || preset.primary || "#D4AF37",
+        bg,
+        font: userTheme.font || preset.font || "Syncopate",
+        isLight
+    };
+};
+

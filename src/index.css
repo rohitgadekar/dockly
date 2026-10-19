@@ -97,37 +97,44 @@
 
 /* Custom Utilities */
 
-/* Global Custom Scrollbar - Applied to entire app */
+/* Global Custom Scrollbar - Dynamically adapts to active user theme */
+:root {
+  --scrollbar-thumb: rgba(212, 175, 55, 0.4);
+  --scrollbar-thumb-hover: rgba(212, 175, 55, 0.7);
+  --scrollbar-track: rgba(255, 255, 255, 0.02);
+}
+
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(212, 175, 55, 0.3) transparent;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
 *::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 
 *::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 10px;
+  background: var(--scrollbar-track);
+  border-radius: 9999px;
 }
 
 *::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, rgba(212, 175, 55, 0.4), rgba(212, 175, 55, 0.2));
-  border-radius: 10px;
-  border: 2px solid transparent;
+  background: var(--scrollbar-thumb);
+  border-radius: 9999px;
+  border: 1.5px solid transparent;
   background-clip: padding-box;
+  transition: background-color 0.2s ease;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, rgba(212, 175, 55, 0.6), rgba(212, 175, 55, 0.4));
-  border: 2px solid transparent;
+  background: var(--scrollbar-thumb-hover);
+  border: 1.5px solid transparent;
   background-clip: padding-box;
 }
 
 *::-webkit-scrollbar-thumb:active {
-  background: linear-gradient(180deg, rgba(212, 175, 55, 0.8), rgba(212, 175, 55, 0.6));
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* Corner where scrollbars meet */
@@ -142,16 +149,16 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--scrollbar-track);
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(212, 175, 55, 0.3);
-  border-radius: 10px;
+  background: var(--scrollbar-thumb);
+  border-radius: 9999px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(212, 175, 55, 0.5);
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* Hide scrollbar utility */

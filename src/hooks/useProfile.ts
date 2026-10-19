@@ -4,16 +4,18 @@ import { useEffect } from "react";
 
 export const useProfile = (username: string | undefined) => {
   const queryClient = useQueryClient();
-  const query = useQuery({
-    queryKey: ["profile", username],
-    queryFn: async () => {
-      if (!username) return null;
+  const cleanUsername = username ? username.replace(/^@/, '').trim() : undefined;
 
-      // Primary Point Lookup (Super fast with unique username index)
+  const query = useQuery({
+    queryKey: ["profile", cleanUsername],
+    queryFn: async () => {
+      if (!cleanUsername) return null;
+
+      // Primary Point Lookup (Case-insensitive & clean of @ prefixes)
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("*")
-        .eq("username", username)
+        .ilike("username", cleanUsername)
         .maybeSingle(); // maybeSingle returns null instead of throwing PGRST116 error
 
       if (profileError) throw profileError;
@@ -97,42 +99,42 @@ export const useProfile = (username: string | undefined) => {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${query.data.id}` },
-        () => queryClient.invalidateQueries({ queryKey: ["profile", username] })
+        () => queryClient.invalidateQueries({ queryKey: ["profile", cleanUsername] })
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'ventures', filter: `profile_id=eq.${query.data.id}` },
-        () => queryClient.invalidateQueries({ queryKey: ["profile", username] })
+        () => queryClient.invalidateQueries({ queryKey: ["profile", cleanUsername] })
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'social_links', filter: `profile_id=eq.${query.data.id}` },
-        () => queryClient.invalidateQueries({ queryKey: ["profile", username] })
+        () => queryClient.invalidateQueries({ queryKey: ["profile", cleanUsername] })
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'curated_products', filter: `profile_id=eq.${query.data.id}` },
-        () => queryClient.invalidateQueries({ queryKey: ["profile", username] })
+        () => queryClient.invalidateQueries({ queryKey: ["profile", cleanUsername] })
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'endorsements', filter: `profile_id=eq.${query.data.id}` },
-        () => queryClient.invalidateQueries({ queryKey: ["profile", username] })
+        () => queryClient.invalidateQueries({ queryKey: ["profile", cleanUsername] })
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'milestones', filter: `profile_id=eq.${query.data.id}` },
-        () => queryClient.invalidateQueries({ queryKey: ["profile", username] })
+        () => queryClient.invalidateQueries({ queryKey: ["profile", cleanUsername] })
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'skills', filter: `profile_id=eq.${query.data.id}` },
-        () => queryClient.invalidateQueries({ queryKey: ["profile", username] })
+        () => queryClient.invalidateQueries({ queryKey: ["profile", cleanUsername] })
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'stories', filter: `profile_id=eq.${query.data.id}` },
-        () => queryClient.invalidateQueries({ queryKey: ["profile", username] })
+        () => queryClient.invalidateQueries({ queryKey: ["profile", cleanUsername] })
       )
       .subscribe();
 

@@ -96,9 +96,10 @@ export const EndorsementsSection = ({
                                             className={cn(
                                                 "transition-colors",
                                                 i < rating
-                                                    ? "fill-current text-luxury-gold"
+                                                    ? "fill-current"
                                                     : "opacity-20 text-white"
                                             )}
+                                            style={i < rating ? { color: theme.primary } : undefined}
                                         />
                                     ))}
                                 </div>

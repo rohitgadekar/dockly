@@ -99,7 +99,12 @@ export const DossierSection = ({
                             <div className="space-y-1.5 flex-1 min-w-0">
                                 <div className="flex flex-wrap items-center gap-2">
                                     <span
-                                        className="text-[8px] font-syncopate uppercase tracking-widest px-2.5 py-0.5 rounded-full border border-luxury-gold/30 bg-luxury-gold/10 text-luxury-gold"
+                                        className="text-[8px] font-syncopate uppercase tracking-widest px-2.5 py-0.5 rounded-full border"
+                                        style={{
+                                            borderColor: `${theme.primary}4D`,
+                                            backgroundColor: `${theme.primary}1A`,
+                                            color: theme.primary
+                                        }}
                                     >
                                         {requiresPasscode ? "Clearance Required" : "Public Document"}
                                     </span>
