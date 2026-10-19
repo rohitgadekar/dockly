@@ -38,17 +38,29 @@ export const EndorsementsSection = ({
     };
 
     return (
-        <section className="relative w-full flex flex-col items-center">
+        <section id="endorsements-section" className="relative w-full flex flex-col items-center">
             {/* Architectural Section Label */}
-            <div className="flex flex-col items-center mb-10 md:mb-16">
-                <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em] opacity-40 text-center truncate max-w-full px-4">
-                    Distinction
-                </span>
+            <div className="flex flex-col items-center mb-10 md:mb-14 text-center">
+                <div className="flex items-center gap-2 mb-2 opacity-60">
+                    <Star size={14} style={{ color: theme.primary }} />
+                    <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em]">
+                        Wall of Distinction
+                    </span>
+                </div>
+                <h3
+                    className="text-2xl sm:text-3xl md:text-4xl font-syncopate font-bold uppercase tracking-tight"
+                    style={{ color: isLight ? "#111" : "#FFF", fontFamily: theme.font }}
+                >
+                    Endorsements<span style={{ color: theme.primary }}>.</span>
+                </h3>
+                <p className="text-xs text-white/40 font-plus mt-2 max-w-md italic">
+                    Direct appraisals from founders, engineering leaders, and collaborators.
+                </p>
             </div>
 
             {/* Grid Container */}
             <div className={cn(
-                "grid gap-6 md:gap-8 w-full max-w-5xl px-4 md:px-0",
+                "grid gap-6 md:gap-8 w-full max-w-4xl px-4 md:px-0",
                 endorsements.length === 1
                     ? "grid-cols-1 max-w-3xl"
                     : endorsements.length === 2
@@ -61,15 +73,11 @@ export const EndorsementsSection = ({
                     return (
                         <motion.div
                             key={item.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true, margin: "-50px" }}
-                            transition={{ delay: idx * 0.1, duration: 0.6 }}
                             whileHover={{ y: -6, transition: { duration: 0.3 } }}
-                            className="group relative flex flex-col justify-between p-8 md:p-10 rounded-[2.5rem] border backdrop-blur-2xl transition-all duration-500 overflow-hidden shadow-2xl hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.7)]"
+                            className="group relative flex flex-col justify-between p-8 md:p-10 rounded-[2.5rem] border backdrop-blur-md md:backdrop-blur-2xl transition-all duration-500 overflow-hidden shadow-2xl hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.7)]"
                             style={{
                                 borderColor: cardBorder,
-                                backgroundColor: isLight ? "rgba(255,255,255,0.6)" : "rgba(10,10,10,0.6)",
+                                backgroundColor: isLight ? "rgba(255,255,255,0.8)" : "rgba(10,10,10,0.8)",
                             }}
                         >
                             {/* Ambient Theme Glow on Hover */}

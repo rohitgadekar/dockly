@@ -18,7 +18,15 @@ import {
     ExternalLink,
     Loader2,
     Mail,
-    Calendar
+    Calendar,
+    Share2,
+    UserPlus,
+    Building2,
+    FolderGit2,
+    Music,
+    Video,
+    Sparkles,
+    Briefcase
 } from "lucide-react";
 import { MdVerified } from "react-icons/md";
 import { cn } from "@/lib/utils";
@@ -27,6 +35,11 @@ import { toast } from "sonner";
 import { InquiryForm } from "@/components/profile/InquiryForm";
 import { BookingModal } from "@/components/profile/BookingModal";
 import { EndorsementsSection } from "@/components/profile/EndorsementsSection";
+import { MilestonesSection } from "@/components/profile/MilestonesSection";
+import { DossierSection } from "@/components/profile/DossierSection";
+import { TechStackSection } from "@/components/profile/TechStackSection";
+import { ShareModal } from "@/components/profile/ShareModal";
+import { downloadVCard } from "@/lib/vcard";
 import { CiCircleCheck } from "react-icons/ci";
 import {
     SiTidal,
@@ -152,6 +165,20 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
     const [ytVideos, setYtVideos] = useState<any[]>([]);
     const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
     const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
+    const handleDownloadVCard = () => {
+        downloadVCard({
+            fullName: user.full_name,
+            username: user.username,
+            bio: user.bio,
+            role: user.role,
+            bookingUrl: user.booking_url,
+            avatarUrl: user.avatar_url,
+            socials: user.socials,
+        });
+        toast.success("Digital Dossier vCard downloaded. Ready to add to Contacts.");
+    };
 
     // Custom Player States
     const [player, setPlayer] = useState<any>(null);
@@ -710,6 +737,57 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                     {user.role || 'Creator'}
                                 </span>
 
+                                {/* Current Organization & Office Pill */}
+                                {user.org_enabled && user.org_name && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 5 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.35 }}
+                                    >
+                                        {user.org_url ? (
+                                            <a
+                                                href={user.org_url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="group/org inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-[9px] sm:text-[10px] font-syncopate uppercase tracking-widest transition-all duration-300 hover:scale-105 shadow-sm"
+                                                style={{
+                                                    borderColor: `${theme.primary}30`,
+                                                    backgroundColor: `${theme.primary}0D`,
+                                                    color: textPrimary
+                                                }}
+                                            >
+                                                <Building2 size={11} style={{ color: theme.primary }} className="shrink-0" />
+                                                <span className="opacity-60">{user.org_role || 'Building'} @</span>
+                                                <span className="font-bold underline-offset-4 group-hover/org:underline" style={{ color: theme.primary }}>
+                                                    {user.org_name}
+                                                </span>
+                                                {user.org_start_year && (
+                                                    <span className="opacity-40 text-[8px]">({user.org_start_year}—Present)</span>
+                                                )}
+                                                <ArrowUpRight size={10} className="opacity-50 transition-transform group-hover/org:translate-x-0.5 group-hover/org:-translate-y-0.5" />
+                                            </a>
+                                        ) : (
+                                            <div
+                                                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-[9px] sm:text-[10px] font-syncopate uppercase tracking-widest shadow-sm"
+                                                style={{
+                                                    borderColor: `${theme.primary}30`,
+                                                    backgroundColor: `${theme.primary}0D`,
+                                                    color: textPrimary
+                                                }}
+                                            >
+                                                <Building2 size={11} style={{ color: theme.primary }} className="shrink-0" />
+                                                <span className="opacity-60">{user.org_role || 'Building'} @</span>
+                                                <span className="font-bold" style={{ color: theme.primary }}>
+                                                    {user.org_name}
+                                                </span>
+                                                {user.org_start_year && (
+                                                    <span className="opacity-40 text-[8px]">({user.org_start_year}—Present)</span>
+                                                )}
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                )}
+
                                 <p className="max-w-xl text-lg md:text-2xl font-light italic leading-relaxed opacity-60 px-4 md:px-6">
                                     {user.bio || 'Welcome to my profile.'}
                                 </p>
@@ -777,16 +855,54 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                         )}
                                     </motion.div>
                                 )}
+
+                                {/* Digital Dossier vCard & Share Matrix Tactical Actions */}
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.55 }}
+                                    className="flex flex-wrap items-center justify-center gap-2.5 pt-2"
+                                >
+                                    <button
+                                        type="button"
+                                        onClick={handleDownloadVCard}
+                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full border text-[9px] md:text-[10px] font-syncopate font-bold uppercase tracking-wider shadow-md hover:scale-105 active:scale-95 transition-all duration-150 touch-manipulation cursor-pointer select-none"
+                                        style={{
+                                            borderColor: cardBorder,
+                                            backgroundColor: isLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.03)',
+                                            color: textPrimary
+                                        }}
+                                        title="Download .vcf Contact Card"
+                                    >
+                                        <UserPlus size={12} style={{ color: theme.primary }} />
+                                        <span>Save Contact</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsShareModalOpen(true)}
+                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full border text-[9px] md:text-[10px] font-syncopate font-bold uppercase tracking-wider shadow-md hover:scale-105 active:scale-95 transition-all duration-150 touch-manipulation cursor-pointer select-none"
+                                        style={{
+                                            borderColor: cardBorder,
+                                            backgroundColor: isLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.03)',
+                                            color: textPrimary
+                                        }}
+                                        title="Broadcast Digital Estate"
+                                    >
+                                        <Share2 size={12} style={{ color: theme.primary }} />
+                                        <span>Share</span>
+                                    </button>
+                                </motion.div>
                             </div>
                         </div>
                     </div>
 
                     {/* Main Content Grid */}
-                    <div className="w-full space-y-16 md:space-y-40">
+                    <div className="w-full space-y-20 md:space-y-32">
 
                         {/* Social Ecosystem */}
-                        <section className="flex flex-col items-center pt-8 md:pt-16">
-                            <div className="flex flex-col items-center mb-12 md:mb-20">
+                        <section className="flex flex-col items-center">
+                            <div className="flex flex-col items-center mb-8 md:mb-12">
                                 <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em] opacity-40 text-center truncate max-w-full px-4">Socials</span>
                             </div>
                             <div className="flex flex-wrap justify-center gap-6 max-w-2xl px-6">
@@ -852,110 +968,210 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                         </section>
 
 
-                        {/* Auditory Signature (Spotify) */}
-                        {user.top_tracks && user.top_tracks.length > 0 && (
-                            <section className="relative">
-                                <div className="flex flex-col items-center mb-10 md:mb-20">
-                                    <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em] opacity-40 text-center truncate max-w-full px-4">Music</span>
+                        {/* Selected Work (Neural Ventures / Projects) */}
+                        {user.ventures?.length > 0 && (
+                            <section id="work-section" className="flex flex-col items-center">
+                                <div className="flex flex-col items-center mb-10 md:mb-14 text-center">
+                                    <div className="flex items-center gap-2 mb-2 opacity-60">
+                                        <FolderGit2 size={14} style={{ color: theme.primary }} />
+                                        <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em]">
+                                            Selected Portfolio
+                                        </span>
+                                    </div>
+                                    <h3
+                                        className="text-2xl sm:text-3xl md:text-4xl font-syncopate font-bold uppercase tracking-tight"
+                                        style={{ color: isLight ? "#111" : "#FFF", fontFamily: theme.font }}
+                                    >
+                                        Featured Work<span style={{ color: theme.primary }}>.</span>
+                                    </h3>
+                                    <p className="text-xs text-white/40 font-plus mt-2 max-w-md italic">
+                                        Architectural deployments, flagship ventures, and sovereign systems.
+                                    </p>
                                 </div>
 
-                                <div className="flex flex-col gap-8 items-center w-full">
-                                    {/* Featured Track */}
-                                    <div className="w-full max-w-4xl relative group">
+                                <div className="space-y-8 md:space-y-12 w-full max-w-4xl px-4 md:px-0">
+                                    {user.ventures.map((project: any, idx: number) => (
                                         <div
-                                            className="relative aspect-[16/9] md:aspect-[21/9] rounded-[2rem] md:rounded-[3.5rem] overflow-hidden cursor-pointer border shadow-2xl transition-all duration-700 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)]"
-                                            style={{ borderColor: cardBorder }}
-                                            onClick={() => togglePreview(user.top_tracks[0].previewUrl)}
+                                            key={project.id}
+                                            className="w-full"
                                         >
-                                            <img
-                                                src={user.top_tracks[0].cover}
-                                                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-40"
-                                            />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-
-                                            <div className="absolute inset-0 p-8 md:p-12 flex flex-col justify-end">
-                                                <div className="flex items-center gap-6">
-                                                    <div
-                                                        className="w-16 h-16 md:w-24 md:h-24 rounded-full flex items-center justify-center backdrop-blur-3xl border-2 transition-all duration-500 scale-90 group-hover:scale-100 shadow-2xl aspect-square"
-                                                        style={{
-                                                            borderColor: playingPreview === user.top_tracks[0].previewUrl ? theme.primary : (isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.2)'),
-                                                            backgroundColor: playingPreview === user.top_tracks[0].previewUrl ? theme.primary : (isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'),
-                                                            color: playingPreview === user.top_tracks[0].previewUrl ? (isLight ? 'white' : 'black') : textPrimary
-                                                        }}
-                                                    >
-                                                        {playingPreview === user.top_tracks[0].previewUrl ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />}
+                                            <div
+                                                className="p-8 sm:p-12 md:p-16 rounded-[2.2rem] md:rounded-[3rem] border transition-all duration-700 bg-white/[0.01] hover:bg-white/[0.03] text-center flex flex-col items-center space-y-8 group shadow-xl hover:shadow-2xl"
+                                                style={{
+                                                    borderColor: cardBorder,
+                                                    backgroundColor: isLight ? 'rgba(0,0,0,0.01)' : 'rgba(255,255,255,0.01)'
+                                                }}
+                                            >
+                                                <div className="space-y-4 max-w-2xl w-full">
+                                                    <div className="flex items-center justify-center gap-4">
+                                                        <span className="text-[10px] md:text-[11px] font-syncopate tracking-[0.4em] px-3.5 py-1 rounded-full border uppercase" style={{ borderColor: cardBorder, color: theme.primary, backgroundColor: isLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.03)' }}>
+                                                            #{String(idx + 1).padStart(2, '0')}
+                                                        </span>
                                                     </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        {/* <span className="text-[10px] font-syncopate tracking-[0.4em] uppercase opacity-60 mb-2 block">Listening To</span> */}
-                                                        <h3 className="text-3xl md:text-5xl font-bold tracking-tight mb-2 leading-none uppercase truncate">{user.top_tracks[0].title}</h3>
-                                                        <p className="text-base md:text-xl opacity-40 font-light italic truncate">{user.top_tracks[0].artist}</p>
-                                                    </div>
+                                                    <h3 className="text-2xl sm:text-4xl md:text-5xl font-bold uppercase tracking-[-0.03em] leading-tight truncate px-4" style={{ fontFamily: theme.font }}>
+                                                        {project.title}
+                                                    </h3>
+                                                    <p className="text-base md:text-xl font-light italic opacity-50 line-clamp-2 md:line-clamp-none max-w-xl mx-auto">
+                                                        {project.description || 'Brief description of the project.'}
+                                                    </p>
                                                 </div>
+
+                                                {project.tech_stack?.length > 0 && (
+                                                    <div className="flex flex-wrap justify-center gap-2.5 opacity-60">
+                                                        {project.tech_stack.map((tech: string) => (
+                                                            <span key={tech} className="text-[9px] font-syncopate uppercase tracking-widest px-3 py-1 rounded-full border border-white/5 bg-white/[0.02]">
+                                                                {tech}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                )}
+
+                                                <Button
+                                                    variant="outline"
+                                                    className="w-fit py-5 px-8 md:px-10 rounded-full transition-all duration-500 gap-3 text-[10px] font-syncopate tracking-[0.3em] uppercase hover:scale-105 active:scale-95"
+                                                    style={{
+                                                        borderColor: cardBorder,
+                                                        color: textPrimary
+                                                    }}
+                                                    onClick={() => handleLinkClick('venture', project.id, project.url)}
+                                                >
+                                                    View Deployment <ArrowUpRight size={14} />
+                                                </Button>
                                             </div>
                                         </div>
-                                    </div>
-
-                                    {user.top_tracks.length > 1 && (
-                                        <div className={cn(
-                                            "grid gap-4 w-full max-w-4xl",
-                                            (user.top_tracks.length - 1) === 1 ? "grid-cols-1" :
-                                                (user.top_tracks.length - 1) === 2 ? "grid-cols-1 sm:grid-cols-2" :
-                                                    (user.top_tracks.length - 1) === 3 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" :
-                                                        "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
-                                        )}>
-                                            {user.top_tracks.slice(1, 5).map((track: any) => (
-                                                <div
-                                                    key={track.id}
-                                                    onClick={() => togglePreview(track.previewUrl)}
-                                                    className="group relative aspect-[16/9] rounded-[2rem]  overflow-hidden border bg-white/[0.02] cursor-pointer transition-all duration-300 shadow-xl"
-                                                    style={{ borderColor: playingPreview === track.previewUrl ? `${theme.primary}40` : cardBorder }}
-                                                >
-                                                    <img
-                                                        src={track.cover}
-                                                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-40"
-                                                    />
-                                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-
-                                                    <div className="absolute inset-0 p-4 md:p-6 flex flex-col justify-end">
-                                                        <div className="flex items-center gap-4">
-                                                            <div
-                                                                className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center backdrop-blur-3xl border transition-all duration-500 scale-90 group-hover:scale-100 shadow-2xl aspect-square shrink-0"
-                                                                style={{
-                                                                    borderColor: playingPreview === track.previewUrl ? theme.primary : (isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.2)'),
-                                                                    backgroundColor: playingPreview === track.previewUrl ? theme.primary : (isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'),
-                                                                    color: playingPreview === track.previewUrl ? (isLight ? 'white' : 'black') : textPrimary
-                                                                }}
-                                                            >
-                                                                {playingPreview === track.previewUrl ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" className="ml-0.5" />}
-                                                            </div>
-                                                            <div className="flex-1 min-w-0">
-                                                                <h4 className="text-xs md:text-sm font-bold uppercase tracking-tight leading-tight truncate">{track.title}</h4>
-                                                                <p className="text-[10px] opacity-40 font-light truncate">{track.artist}</p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
+                                    ))}
                                 </div>
                             </section>
                         )}
 
+                        {/* Engineering Arsenal / Tech Stack */}
+                        <TechStackSection
+                            skills={user.skills || []}
+                            theme={theme}
+                            isLight={isLight}
+                        />
 
+                        {/* Career Trajectory & Milestones Timeline */}
+                        <MilestonesSection
+                            milestones={user.milestones || []}
+                            theme={theme}
+                            isLight={isLight}
+                            textPrimary={textPrimary}
+                            cardBorder={cardBorder}
+                        />
+
+                        {/* Confidential Executive Dossier & Resume Vault */}
+                        <DossierSection
+                            user={user}
+                            theme={theme}
+                            isLight={isLight}
+                            textPrimary={textPrimary}
+                            cardBorder={cardBorder}
+                        />
+
+                        {/* Client Endorsements / Wall of Distinction */}
+                        <EndorsementsSection
+                            endorsements={user.endorsements || []}
+                            theme={theme}
+                            isLight={isLight}
+                            textPrimary={textPrimary}
+                            cardBorder={cardBorder}
+                        />
+
+                        {/* Personal Picks / Curated Boutique */}
+                        {user.products?.length > 0 && (
+                            <section id="picks-section" className="flex flex-col items-center">
+                                <div className="flex flex-col items-center mb-10 md:mb-14 text-center">
+                                    <div className="flex items-center gap-2 mb-2 opacity-60">
+                                        <ShoppingBag size={14} style={{ color: theme.primary }} />
+                                        <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em]">
+                                            Curated Recommendations
+                                        </span>
+                                    </div>
+                                    <h3
+                                        className="text-2xl sm:text-3xl md:text-4xl font-syncopate font-bold uppercase tracking-tight"
+                                        style={{ color: isLight ? "#111" : "#FFF", fontFamily: theme.font }}
+                                    >
+                                        Personal Picks<span style={{ color: theme.primary }}>.</span>
+                                    </h3>
+                                    <p className="text-xs text-white/40 font-plus mt-2 max-w-md italic">
+                                        Handpicked hardware, literature, tools, and digital acquisitions.
+                                    </p>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 w-full max-w-4xl px-4 md:px-0">
+                                    {user.products.map((product: any) => (
+                                        <div
+                                            key={product.id}
+                                            className="group relative"
+                                        >
+                                            <div className="relative aspect-[4/5] rounded-[2.2rem] md:rounded-[2.8rem] overflow-hidden border bg-neutral-900 shadow-xl" style={{ borderColor: cardBorder }}>
+                                                <img
+                                                    src={product.image_url || "https://images.unsplash.com/photo-1510511459019-5dee99c4ff5d?auto=format&fit=crop&q=80&w=400"}
+                                                    alt={product.title}
+                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+
+                                                {/* Luxury Product Info */}
+                                                <div className="absolute inset-x-0 bottom-0 p-6 md:p-8 flex flex-col justify-end">
+                                                    <div className="flex justify-between items-end gap-4">
+                                                        <div className="flex-1 min-w-0 space-y-1">
+                                                            <h3 className="text-xl md:text-2xl font-bold uppercase tracking-tight leading-snug truncate text-white">{product.title}</h3>
+                                                            <span className="text-lg md:text-xl font-light italic" style={{ color: theme.primary }}>
+                                                                {new Intl.NumberFormat(user.currency === 'INR' ? 'en-IN' : 'en-US', {
+                                                                    style: 'currency',
+                                                                    currency: user.currency || 'USD',
+                                                                    maximumFractionDigits: 0
+                                                                }).format(parseFloat(product.price || "0"))}
+                                                            </span>
+                                                        </div>
+                                                        <button
+                                                            className="w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all duration-300 shrink-0"
+                                                            style={{
+                                                                backgroundColor: isLight ? '#1E293B' : '#FFFFFF',
+                                                                color: isLight ? '#FFFFFF' : '#000000'
+                                                            }}
+                                                            onClick={() => handleLinkClick('product', product.id, product.url)}
+                                                            title="Inspect / Acquire"
+                                                        >
+                                                            <ShoppingBag size={20} />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </section>
+                        )}
 
                         {/* Creative Spectrum (YouTube) */}
                         {user.youtube_channel_id && ytVideos.length > 0 && (
-                            <section className="relative">
-                                <div className="flex flex-col items-center mb-10 md:mb-20">
-                                    <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em] opacity-40 text-center truncate max-w-full px-4">Videos</span>
+                            <section id="videos-section" className="flex flex-col items-center">
+                                <div className="flex flex-col items-center mb-10 md:mb-14 text-center">
+                                    <div className="flex items-center gap-2 mb-2 opacity-60">
+                                        <Video size={14} style={{ color: theme.primary }} />
+                                        <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em]">
+                                            Broadcast Channel
+                                        </span>
+                                    </div>
+                                    <h3
+                                        className="text-2xl sm:text-3xl md:text-4xl font-syncopate font-bold uppercase tracking-tight"
+                                        style={{ color: isLight ? "#111" : "#FFF", fontFamily: theme.font }}
+                                    >
+                                        Latest Transmissions<span style={{ color: theme.primary }}>.</span>
+                                    </h3>
+                                    <p className="text-xs text-white/40 font-plus mt-2 max-w-md italic">
+                                        Recent keynotes, video architecture essays, and tutorials.
+                                    </p>
                                 </div>
 
-                                <div className="flex flex-col gap-8 items-center w-full">
+                                <div className="flex flex-col gap-6 items-center w-full max-w-4xl px-4 md:px-0">
                                     {/* Featured Video */}
-                                    <div className="w-full max-w-4xl relative group">
+                                    <div className="w-full relative group">
                                         <div
-                                            className="relative aspect-[16/9] md:aspect-video rounded-[2rem] md:rounded-[3.5rem]  overflow-hidden cursor-pointer border shadow-2xl transition-all duration-700 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)]"
+                                            className="relative aspect-[16/9] md:aspect-video rounded-[2rem] md:rounded-[3rem] overflow-hidden cursor-pointer border shadow-2xl transition-all duration-500 hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)]"
                                             style={{ borderColor: cardBorder }}
                                             onClick={() => setActiveVideoId(ytVideos[0].id)}
                                         >
@@ -965,21 +1181,21 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                             />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
 
-                                            <div className="absolute inset-0 p-8 md:p-12 flex flex-col justify-end">
-                                                <div className="flex items-center gap-6">
+                                            <div className="absolute inset-0 p-6 md:p-10 flex flex-col justify-end">
+                                                <div className="flex items-center gap-5">
                                                     <div
-                                                        className="w-16 h-16 md:w-24 md:h-24 rounded-full flex items-center justify-center backdrop-blur-3xl border-2 transition-all duration-500 scale-90 group-hover:scale-100 shadow-2xl aspect-square"
+                                                        className="w-14 h-14 md:w-20 md:h-20 rounded-full flex items-center justify-center border-2 transition-all duration-300 scale-95 group-hover:scale-100 shadow-xl aspect-square shrink-0"
                                                         style={{
                                                             borderColor: theme.primary + '33',
                                                             backgroundColor: 'rgba(255,255,255,0.05)',
                                                             color: textPrimary
                                                         }}
                                                     >
-                                                        <Play size={32} fill="currentColor" className="ml-1" />
+                                                        <Play size={28} fill="currentColor" className="ml-1" />
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <span className="text-[10px] font-syncopate tracking-[0.4em] uppercase opacity-60 mb-2 block">Latest Video</span>
-                                                        <h3 className="text-3xl md:text-5xl font-bold tracking-tight mb-2 leading-none uppercase truncate">{ytVideos[0].title}</h3>
+                                                        <span className="text-[10px] font-syncopate tracking-[0.3em] uppercase opacity-60 mb-1.5 block">Featured Transmission</span>
+                                                        <h3 className="text-2xl md:text-4xl font-bold tracking-tight mb-2 leading-none uppercase truncate text-white">{ytVideos[0].title}</h3>
                                                         <div className="flex items-center gap-2">
                                                             <div className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
                                                             <p className="text-[9px] font-syncopate uppercase tracking-widest text-white/40">
@@ -994,7 +1210,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
 
                                     {ytVideos.length > 1 && (
                                         <div className={cn(
-                                            "grid gap-4 w-full max-w-4xl",
+                                            "grid gap-4 w-full",
                                             (ytVideos.length - 1) === 1 ? "grid-cols-1" :
                                                 (ytVideos.length - 1) === 2 ? "grid-cols-1 sm:grid-cols-2" :
                                                     (ytVideos.length - 1) === 3 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" :
@@ -1004,7 +1220,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                 <div
                                                     key={video.id}
                                                     onClick={() => setActiveVideoId(video.id)}
-                                                    className="group relative aspect-[16/9] rounded-[2rem] overflow-hidden border bg-white/[0.02] cursor-pointer transition-all duration-300 shadow-xl"
+                                                    className="group relative aspect-[16/9] rounded-[1.8rem] overflow-hidden border bg-white/[0.02] cursor-pointer transition-all duration-300 shadow-lg"
                                                     style={{ borderColor: cardBorder }}
                                                 >
                                                     <img
@@ -1013,20 +1229,20 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                     />
                                                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
 
-                                                    <div className="absolute inset-0 p-4 md:p-6 flex flex-col justify-end">
-                                                        <div className="flex items-center gap-4">
+                                                    <div className="absolute inset-0 p-4 flex flex-col justify-end">
+                                                        <div className="flex items-center gap-3">
                                                             <div
-                                                                className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center backdrop-blur-3xl border transition-all duration-500 scale-90 group-hover:scale-100 shadow-2xl aspect-square shrink-0"
+                                                                className="w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center border transition-all duration-300 scale-90 group-hover:scale-100 shadow-lg aspect-square shrink-0"
                                                                 style={{
                                                                     borderColor: theme.primary + '20',
                                                                     backgroundColor: 'rgba(255,255,255,0.05)',
                                                                     color: textPrimary
                                                                 }}
                                                             >
-                                                                <Play size={18} fill="currentColor" className="ml-0.5" />
+                                                                <Play size={15} fill="currentColor" className="ml-0.5" />
                                                             </div>
                                                             <div className="flex-1 min-w-0">
-                                                                <h4 className="text-xs md:text-sm font-bold uppercase tracking-tight leading-tight truncate">{video.title}</h4>
+                                                                <h4 className="text-xs md:text-sm font-bold uppercase tracking-tight leading-tight truncate text-white">{video.title}</h4>
                                                                 <p className="text-[10px] opacity-40 font-light truncate">
                                                                     {video.published ? formatDistanceToNow(new Date(video.published), { addSuffix: true }) : 'Recent'}
                                                                 </p>
@@ -1038,14 +1254,14 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                         </div>
                                     )}
 
-                                    <div className="flex justify-center pt-8">
+                                    <div className="flex justify-center pt-4">
                                         <Button
                                             variant="outline"
                                             onClick={() => window.open(`https://youtube.com/channel/${user.youtube_channel_id}`, '_blank')}
-                                            className="group relative px-12 py-6 rounded-full text-[10px] font-syncopate tracking-[0.4em] uppercase border-white/10 hover:border-luxury-gold/40 bg-white/[0.02] hover:bg-white/[0.05] transition-all duration-700"
+                                            className="group relative px-8 py-4 rounded-full text-[9px] md:text-[10px] font-syncopate tracking-[0.3em] uppercase border-white/10 hover:border-luxury-gold/40 bg-white/[0.02] hover:bg-white/[0.05] transition-all duration-500"
                                         >
-                                            <span className="relative z-10 flex items-center gap-4">
-                                                View Channel <ArrowUpRight size={16} className="transition-transform duration-500 group-hover:translate-x-1 group-hover:-translate-y-1" />
+                                            <span className="relative z-10 flex items-center gap-3">
+                                                View Channel <ArrowUpRight size={14} className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                                             </span>
                                         </Button>
                                     </div>
@@ -1053,157 +1269,164 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                             </section>
                         )}
 
-
-                        {/* Neural Ventures (Projects) */}
-                        {user.ventures?.length > 0 && (
-                            <section className="space-y-20">
-                                <div className="flex flex-col items-center">
-                                    <span className="text-[11px] font-syncopate uppercase tracking-[1em] opacity-40 font-black">Work</span>
+                        {/* Auditory Signature (Spotify) */}
+                        {user.top_tracks && user.top_tracks.length > 0 && (
+                            <section id="music-section" className="flex flex-col items-center">
+                                <div className="flex flex-col items-center mb-10 md:mb-14 text-center">
+                                    <div className="flex items-center gap-2 mb-2 opacity-60">
+                                        <Music size={14} style={{ color: theme.primary }} />
+                                        <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em]">
+                                            Auditory Signature
+                                        </span>
+                                    </div>
+                                    <h3
+                                        className="text-2xl sm:text-3xl md:text-4xl font-syncopate font-bold uppercase tracking-tight"
+                                        style={{ color: isLight ? "#111" : "#FFF", fontFamily: theme.font }}
+                                    >
+                                        Heavy Rotation<span style={{ color: theme.primary }}>.</span>
+                                    </h3>
+                                    <p className="text-xs text-white/40 font-plus mt-2 max-w-md italic">
+                                        Soundtracks, focus frequencies, and studio listening rotation.
+                                    </p>
                                 </div>
 
-                                <div className="space-y-12 md:space-y-24">
-                                    {user.ventures.map((project: any, idx: number) => (
+                                <div className="flex flex-col gap-6 items-center w-full max-w-4xl px-4 md:px-0">
+                                    {/* Featured Track */}
+                                    <div className="w-full relative group">
                                         <div
-                                            key={project.id}
-                                            className="w-full max-w-4xl mx-auto"
+                                            className="relative aspect-[16/9] md:aspect-[21/9] rounded-[2rem] md:rounded-[3rem] overflow-hidden cursor-pointer border shadow-2xl transition-all duration-500 hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)]"
+                                            style={{ borderColor: cardBorder }}
+                                            onClick={() => togglePreview(user.top_tracks[0].previewUrl)}
                                         >
-                                            <div
-                                                className="p-8 md:p-20 rounded-[2.5rem] md:rounded-[3.5rem]  border transition-all duration-700 bg-white/[0.01] hover:bg-white/[0.03] text-center flex flex-col items-center space-y-10 group"
-                                                style={{
-                                                    borderColor: cardBorder,
-                                                    backgroundColor: isLight ? 'rgba(0,0,0,0.01)' : 'rgba(255,255,255,0.01)'
-                                                }}
-                                            >
-                                                <div className="space-y-6 max-w-2xl w-full">
-                                                    <div className="flex items-center justify-center gap-4">
-                                                        <span className="text-[12px] font-syncopate tracking-[0.5em] px-4 py-1.5 rounded-full border uppercase" style={{ borderColor: cardBorder, color: theme.primary, backgroundColor: isLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.03)' }}>
-                                                            #{idx + 1}
-                                                        </span>
+                                            <img
+                                                src={user.top_tracks[0].cover}
+                                                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-40"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+
+                                            <div className="absolute inset-0 p-6 md:p-10 flex flex-col justify-end">
+                                                <div className="flex items-center gap-5">
+                                                    <div
+                                                        className="w-14 h-14 md:w-20 md:h-20 rounded-full flex items-center justify-center border-2 transition-all duration-300 scale-95 group-hover:scale-100 shadow-xl aspect-square shrink-0"
+                                                        style={{
+                                                            borderColor: playingPreview === user.top_tracks[0].previewUrl ? theme.primary : (isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.2)'),
+                                                            backgroundColor: playingPreview === user.top_tracks[0].previewUrl ? theme.primary : (isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'),
+                                                            color: playingPreview === user.top_tracks[0].previewUrl ? (isLight ? 'white' : 'black') : textPrimary
+                                                        }}
+                                                    >
+                                                        {playingPreview === user.top_tracks[0].previewUrl ? <Pause size={28} fill="currentColor" /> : <Play size={28} fill="currentColor" className="ml-1" />}
                                                     </div>
-                                                    <h3 className="text-3xl md:text-7xl font-bold uppercase tracking-[-0.04em] leading-tight truncate px-4" style={{ fontFamily: theme.font }}>
-                                                        {project.title}
-                                                    </h3>
-                                                    <p className="text-lg md:text-2xl font-light italic opacity-50 line-clamp-2 md:line-clamp-none">
-                                                        {project.description || 'Brief description of the project.'}
-                                                    </p>
+                                                    <div className="flex-1 min-w-0">
+                                                        <h3 className="text-2xl md:text-4xl font-bold tracking-tight mb-1 leading-none uppercase truncate text-white">{user.top_tracks[0].title}</h3>
+                                                        <p className="text-sm md:text-lg opacity-40 font-light italic truncate">{user.top_tracks[0].artist}</p>
+                                                    </div>
                                                 </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                                <div className="flex flex-wrap justify-center gap-4 opacity-40">
-                                                    {project.tech_stack?.map((tech: string) => (
-                                                        <span key={tech} className="text-[10px] uppercase tracking-[0.3em] font-medium border-b border-white/10 pb-1">
-                                                            {tech}
-                                                        </span>
-                                                    ))}
-                                                </div>
-
-                                                <Button
-                                                    variant="outline"
-                                                    className="w-fit py-8 px-12 rounded-[2.5rem] transition-all duration-700 gap-4 text-[11px] font-syncopate tracking-[0.4em] uppercase hover:scale-105 active:scale-95"
-                                                    style={{
-                                                        borderColor: cardBorder,
-                                                        color: textPrimary
-                                                    }}
-                                                    onClick={() => handleLinkClick('venture', project.id, project.url)}
+                                    {user.top_tracks.length > 1 && (
+                                        <div className={cn(
+                                            "grid gap-4 w-full",
+                                            (user.top_tracks.length - 1) === 1 ? "grid-cols-1" :
+                                                (user.top_tracks.length - 1) === 2 ? "grid-cols-1 sm:grid-cols-2" :
+                                                    (user.top_tracks.length - 1) === 3 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" :
+                                                        "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+                                        )}>
+                                            {user.top_tracks.slice(1, 5).map((track: any) => (
+                                                <div
+                                                    key={track.id}
+                                                    onClick={() => togglePreview(track.previewUrl)}
+                                                    className="group relative aspect-[16/9] rounded-[1.8rem] overflow-hidden border bg-white/[0.02] cursor-pointer transition-all duration-300 shadow-lg"
+                                                    style={{ borderColor: playingPreview === track.previewUrl ? `${theme.primary}40` : cardBorder }}
                                                 >
-                                                    View  <ArrowUpRight size={16} />
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </section>
-                        )}
+                                                    <img
+                                                        src={track.cover}
+                                                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-40"
+                                                    />
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
 
-                        {/* Elite Boutique (Products) */}
-                        {user.products?.length > 0 && (
-                            <section className="space-y-20">
-                                <div className="flex flex-col items-center">
-                                    <span className="text-[11px] font-syncopate uppercase tracking-[1em] opacity-40 font-black">Picks</span>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                                    {user.products.map((product: any, _idx: number) => (
-                                        <div
-                                            key={product.id}
-                                            className="group relative"
-                                        >
-                                            <div className="relative aspect-[4/5] rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden border bg-neutral-900" style={{ borderColor: cardBorder }}>
-                                                <img
-                                                    src={product.image_url || "https://images.unsplash.com/photo-1510511459019-5dee99c4ff5d?auto=format&fit=crop&q=80&w=400"}
-                                                    alt={product.title}
-                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                                />
-                                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 transition-opacity" />
-
-                                                {/* Luxury Product Info */}
-                                                <div className="absolute inset-x-0 bottom-0 p-8 md:p-12 flex flex-col justify-end">
-                                                    <div className="flex justify-between items-end gap-5 translate-y-0 md:translate-y-4 md:group-hover:translate-y-0 transition-transform duration-700">
-                                                        <div className="flex-1 min-w-0 space-y-1">
-                                                            <h3 className="text-2xl md:text-3xl font-bold uppercase tracking-tighter leading-none truncate">{product.title}</h3>
-                                                            <span className="text-xl md:text-xl font-light italic" style={{ color: theme.primary }}>
-                                                                {new Intl.NumberFormat(user.currency === 'INR' ? 'en-IN' : 'en-US', {
-                                                                    style: 'currency',
-                                                                    currency: user.currency || 'USD',
-                                                                    maximumFractionDigits: 0
-                                                                }).format(parseFloat(product.price || "0"))}
-                                                            </span>
+                                                    <div className="absolute inset-0 p-4 flex flex-col justify-end">
+                                                        <div className="flex items-center gap-3">
+                                                            <div
+                                                                className="w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center border transition-all duration-300 scale-90 group-hover:scale-100 shadow-lg aspect-square shrink-0"
+                                                                style={{
+                                                                    borderColor: playingPreview === track.previewUrl ? theme.primary : (isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.2)'),
+                                                                    backgroundColor: playingPreview === track.previewUrl ? theme.primary : (isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'),
+                                                                    color: playingPreview === track.previewUrl ? (isLight ? 'white' : 'black') : textPrimary
+                                                                }}
+                                                            >
+                                                                {playingPreview === track.previewUrl ? <Pause size={15} fill="currentColor" /> : <Play size={15} fill="currentColor" className="ml-0.5" />}
+                                                            </div>
+                                                            <div className="flex-1 min-w-0">
+                                                                <h4 className="text-xs md:text-sm font-bold uppercase tracking-tight leading-tight truncate text-white">{track.title}</h4>
+                                                                <p className="text-[10px] opacity-40 font-light truncate">{track.artist}</p>
+                                                            </div>
                                                         </div>
-                                                        <button
-                                                            className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-all duration-500 shrink-0"
-                                                            style={{
-                                                                backgroundColor: isLight ? '#1E293B' : '#FFFFFF',
-                                                                color: isLight ? '#FFFFFF' : '#000000'
-                                                            }}
-                                                            onClick={() => handleLinkClick('product', product.id, product.url)}
-                                                        >
-                                                            <ShoppingBag size={24} />
-                                                        </button>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            ))}
                                         </div>
-                                    ))}
+                                    )}
                                 </div>
                             </section>
                         )}
-
-                        {/* Client Endorsements / Wall of Distinction */}
-                        <EndorsementsSection
-                            endorsements={user.endorsements || []}
-                            theme={theme}
-                            isLight={isLight}
-                            textPrimary={textPrimary}
-                            cardBorder={cardBorder}
-                        />
 
                         {/* Brand Inquiries Form */}
                         {user.accepting_inquiries && (
-                            <section className="relative w-full flex flex-col items-center mt-16">
-                                <div className="flex flex-col items-center mb-10 md:mb-16">
-                                    <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em] opacity-40 text-center truncate max-w-full px-4">Collaboration</span>
+                            <section id="inquiry-section" className="relative w-full flex flex-col items-center">
+                                <div className="flex flex-col items-center mb-10 md:mb-14 text-center">
+                                    <div className="flex items-center gap-2 mb-2 opacity-60">
+                                        <Briefcase size={14} style={{ color: theme.primary }} />
+                                        <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em]">
+                                            Direct Inquiry
+                                        </span>
+                                    </div>
+                                    <h3
+                                        className="text-2xl sm:text-3xl md:text-4xl font-syncopate font-bold uppercase tracking-tight"
+                                        style={{ color: isLight ? "#111" : "#FFF", fontFamily: theme.font }}
+                                    >
+                                        Collaborate<span style={{ color: theme.primary }}>.</span>
+                                    </h3>
+                                    <p className="text-xs text-white/40 font-plus mt-2 max-w-md italic">
+                                        Architectural advisory, speaking engagements, and strategic partnerships.
+                                    </p>
                                 </div>
-                                <InquiryForm
-                                    profileId={user.id}
-                                    theme={theme}
-                                    isLight={isLight}
-                                    textPrimary={textPrimary}
-                                    cardBorder={cardBorder}
-                                />
+                                <div className="w-full max-w-4xl px-4 md:px-0">
+                                    <InquiryForm
+                                        profileId={user.id}
+                                        theme={theme}
+                                        isLight={isLight}
+                                        textPrimary={textPrimary}
+                                        cardBorder={cardBorder}
+                                    />
+                                </div>
                             </section>
                         )}
-
-
 
                         {/* Exclusive Access / Newsletter */}
                         {user.newsletter_enabled && (
                             <section className="relative w-full flex flex-col items-center">
-                                <div className="flex flex-col items-center mb-10 md:mb-16">
-                                    <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em] opacity-40 text-center truncate max-w-full px-4">Newsletter</span>
+                                <div className="flex flex-col items-center mb-10 md:mb-14 text-center">
+                                    <div className="flex items-center gap-2 mb-2 opacity-60">
+                                        <Mail size={14} style={{ color: theme.primary }} />
+                                        <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em]">
+                                            Dispatch
+                                        </span>
+                                    </div>
+                                    <h3
+                                        className="text-2xl sm:text-3xl md:text-4xl font-syncopate font-bold uppercase tracking-tight"
+                                        style={{ color: isLight ? "#111" : "#FFF", fontFamily: theme.font }}
+                                    >
+                                        Exclusive Access<span style={{ color: theme.primary }}>.</span>
+                                    </h3>
+                                    <p className="text-xs text-white/40 font-plus mt-2 max-w-md italic">
+                                        Periodic engineering essays, venture updates, and privileged dispatches.
+                                    </p>
                                 </div>
 
                                 <motion.div
-                                    // 
-                                    className="w-full max-w-4xl relative"
+                                    className="w-full max-w-4xl px-4 md:px-0 relative"
                                 >
                                     {/* Architectural Glow */}
                                     <div
@@ -1671,6 +1894,15 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                 <BookingModal
                     isOpen={isBookingModalOpen}
                     onClose={() => setIsBookingModalOpen(false)}
+                    user={user}
+                    theme={theme}
+                    isLight={isLight}
+                />
+
+                {/* Estate Broadcast / Share Matrix Modal */}
+                <ShareModal
+                    isOpen={isShareModalOpen}
+                    onClose={() => setIsShareModalOpen(false)}
                     user={user}
                     theme={theme}
                     isLight={isLight}

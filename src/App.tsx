@@ -24,6 +24,8 @@ import Identity from "@/pages/dashboard/Identity";
 import Audience from "@/pages/dashboard/Audience";
 import Inquiries from "@/pages/dashboard/Inquiries";
 import Endorsements from "@/pages/dashboard/Endorsements";
+import Milestones from "@/pages/dashboard/Milestones";
+import Skills from "@/pages/dashboard/Skills";
 import Protocol from "@/pages/Protocol";
 
 const queryClient = new QueryClient();
@@ -128,6 +130,8 @@ function App() {
                                 <Route path="audience" element={<Audience />} />
                                 <Route path="inquiries" element={<Inquiries />} />
                                 <Route path="endorsements" element={<Endorsements />} />
+                                <Route path="milestones" element={<Milestones />} />
+                                <Route path="skills" element={<Skills />} />
                             </Route>
                             <Route path="/preview" element={<PreviewRedirect />} />
                             <Route path="/protocol/:id" element={<Protocol />} />

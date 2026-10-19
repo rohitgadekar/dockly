@@ -23,7 +23,15 @@ import {
     Lock,
     Calendar,
     CheckCircle2,
-    ArrowUpRight
+    ArrowUpRight,
+    Building2,
+    Briefcase,
+    FileText,
+    KeyRound,
+    Eye,
+    EyeOff,
+    Shuffle,
+    ExternalLink
 } from "lucide-react";
 import { useDashboard } from "@/hooks/useDashboard";
 import { supabase } from "@/lib/supabase";
@@ -61,6 +69,25 @@ const Settings = () => {
     const [bookingUrl, setBookingUrl] = useState("");
     const [bookingButtonText, setBookingButtonText] = useState("Schedule Session");
     const [savingAvailability, setSavingAvailability] = useState(false);
+
+    // Current Organization State
+    const [orgName, setOrgName] = useState("");
+    const [orgRole, setOrgRole] = useState("");
+    const [orgUrl, setOrgUrl] = useState("");
+    const [orgStartYear, setOrgStartYear] = useState("");
+    const [orgEnabled, setOrgEnabled] = useState(true);
+    const [savingOrg, setSavingOrg] = useState(false);
+
+    // Confidential Executive Dossier State
+    const [dossierEnabled, setDossierEnabled] = useState(false);
+    const [dossierTitle, setDossierTitle] = useState("Executive Dossier & CV");
+    const [dossierDescription, setDossierDescription] = useState("");
+    const [dossierFileUrl, setDossierFileUrl] = useState("");
+    const [dossierPasscode, setDossierPasscode] = useState("");
+    const [dossierRequiresPasscode, setDossierRequiresPasscode] = useState(true);
+    const [showPasscode, setShowPasscode] = useState(false);
+    const [savingDossier, setSavingDossier] = useState(false);
+
     const [loading, setLoading] = useState(false);
     const [uploadingStory, setUploadingStory] = useState(false);
     const [updatingPassword, setUpdatingPassword] = useState(false);
@@ -90,6 +117,20 @@ const Settings = () => {
             setBookingEnabled(data.profile.booking_enabled || false);
             setBookingUrl(data.profile.booking_url || "");
             setBookingButtonText(data.profile.booking_button_text || "Schedule Session");
+
+            // Organization & Dossier
+            setOrgName(data.profile.org_name || "");
+            setOrgRole(data.profile.org_role || "");
+            setOrgUrl(data.profile.org_url || "");
+            setOrgStartYear(data.profile.org_start_year || "");
+            setOrgEnabled(data.profile.org_enabled ?? true);
+
+            setDossierEnabled(data.profile.dossier_enabled || false);
+            setDossierTitle(data.profile.dossier_title || "Executive Dossier & CV");
+            setDossierDescription(data.profile.dossier_description || "Comprehensive career overview, venture history, advisory board clearances, and private references.");
+            setDossierFileUrl(data.profile.dossier_file_url || "");
+            setDossierPasscode(data.profile.dossier_passcode || "");
+            setDossierRequiresPasscode(data.profile.dossier_requires_passcode ?? true);
         }
     }, [data?.profile]);
 
@@ -239,6 +280,77 @@ const Settings = () => {
         } finally {
             setSavingAvailability(false);
         }
+    };
+
+    const handleSaveOrg = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSavingOrg(true);
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error("Unauthorized");
+
+            const { error } = await supabase.from("profiles").update({
+                org_name: orgName.trim(),
+                org_role: orgRole.trim(),
+                org_url: orgUrl.trim(),
+                org_start_year: orgStartYear.trim(),
+                org_enabled: orgEnabled,
+                updated_at: new Date().toISOString()
+            }).eq("id", user.id);
+
+            if (error) throw error;
+
+            toast.success("Current organization & office credentials saved.");
+            queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+            if (data?.profile?.username) {
+                queryClient.invalidateQueries({ queryKey: ["profile", data.profile.username] });
+            }
+        } catch (error: any) {
+            toast.error(error.message || "Failed to update organization");
+        } finally {
+            setSavingOrg(false);
+        }
+    };
+
+    const handleSaveDossier = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSavingDossier(true);
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error("Unauthorized");
+
+            const { error } = await supabase.from("profiles").update({
+                dossier_enabled: dossierEnabled,
+                dossier_title: dossierTitle.trim(),
+                dossier_description: dossierDescription.trim(),
+                dossier_file_url: dossierFileUrl.trim(),
+                dossier_passcode: dossierPasscode.trim(),
+                dossier_requires_passcode: dossierRequiresPasscode,
+                updated_at: new Date().toISOString()
+            }).eq("id", user.id);
+
+            if (error) throw error;
+
+            toast.success("Executive Dossier Vault credentials saved.");
+            queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+            if (data?.profile?.username) {
+                queryClient.invalidateQueries({ queryKey: ["profile", data.profile.username] });
+            }
+        } catch (error: any) {
+            toast.error(error.message || "Failed to update dossier vault");
+        } finally {
+            setSavingDossier(false);
+        }
+    };
+
+    const generateRandomPasscode = () => {
+        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        let code = "";
+        for (let i = 0; i < 6; i++) {
+            code += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        setDossierPasscode(code);
+        toast.info(`Generated Clearance Cipher: ${code}`);
     };
 
     const handleUpdatePassword = async (e: React.FormEvent) => {
@@ -469,6 +581,121 @@ const Settings = () => {
                             </Button>
                         </form>
                     </div>
+                </Card>
+
+                {/* Section: Current Organization & Primary Office */}
+                <Card className="p-8 sm:p-16 border-white/5 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-luxury-gold/[0.02] blur-[120px] -mr-48 -mt-48 pointer-events-none" />
+
+                    <div className="flex flex-col md:flex-row items-center gap-6 sm:gap-12 border-b border-white/5 pb-12 mb-12">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-luxury-gold/5 rounded-[1.5rem] flex items-center justify-center text-luxury-gold border border-luxury-gold/10 shrink-0">
+                            <Building2 size={32} strokeWidth={1} />
+                        </div>
+                        <div className="text-center md:text-left">
+                            <h2 className="text-2xl sm:text-3xl font-syncopate font-bold uppercase tracking-tight text-white">Current Organization & Office</h2>
+                            <p className="text-[10px] text-white/20 font-syncopate uppercase tracking-[0.4em] mt-2">Flagship affiliation and executive office displayed in profile hero</p>
+                        </div>
+                    </div>
+
+                    <form onSubmit={handleSaveOrg} className="space-y-10">
+                        {/* Visibility Toggle */}
+                        <div className="flex flex-col md:flex-row items-center justify-between p-6 sm:p-8 bg-white/[0.02] border border-white/5 rounded-[2rem] gap-6">
+                            <div className="max-w-xl text-center md:text-left">
+                                <label className="text-xs font-syncopate uppercase tracking-[0.2em] text-white block mb-2">Display Organization in Profile Hero</label>
+                                <p className="text-sm text-white/40 font-plus leading-relaxed">
+                                    Renders a gilded live badge below your role with your current venture, position, tenure, and external office portal link.
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setOrgEnabled(!orgEnabled)}
+                                className={`w-20 h-10 rounded-full relative transition-all duration-500 ease-out border-2 shrink-0 ${orgEnabled ? 'bg-luxury-gold/10 border-luxury-gold' : 'bg-white/5 border-white/10'}`}
+                            >
+                                <div className={`absolute top-1 left-1 w-7 h-7 rounded-full bg-white transition-all duration-500 shadow-[0_0_15px_rgba(255,255,255,0.3)] ${orgEnabled ? 'translate-x-10 bg-luxury-gold shadow-[0_0_20px_rgba(212,175,55,0.6)]' : 'translate-x-0 opacity-40'}`} />
+                            </button>
+                        </div>
+
+                        {/* Fields */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/40 ml-2">Organization / Company Name</label>
+                                <input
+                                    value={orgName}
+                                    onChange={(e) => setOrgName(e.target.value)}
+                                    placeholder="Ex. Anthropic, Dockly Labs, Sequoia"
+                                    className="w-full bg-white/[0.02] border border-white/5 rounded-[2rem] py-6 px-8 sm:px-10 outline-none focus:border-luxury-gold/40 focus:bg-white/[0.04] transition-all duration-700 font-plus text-base sm:text-lg text-white"
+                                />
+                            </div>
+
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/40 ml-2">Executive Position / Title</label>
+                                <input
+                                    value={orgRole}
+                                    onChange={(e) => setOrgRole(e.target.value)}
+                                    placeholder="Ex. Founding Partner, Head of Architecture"
+                                    className="w-full bg-white/[0.02] border border-white/5 rounded-[2rem] py-6 px-8 sm:px-10 outline-none focus:border-luxury-gold/40 focus:bg-white/[0.04] transition-all duration-700 font-plus text-base sm:text-lg text-white"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/40 ml-2">Organization URL / Portal</label>
+                                <input
+                                    value={orgUrl}
+                                    onChange={(e) => setOrgUrl(e.target.value)}
+                                    placeholder="https://company.com"
+                                    className="w-full bg-white/[0.02] border border-white/5 rounded-[2rem] py-6 px-8 sm:px-10 outline-none focus:border-luxury-gold/40 focus:bg-white/[0.04] transition-all duration-700 font-plus text-base text-white"
+                                />
+                            </div>
+
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/40 ml-2">Tenure / Start Year</label>
+                                <input
+                                    value={orgStartYear}
+                                    onChange={(e) => setOrgStartYear(e.target.value)}
+                                    placeholder="Ex. 2022 or 2021 — Present"
+                                    className="w-full bg-white/[0.02] border border-white/5 rounded-[2rem] py-6 px-8 sm:px-10 outline-none focus:border-luxury-gold/40 focus:bg-white/[0.04] transition-all duration-700 font-plus text-base text-white"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Live Hero Preview */}
+                        <div className="p-6 sm:p-8 rounded-[2rem] border border-white/5 bg-white/[0.01] space-y-4">
+                            <span className="text-[9px] font-syncopate uppercase tracking-[0.3em] text-white/30 block">
+                                Live Hero Badge Preview
+                            </span>
+                            <div className="pt-2">
+                                {orgName && orgEnabled ? (
+                                    <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-luxury-gold/30 bg-luxury-gold/5 text-xs text-white/80 font-plus">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-luxury-gold shadow-[0_0_8px_rgba(212,175,55,0.8)]" />
+                                        <span>
+                                            <strong className="text-white font-medium">{orgRole || "Role"}</strong> at <span className="text-luxury-gold font-semibold">{orgName}</span>
+                                            {orgStartYear && <span className="text-white/40 ml-1.5">({orgStartYear})</span>}
+                                        </span>
+                                        {orgUrl && <ExternalLink size={11} className="text-luxury-gold/70 ml-0.5" />}
+                                    </div>
+                                ) : (
+                                    <p className="text-xs text-white/30 font-plus italic">
+                                        {orgEnabled ? "Enter organization credentials above to preview badge." : "Badge is currently disabled."}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+
+                        <Button
+                            type="submit"
+                            variant="luxury"
+                            disabled={savingOrg}
+                            className="w-full py-8 text-xs tracking-[0.4em] uppercase font-syncopate transition-all duration-1000 overflow-hidden relative group"
+                        >
+                            <motion.div
+                                className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"
+                            />
+                            {savingOrg ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
+                            Save Organization Credentials
+                        </Button>
+                    </form>
                 </Card>
 
                 {/* Section 2: Newsletter Configuration */}
@@ -732,6 +959,178 @@ const Settings = () => {
                             />
                             {savingAvailability ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
                             Synchronize Availability & Booking
+                        </Button>
+                    </form>
+                </Card>
+
+                {/* Section: Confidential Executive Dossier & Resume Vault */}
+                <Card className="p-8 sm:p-16 border-white/5 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-luxury-gold/[0.02] blur-[120px] -mr-48 -mt-48 pointer-events-none" />
+
+                    <div className="flex flex-col md:flex-row items-center gap-6 sm:gap-12 border-b border-white/5 pb-12 mb-12">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-luxury-gold/5 rounded-[1.5rem] flex items-center justify-center text-luxury-gold border border-luxury-gold/10 shrink-0">
+                            <FileText size={32} strokeWidth={1} />
+                        </div>
+                        <div className="text-center md:text-left">
+                            <h2 className="text-2xl sm:text-3xl font-syncopate font-bold uppercase tracking-tight text-white">Executive Dossier & Resume Vault</h2>
+                            <p className="text-[10px] text-white/20 font-syncopate uppercase tracking-[0.4em] mt-2">Share private CV, board profile, or investment memo with passcode security</p>
+                        </div>
+                    </div>
+
+                    <form onSubmit={handleSaveDossier} className="space-y-10">
+                        {/* Visibility Toggle */}
+                        <div className="flex flex-col md:flex-row items-center justify-between p-6 sm:p-8 bg-white/[0.02] border border-white/5 rounded-[2rem] gap-6">
+                            <div className="max-w-xl text-center md:text-left">
+                                <label className="text-xs font-syncopate uppercase tracking-[0.2em] text-white block mb-2">Enable Dossier Vault Section</label>
+                                <p className="text-sm text-white/40 font-plus leading-relaxed">
+                                    Displays a dedicated executive dossier card on your profile where authorized partners and recruiters can inspect or download your credentials.
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setDossierEnabled(!dossierEnabled)}
+                                className={`w-20 h-10 rounded-full relative transition-all duration-500 ease-out border-2 shrink-0 ${dossierEnabled ? 'bg-luxury-gold/10 border-luxury-gold' : 'bg-white/5 border-white/10'}`}
+                            >
+                                <div className={`absolute top-1 left-1 w-7 h-7 rounded-full bg-white transition-all duration-500 shadow-[0_0_15px_rgba(255,255,255,0.3)] ${dossierEnabled ? 'translate-x-10 bg-luxury-gold shadow-[0_0_20px_rgba(212,175,55,0.6)]' : 'translate-x-0 opacity-40'}`} />
+                            </button>
+                        </div>
+
+                        {dossierEnabled && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                className="space-y-10"
+                            >
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/40 ml-2">Dossier / Document Title</label>
+                                        <input
+                                            value={dossierTitle}
+                                            onChange={(e) => setDossierTitle(e.target.value)}
+                                            placeholder="Ex. Executive Dossier & CV (2026)"
+                                            className="w-full bg-white/[0.02] border border-white/5 rounded-[2rem] py-6 px-8 sm:px-10 outline-none focus:border-luxury-gold/40 focus:bg-white/[0.04] transition-all duration-700 font-plus text-base sm:text-lg text-white"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/40 ml-2">Document / PDF Direct Link</label>
+                                        <input
+                                            value={dossierFileUrl}
+                                            onChange={(e) => setDossierFileUrl(e.target.value)}
+                                            placeholder="https://.../resume.pdf (Google Drive, Dropbox, Hosted PDF)"
+                                            className="w-full bg-white/[0.02] border border-white/5 rounded-[2rem] py-6 px-8 sm:px-10 outline-none focus:border-luxury-gold/40 focus:bg-white/[0.04] transition-all duration-700 font-plus text-base text-white"
+                                        />
+                                        <p className="text-[9px] font-syncopate uppercase tracking-widest text-white/20 ml-4 italic">
+                                            Supports direct PDF URLs, Google Drive viewer links, or Notion public pages.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/40 ml-2">Executive Summary / Briefing Note</label>
+                                    <textarea
+                                        value={dossierDescription}
+                                        onChange={(e) => setDossierDescription(e.target.value)}
+                                        placeholder="Ex. Comprehensive career overview, venture history, advisory board clearances, and private references."
+                                        className="w-full bg-white/[0.02] border border-white/5 rounded-[2rem] py-6 px-8 sm:px-10 outline-none focus:border-luxury-gold/40 focus:bg-white/[0.04] transition-all duration-700 h-28 font-plus text-base leading-relaxed text-white resize-none"
+                                    />
+                                </div>
+
+                                {/* Security / Passcode Toggle */}
+                                <div className="p-6 sm:p-8 bg-white/[0.02] border border-white/5 rounded-[2rem] space-y-6">
+                                    <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                                        <div className="max-w-xl text-center md:text-left">
+                                            <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                                                <Lock size={14} className="text-luxury-gold" />
+                                                <label className="text-xs font-syncopate uppercase tracking-[0.2em] text-white">Require Passcode Clearance</label>
+                                            </div>
+                                            <p className="text-sm text-white/40 font-plus leading-relaxed">
+                                                When enabled, visitors must enter your clearance cipher to view or download. A fallback &quot;Request Access&quot; flow will route inquiries to your inbox.
+                                            </p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setDossierRequiresPasscode(!dossierRequiresPasscode)}
+                                            className={`w-20 h-10 rounded-full relative transition-all duration-500 ease-out border-2 shrink-0 ${dossierRequiresPasscode ? 'bg-luxury-gold/10 border-luxury-gold' : 'bg-white/5 border-white/10'}`}
+                                        >
+                                            <div className={`absolute top-1 left-1 w-7 h-7 rounded-full bg-white transition-all duration-500 shadow-[0_0_15px_rgba(255,255,255,0.3)] ${dossierRequiresPasscode ? 'translate-x-10 bg-luxury-gold shadow-[0_0_20px_rgba(212,175,55,0.6)]' : 'translate-x-0 opacity-40'}`} />
+                                        </button>
+                                    </div>
+
+                                    {dossierRequiresPasscode && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="pt-4 border-t border-white/5 grid grid-cols-1 md:grid-cols-2 gap-6 items-end"
+                                        >
+                                            <div className="space-y-3">
+                                                <label className="text-[10px] font-syncopate uppercase tracking-[0.4em] text-white/40 ml-2">Clearance Passcode / Cipher</label>
+                                                <div className="relative">
+                                                    <input
+                                                        type={showPasscode ? "text" : "password"}
+                                                        value={dossierPasscode}
+                                                        onChange={(e) => setDossierPasscode(e.target.value)}
+                                                        placeholder="Ex. CIPHER2026 or 784291"
+                                                        className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-5 px-6 pr-14 outline-none focus:border-luxury-gold/40 font-mono tracking-widest text-lg text-luxury-gold font-bold"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setShowPasscode(!showPasscode)}
+                                                        className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-white/40 hover:text-white transition-colors"
+                                                    >
+                                                        {showPasscode ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <button
+                                                    type="button"
+                                                    onClick={generateRandomPasscode}
+                                                    className="w-full py-5 px-6 rounded-2xl border border-luxury-gold/20 bg-luxury-gold/5 hover:bg-luxury-gold/10 text-luxury-gold text-xs font-syncopate uppercase tracking-wider flex items-center justify-center gap-3 transition-all"
+                                                >
+                                                    <Shuffle size={14} />
+                                                    Generate Random Cipher
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </div>
+
+                                {/* Preview Card */}
+                                <div className="p-6 sm:p-8 rounded-[2rem] border border-white/5 bg-white/[0.01] space-y-4">
+                                    <span className="text-[9px] font-syncopate uppercase tracking-[0.3em] text-white/30 block">
+                                        Live Profile Section Preview
+                                    </span>
+                                    <div className="p-6 rounded-2xl border border-white/10 bg-white/[0.02] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 rounded-xl bg-luxury-gold/10 border border-luxury-gold/20 flex items-center justify-center text-luxury-gold shrink-0">
+                                                {dossierRequiresPasscode ? <Lock size={20} /> : <FileText size={20} />}
+                                            </div>
+                                            <div>
+                                                <h4 className="text-white font-syncopate font-bold text-sm tracking-wide">{dossierTitle || "Executive Dossier & CV"}</h4>
+                                                <p className="text-xs text-white/40 font-plus mt-1 line-clamp-1">{dossierDescription || "Comprehensive career overview and references."}</p>
+                                            </div>
+                                        </div>
+                                        <div className="px-4 py-2 rounded-full border border-luxury-gold/30 bg-luxury-gold/10 text-luxury-gold text-[10px] font-syncopate uppercase tracking-widest shrink-0">
+                                            {dossierRequiresPasscode ? "Clearance Required" : "Open Clearance"}
+                                        </div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        <Button
+                            type="submit"
+                            variant="luxury"
+                            disabled={savingDossier}
+                            className="w-full py-8 text-xs tracking-[0.4em] uppercase font-syncopate transition-all duration-1000 overflow-hidden relative group"
+                        >
+                            <motion.div
+                                className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"
+                            />
+                            {savingDossier ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
+                            Synchronize Dossier Vault
                         </Button>
                     </form>
                 </Card>

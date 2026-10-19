@@ -11,7 +11,7 @@ export function useDashboard() {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error("Not authenticated");
 
-            const [profile, ventures, socials, products, stories, profileViews, linkClicks, endorsements] = await Promise.all([
+            const [profile, ventures, socials, products, stories, profileViews, linkClicks, endorsements, milestones, skills] = await Promise.all([
                 supabase.from("profiles").select("*").eq("id", user.id).single(),
                 supabase.from("ventures").select("*").eq("profile_id", user.id).order("created_at", { ascending: false }),
                 supabase.from("social_links").select("*").eq("profile_id", user.id).order("order_index"),
@@ -19,7 +19,9 @@ export function useDashboard() {
                 supabase.from("stories").select("*").eq("profile_id", user.id).gt("expires_at", new Date().toISOString()).order("created_at", { ascending: false }),
                 supabase.from("profile_views").select("*").eq("profile_id", user.id),
                 supabase.from("link_clicks").select("*").eq("profile_id", user.id),
-                supabase.from("endorsements").select("*").eq("profile_id", user.id).order("order_index", { ascending: true })
+                supabase.from("endorsements").select("*").eq("profile_id", user.id).order("order_index", { ascending: true }),
+                supabase.from("milestones").select("*").eq("profile_id", user.id).order("order_index", { ascending: true }),
+                supabase.from("skills").select("*").eq("profile_id", user.id).order("order_index", { ascending: true })
             ]);
 
             // Helper to generate long-lived URLs (1 year) for avatars to prevent expiration
@@ -54,6 +56,10 @@ export function useDashboard() {
                 stories: resolvedStories,
                 endorsements: endorsements?.data || [],
                 endorsementsError: endorsements?.error ? endorsements.error.message : null,
+                milestones: milestones?.data || [],
+                milestonesError: milestones?.error ? milestones.error.message : null,
+                skills: skills?.data || [],
+                skillsError: skills?.error ? skills.error.message : null,
                 analytics: {
                     profileViews: profileViews.data || [],
                     linkClicks: linkClicks.data || [],
@@ -90,6 +96,16 @@ export function useDashboard() {
             .on(
                 'postgres_changes',
                 { event: '*', schema: 'public', table: 'endorsements' },
+                () => queryClient.invalidateQueries({ queryKey: ["dashboard-data"] })
+            )
+            .on(
+                'postgres_changes',
+                { event: '*', schema: 'public', table: 'milestones' },
+                () => queryClient.invalidateQueries({ queryKey: ["dashboard-data"] })
+            )
+            .on(
+                'postgres_changes',
+                { event: '*', schema: 'public', table: 'skills' },
                 () => queryClient.invalidateQueries({ queryKey: ["dashboard-data"] })
             )
             .on(

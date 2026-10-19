@@ -331,3 +331,86 @@ BEGIN
   END IF;
 END $$;
 
+-- Career Trajectory & Milestones
+CREATE TABLE IF NOT EXISTS milestones (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  profile_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
+  year TEXT NOT NULL,
+  title TEXT NOT NULL,
+  organization TEXT,
+  description TEXT,
+  category TEXT DEFAULT 'Milestone',
+  badge TEXT,
+  url TEXT,
+  order_index INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE milestones ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Milestones are viewable by everyone if profile not private." ON milestones;
+DROP POLICY IF EXISTS "Users can manage their own milestones." ON milestones;
+
+CREATE POLICY "Milestones are viewable by everyone if profile not private." ON milestones FOR SELECT USING (
+  EXISTS (SELECT 1 FROM profiles WHERE profiles.id = milestones.profile_id AND (NOT profiles.is_private OR auth.uid() = profiles.id))
+);
+
+CREATE POLICY "Users can manage their own milestones." ON milestones FOR ALL USING (auth.uid() = profile_id);
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND tablename = 'milestones') THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE milestones;
+  END IF;
+END $$;
+
+-- Primary Organization & Executive Affiliation
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS org_name TEXT DEFAULT '';
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS org_role TEXT DEFAULT '';
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS org_url TEXT DEFAULT '';
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS org_logo TEXT DEFAULT '';
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS org_start_year TEXT DEFAULT '';
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS org_enabled BOOLEAN DEFAULT false;
+
+-- Confidential Executive Dossier & Resume Vault
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS dossier_enabled BOOLEAN DEFAULT false;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS dossier_title TEXT DEFAULT 'Executive Curriculum Vitae';
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS dossier_description TEXT DEFAULT 'Confidential career dossier and institutional track record.';
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS dossier_file_url TEXT DEFAULT '';
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS dossier_passcode TEXT DEFAULT '';
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS dossier_requires_passcode BOOLEAN DEFAULT true;
+
+-- Skills & Tech Stack Module
+CREATE TABLE IF NOT EXISTS skills (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  profile_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
+  name TEXT NOT NULL,
+  category TEXT DEFAULT 'Languages',
+  proficiency TEXT DEFAULT 'Advanced',
+  icon_key TEXT NOT NULL,
+  color TEXT,
+  years_exp TEXT,
+  order_index INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE skills ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Skills are viewable by everyone if profile not private." ON skills;
+DROP POLICY IF EXISTS "Users can manage their own skills." ON skills;
+
+CREATE POLICY "Skills are viewable by everyone if profile not private." ON skills FOR SELECT USING (
+  EXISTS (SELECT 1 FROM profiles WHERE profiles.id = skills.profile_id AND (NOT profiles.is_private OR auth.uid() = profiles.id))
+);
+
+CREATE POLICY "Users can manage their own skills." ON skills FOR ALL USING (auth.uid() = profile_id);
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND tablename = 'skills') THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE skills;
+  END IF;
+END $$;
+
+
+
