@@ -196,19 +196,19 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
 
             if (error) {
                 if (error.code === '23505') {
-                    toast.error("You are already subscribed to this dossier.");
+                    toast.error("You're already subscribed!");
                 } else {
                     throw error;
                 }
             } else {
-                toast.success("Access Granted. You are on the list.");
+                toast.success("You're subscribed! Thanks for joining.");
                 setSubscribed(true);
                 setSubscriberEmail("");
                 setSubscriberName("");
             }
         } catch (error) {
             console.error("Subscription error:", error);
-            toast.error("Transmission failed. Please retry.");
+            toast.error("Something went wrong. Please try again.");
         } finally {
             setIsSubscribing(false);
         }
@@ -845,8 +845,8 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                             <span>
                                                 {user.availability_text || (
                                                     user.availability_status === 'limited' ? 'Limited Capacity' :
-                                                        user.availability_status === 'busy' ? 'High Demand' :
-                                                            user.availability_status === 'offline' ? 'Stealth Protocol' : 'Available for Work'
+                                                        user.availability_status === 'busy' ? 'Busy' :
+                                                            user.availability_status === 'offline' ? 'Offline' : 'Available for Work'
                                                 )}
                                             </span>
                                         </div>
@@ -864,14 +864,14 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                 }}
                                             >
                                                 <Calendar size={13} style={{ color: theme.primary }} />
-                                                <span>{user.booking_button_text || "Schedule Session"}</span>
+                                                <span>{user.booking_button_text || "Schedule Call"}</span>
                                                 <ArrowUpRight size={13} className="opacity-70" />
                                             </motion.button>
                                         )}
                                     </motion.div>
                                 )}
 
-                                {/* Share Matrix Tactical Action */}
+                                {/* Share Action */}
                                 <motion.div
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
@@ -887,7 +887,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                             backgroundColor: isLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.03)',
                                             color: textPrimary
                                         }}
-                                        title="Broadcast Digital Estate"
+                                        title="Share profile"
                                     >
                                         <Share2 size={12} style={{ color: theme.primary }} />
                                         <span>Share</span>
@@ -900,7 +900,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                     {/* Main Content Grid */}
                     <div className="w-full space-y-20 md:space-y-32">
 
-                        {/* Social Ecosystem */}
+                        {/* Social Links */}
                         <section className="flex flex-col items-center">
                             <div className="flex flex-col items-center mb-8 md:mb-12">
                                 <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em] opacity-40 text-center truncate max-w-full px-4">Socials</span>
@@ -920,7 +920,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                             style={{
                                                 borderColor: cardBorder,
                                                 backgroundColor: isLight ? 'rgba(0,0,0,0.02)' : 'rgba(255,255,255,0.02)',
-                                                // color: theme.
+                                                // color: theme.primary,
                                             }}
                                         >
                                             <Icon size={28} />
@@ -975,7 +975,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                     <div className="flex items-center gap-2 mb-2 opacity-60">
                                         <FolderGit2 size={14} style={{ color: theme.primary }} />
                                         <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em]">
-                                            Selected Portfolio
+                                            Portfolio
                                         </span>
                                     </div>
                                     <h3
@@ -985,7 +985,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                         Featured Work<span style={{ color: theme.primary }}>.</span>
                                     </h3>
                                     <p className="text-xs text-white/40 font-plus mt-2 max-w-md italic">
-                                        Architectural deployments, flagship ventures, and sovereign systems.
+                                        Projects, applications, and things I've built.
                                     </p>
                                 </div>
 
@@ -1035,7 +1035,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                     }}
                                                     onClick={() => handleLinkClick('venture', project.id, project.url)}
                                                 >
-                                                    View Deployment <ArrowUpRight size={14} />
+                                                    View Project <ArrowUpRight size={14} />
                                                 </Button>
                                             </div>
                                         </div>
@@ -1085,17 +1085,17 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                     <div className="flex items-center gap-2 mb-2 opacity-60">
                                         <ShoppingBag size={14} style={{ color: theme.primary }} />
                                         <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em]">
-                                            Curated Recommendations
+                                            Recommendations
                                         </span>
                                     </div>
                                     <h3
                                         className="text-2xl sm:text-3xl md:text-4xl font-syncopate font-bold uppercase tracking-tight"
                                         style={{ color: isLight ? "#111" : "#FFF", fontFamily: theme.font }}
                                     >
-                                        Personal Picks<span style={{ color: theme.primary }}>.</span>
+                                        Favorite Picks<span style={{ color: theme.primary }}>.</span>
                                     </h3>
                                     <p className="text-xs text-white/40 font-plus mt-2 max-w-md italic">
-                                        Handpicked hardware, literature, tools, and digital acquisitions.
+                                        Tools, gear, books, and products I use and recommend.
                                     </p>
                                 </div>
 
@@ -1113,7 +1113,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                 />
                                                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
 
-                                                {/* Luxury Product Info */}
+                                                {/* Product Info */}
                                                 <div className="absolute inset-x-0 bottom-0 p-6 md:p-8 flex flex-col justify-end">
                                                     <div className="flex justify-between items-end gap-4">
                                                         <div className="flex-1 min-w-0 space-y-1">
@@ -1133,7 +1133,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                                 color: isLight ? '#FFFFFF' : '#000000'
                                                             }}
                                                             onClick={() => handleLinkClick('product', product.id, product.url)}
-                                                            title="Inspect / Acquire"
+                                                            title="View product"
                                                         >
                                                             <ShoppingBag size={20} />
                                                         </button>
@@ -1153,17 +1153,17 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                     <div className="flex items-center gap-2 mb-2 opacity-60">
                                         <Video size={14} style={{ color: theme.primary }} />
                                         <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em]">
-                                            Broadcast Channel
+                                            Videos
                                         </span>
                                     </div>
                                     <h3
                                         className="text-2xl sm:text-3xl md:text-4xl font-syncopate font-bold uppercase tracking-tight"
                                         style={{ color: isLight ? "#111" : "#FFF", fontFamily: theme.font }}
                                     >
-                                        Latest Transmissions<span style={{ color: theme.primary }}>.</span>
+                                        Latest Videos<span style={{ color: theme.primary }}>.</span>
                                     </h3>
                                     <p className="text-xs text-white/40 font-plus mt-2 max-w-md italic">
-                                        Recent keynotes, video architecture essays, and tutorials.
+                                        Videos, tutorials, and talks.
                                     </p>
                                 </div>
 
@@ -1194,7 +1194,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                                         <Play size={28} fill="currentColor" className="ml-1" />
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <span className="text-[10px] font-syncopate tracking-[0.3em] uppercase opacity-60 mb-1.5 block">Featured Transmission</span>
+                                                        <span className="text-[10px] font-syncopate tracking-[0.3em] uppercase opacity-60 mb-1.5 block">Featured Video</span>
                                                         <h3 className="text-2xl md:text-4xl font-bold tracking-tight mb-2 leading-none uppercase truncate text-white">{ytVideos[0].title}</h3>
                                                         <div className="flex items-center gap-2">
                                                             <div className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
@@ -1269,14 +1269,14 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                             </section>
                         )}
 
-                        {/* Auditory Signature (Spotify) */}
+                        {/* Music (Spotify) */}
                         {user.top_tracks && user.top_tracks.length > 0 && (
                             <section id="music-section" className="flex flex-col items-center">
                                 <div className="flex flex-col items-center mb-10 md:mb-14 text-center">
                                     <div className="flex items-center gap-2 mb-2 opacity-60">
                                         <Music size={14} style={{ color: theme.primary }} />
                                         <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em]">
-                                            Auditory Signature
+                                            Music
                                         </span>
                                     </div>
                                     <h3
@@ -1286,7 +1286,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                         Heavy Rotation<span style={{ color: theme.primary }}>.</span>
                                     </h3>
                                     <p className="text-xs text-white/40 font-plus mt-2 max-w-md italic">
-                                        Soundtracks, focus frequencies, and studio listening rotation.
+                                        Tracks and playlists in my current rotation.
                                     </p>
                                 </div>
 
@@ -1372,24 +1372,24 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                             </section>
                         )}
 
-                        {/* Brand Inquiries Form */}
+                        {/* Contact & Inquiries Form */}
                         {user.accepting_inquiries && (
                             <section id="inquiry-section" className="relative w-full flex flex-col items-center">
                                 <div className="flex flex-col items-center mb-10 md:mb-14 text-center">
                                     <div className="flex items-center gap-2 mb-2 opacity-60">
                                         <Briefcase size={14} style={{ color: theme.primary }} />
                                         <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em]">
-                                            Direct Inquiry
+                                            Contact
                                         </span>
                                     </div>
                                     <h3
                                         className="text-2xl sm:text-3xl md:text-4xl font-syncopate font-bold uppercase tracking-tight"
                                         style={{ color: isLight ? "#111" : "#FFF", fontFamily: theme.font }}
                                     >
-                                        Collaborate<span style={{ color: theme.primary }}>.</span>
+                                        Let's Work Together<span style={{ color: theme.primary }}>.</span>
                                     </h3>
                                     <p className="text-xs text-white/40 font-plus mt-2 max-w-md italic">
-                                        Architectural advisory, speaking engagements, and strategic partnerships.
+                                        Available for freelance, consulting, or speaking engagements.
                                     </p>
                                 </div>
                                 <div className="w-full max-w-4xl px-4 md:px-0">
@@ -1404,24 +1404,24 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                             </section>
                         )}
 
-                        {/* Exclusive Access / Newsletter */}
+                        {/* Newsletter */}
                         {user.newsletter_enabled && (
                             <section className="relative w-full flex flex-col items-center">
                                 <div className="flex flex-col items-center mb-10 md:mb-14 text-center">
                                     <div className="flex items-center gap-2 mb-2 opacity-60">
                                         <Mail size={14} style={{ color: theme.primary }} />
                                         <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em]">
-                                            Dispatch
+                                            Newsletter
                                         </span>
                                     </div>
                                     <h3
                                         className="text-2xl sm:text-3xl md:text-4xl font-syncopate font-bold uppercase tracking-tight"
                                         style={{ color: isLight ? "#111" : "#FFF", fontFamily: theme.font }}
                                     >
-                                        Exclusive Access<span style={{ color: theme.primary }}>.</span>
+                                        Stay in the Loop<span style={{ color: theme.primary }}>.</span>
                                     </h3>
                                     <p className="text-xs text-white/40 font-plus mt-2 max-w-md italic">
-                                        Periodic engineering essays, venture updates, and privileged dispatches.
+                                        Articles, project updates, and insights sent straight to your inbox.
                                     </p>
                                 </div>
 
@@ -1882,7 +1882,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                 {/* Minimal Status Bar */}
                                 <div className="absolute top-10 left-10 z-20 flex items-center gap-4 opacity-40">
                                     <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: theme.primary }} />
-                                    <span className="text-[8px] font-syncopate uppercase tracking-[0.4em] text-white">Secure Connection</span>
+                                    <span className="text-[8px] font-syncopate uppercase tracking-[0.4em] text-white">Live</span>
                                 </div>
                             </motion.div>
 

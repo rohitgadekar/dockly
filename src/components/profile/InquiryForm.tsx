@@ -112,25 +112,25 @@ export const InquiryForm = ({ profileId, theme, isLight, textPrimary, cardBorder
                             <div className="flex items-center justify-center md:justify-start gap-2 mb-3 opacity-60">
                                 <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: theme.primary }} />
                                 <span className="text-[9px] font-syncopate uppercase tracking-widest" style={{ color: theme.primary }}>
-                                    Brand Inquiry
+                                    Message
                                 </span>
                             </div>
                             <h3 className="text-3xl md:text-4xl font-bold uppercase tracking-tight leading-none mb-4" style={{ color: textPrimary, fontFamily: theme.font }}>
-                                Let's <br className="hidden md:block" /> Collaborate
+                                Let's <br className="hidden md:block" /> Connect
                             </h3>
                         </div>
                         <p className="text-base font-light leading-relaxed opacity-50" style={{ color: textPrimary }}>
-                            Share your vision and let's create something extraordinary together. Premium partnerships starting here.
+                            Have a project in mind, an opportunity, or a question? Send a message and I'll get back to you soon.
                         </p>
 
                         <div className="hidden md:flex flex-col gap-4 pt-8">
                             <div className="flex items-center gap-3 opacity-40">
                                 <Briefcase size={16} />
-                                <span className="text-[10px] uppercase tracking-widest font-syncopate">Tailored Strategy</span>
+                                <span className="text-[10px] uppercase tracking-widest font-syncopate">Quick Response</span>
                             </div>
                             <div className="flex items-center gap-3 opacity-40">
                                 <ArrowUpRight size={16} />
-                                <span className="text-[10px] uppercase tracking-widest font-syncopate">Global Exposure</span>
+                                <span className="text-[10px] uppercase tracking-widest font-syncopate">Direct Contact</span>
                             </div>
                         </div>
                     </div>

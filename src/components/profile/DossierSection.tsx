@@ -31,31 +31,31 @@ export const DossierSection = ({
     if (!user.dossier_enabled) return null;
 
     const requiresPasscode = user.dossier_requires_passcode !== false && !!user.dossier_passcode;
-    const title = user.dossier_title || "Executive Curriculum Vitae";
-    const description = user.dossier_description || "Confidential career dossier, advisory credentials, and institutional track record.";
+    const title = user.dossier_title || "Resume & Experience";
+    const description = user.dossier_description || "Career history, background, and professional achievements.";
 
     return (
         <section id="dossier-section" className="relative w-full flex flex-col items-center">
-            {/* Section Architectural Header */}
+            {/* Section Header */}
             <div className="flex flex-col items-center mb-10 md:mb-14 text-center">
                 <div className="flex items-center gap-2 mb-2 opacity-60">
                     <Shield size={14} style={{ color: theme.primary }} />
                     <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em]">
-                        Executive Credentials
+                        Experience
                     </span>
                 </div>
                 <h3
                     className="text-2xl sm:text-3xl md:text-4xl font-syncopate font-bold uppercase tracking-tight"
                     style={{ color: isLight ? "#111" : "#FFF", fontFamily: theme.font }}
                 >
-                    Curriculum Vitae<span style={{ color: theme.primary }}>.</span>
+                    Resume<span style={{ color: theme.primary }}>.</span>
                 </h3>
                 <p className="text-xs text-white/40 font-plus mt-2 max-w-md italic">
-                    Confidential career dossier, advisory credentials, and institutional track record.
+                    Career history, professional milestones, and credentials.
                 </p>
             </div>
 
-            {/* Dossier Vault Card */}
+            {/* Dossier Card */}
             <div className="w-full max-w-4xl px-4 md:px-0">
                 <motion.div
                     whileHover={{ y: -4, transition: { duration: 0.3 } }}
@@ -106,10 +106,10 @@ export const DossierSection = ({
                                             color: theme.primary
                                         }}
                                     >
-                                        {requiresPasscode ? "Clearance Required" : "Public Document"}
+                                        {requiresPasscode ? "Password Protected" : "Public Resume"}
                                     </span>
                                     <span className="text-[8px] font-syncopate uppercase tracking-widest text-white/40">
-                                        Executive Record
+                                        Resume
                                     </span>
                                 </div>
 
@@ -138,7 +138,7 @@ export const DossierSection = ({
                                 }}
                             >
                                 {requiresPasscode ? <Lock size={13} /> : <FileText size={13} />}
-                                <span>{requiresPasscode ? "Request / Decrypt" : "View Record"}</span>
+                                <span>{requiresPasscode ? "Enter Password" : "View Resume"}</span>
                                 <ArrowUpRight size={13} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                             </button>
                         </div>

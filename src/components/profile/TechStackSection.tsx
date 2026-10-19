@@ -59,7 +59,7 @@ export const TechStackSection = ({
                 <div className="flex items-center gap-2 mb-2 opacity-60">
                     <Cpu size={14} style={{ color: theme.primary }} />
                     <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em]">
-                        Engineering Arsenal
+                        Skills & Tools
                     </span>
                 </div>
                 <h3
@@ -69,7 +69,7 @@ export const TechStackSection = ({
                     Tech Stack<span style={{ color: theme.primary }}>.</span>
                 </h3>
                 <p className="text-xs text-white/40 font-plus mt-2 max-w-md italic">
-                    Core technical proficiencies, frameworks, and architectural tooling.
+                    Languages, frameworks, and tools I work with.
                 </p>
             </div>
 

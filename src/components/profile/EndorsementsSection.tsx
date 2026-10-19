@@ -39,22 +39,22 @@ export const EndorsementsSection = ({
 
     return (
         <section id="endorsements-section" className="relative w-full flex flex-col items-center">
-            {/* Architectural Section Label */}
+            {/* Section Label */}
             <div className="flex flex-col items-center mb-10 md:mb-14 text-center">
                 <div className="flex items-center gap-2 mb-2 opacity-60">
                     <Star size={14} style={{ color: theme.primary }} />
                     <span className="text-[10px] font-syncopate uppercase tracking-[0.3em] md:tracking-[0.8em]">
-                        Wall of Distinction
+                        Testimonials
                     </span>
                 </div>
                 <h3
                     className="text-2xl sm:text-3xl md:text-4xl font-syncopate font-bold uppercase tracking-tight"
                     style={{ color: isLight ? "#111" : "#FFF", fontFamily: theme.font }}
                 >
-                    Endorsements<span style={{ color: theme.primary }}>.</span>
+                    Testimonials<span style={{ color: theme.primary }}>.</span>
                 </h3>
                 <p className="text-xs text-white/40 font-plus mt-2 max-w-md italic">
-                    Direct appraisals from founders, engineering leaders, and collaborators.
+                    Feedback from clients, teammates, and people I've worked with.
                 </p>
             </div>
 

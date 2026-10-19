@@ -55,8 +55,8 @@ export const DossierModal = ({
 
     const requiresPasscode = user.dossier_requires_passcode !== false && !!user.dossier_passcode;
     const documentUrl = user.dossier_file_url || "#";
-    const documentTitle = user.dossier_title || "Executive Curriculum Vitae";
-    const documentDesc = user.dossier_description || "Confidential career dossier and institutional track record.";
+    const documentTitle = user.dossier_title || "Resume & Experience";
+    const documentDesc = user.dossier_description || "Career history, background, and professional achievements.";
 
     const handleUnlock = (e?: React.FormEvent) => {
         if (e) e.preventDefault();
@@ -68,12 +68,12 @@ export const DossierModal = ({
 
         if (!expected || entered.toLowerCase() === expected.toLowerCase()) {
             setIsUnlocked(true);
-            toast.success("Clearance validated. Dossier decrypted.");
+            toast.success("Password verified! Opening document.");
         } else {
             setError(true);
             setShake(true);
             setTimeout(() => setShake(false), 500);
-            toast.error("Invalid clearance passcode.");
+            toast.error("Incorrect password. Please try again.");
         }
     };
 
@@ -84,14 +84,14 @@ export const DossierModal = ({
             const form = document.getElementById("inquiry-section");
             if (form) {
                 form.scrollIntoView({ behavior: "smooth" });
-                toast.info("Inquire below to request clearance credentials.");
+                toast.info("Send a message below to request password access.");
                 return;
             }
         }
         // Fallback to mailto
-        const subject = encodeURIComponent(`Access Request: Executive Dossier (${user.full_name || user.username})`);
+        const subject = encodeURIComponent(`Access Request: Resume (${user.full_name || user.username})`);
         const body = encodeURIComponent(
-            `Hello ${user.full_name || user.username},\n\nI would like to request the clearance passcode to view your Executive Dossier.\n\nName:\nOrganization / Fund:\nReason for Request:`
+            `Hello ${user.full_name || user.username},\n\nI would like to request the password to view your resume.\n\nName:\nCompany / Organization:\nReason for Request:`
         );
         window.location.href = `mailto:${user.email || ""}?subject=${subject}&body=${body}`;
     };
@@ -162,10 +162,10 @@ export const DossierModal = ({
                                         className="text-xs font-syncopate font-bold uppercase tracking-[0.18em]"
                                         style={{ color: isLight ? "#111" : "#FFF" }}
                                     >
-                                        {effectiveUnlocked ? "Dossier Decrypted" : "Restricted Clearance"}
+                                        {effectiveUnlocked ? "Resume Unlocked" : "Password Protected"}
                                     </h3>
                                     <p className="text-[8px] font-syncopate tracking-widest uppercase opacity-40">
-                                        Executive Archives
+                                        Resume & Documents
                                     </p>
                                 </div>
                             </div>
@@ -212,7 +212,7 @@ export const DossierModal = ({
                                                 color: theme.primary
                                             }}
                                         >
-                                            {requiresPasscode && !effectiveUnlocked ? "Protected PDF" : "Official PDF"}
+                                            {requiresPasscode && !effectiveUnlocked ? "Protected PDF" : "PDF Resume"}
                                         </span>
                                     </div>
                                     <h4
@@ -239,7 +239,7 @@ export const DossierModal = ({
                                     >
                                         <CheckCircle2 size={18} className="shrink-0" />
                                         <span className="text-xs font-syncopate uppercase tracking-wider font-bold">
-                                            Clearance Authorized • Ready for Inspection
+                                            Access Granted • Document Ready
                                         </span>
                                     </div>
 
@@ -256,7 +256,7 @@ export const DossierModal = ({
                                             }}
                                         >
                                             <Eye size={14} />
-                                            <span>Inspect Document</span>
+                                            <span>View Document</span>
                                             <ExternalLink size={12} className="opacity-70" />
                                         </a>
 
@@ -271,7 +271,7 @@ export const DossierModal = ({
                                             }}
                                         >
                                             <Download size={14} />
-                                            <span>Save Copy</span>
+                                            <span>Download PDF</span>
                                         </a>
                                     </div>
                                 </motion.div>
@@ -281,7 +281,7 @@ export const DossierModal = ({
                                     <form onSubmit={handleUnlock} className="space-y-4">
                                         <div className="space-y-2">
                                             <label className="text-[9px] font-syncopate uppercase tracking-[0.3em] text-white/50 block">
-                                                Enter Passcode Clearance
+                                                Enter Password
                                             </label>
                                             <div
                                                 className={`relative rounded-2xl border transition-all duration-300 ${
@@ -300,7 +300,7 @@ export const DossierModal = ({
                                                         setPasscode(e.target.value);
                                                         setError(false);
                                                     }}
-                                                    placeholder="Passcode / NDA Token"
+                                                    placeholder="Enter password"
                                                     className="w-full px-5 py-3.5 bg-transparent text-sm text-white focus:outline-none font-mono tracking-widest placeholder:tracking-normal placeholder:font-sans placeholder:opacity-30"
                                                 />
                                                 <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-40">
@@ -309,7 +309,7 @@ export const DossierModal = ({
                                             </div>
                                             {error && (
                                                 <p className="text-[10px] text-red-400 font-syncopate uppercase tracking-wider flex items-center gap-1.5 pt-1">
-                                                    <AlertTriangle size={11} /> Passcode incorrect. Contact sovereign for access.
+                                                    <AlertTriangle size={11} /> Incorrect password. Please try again.
                                                 </p>
                                             )}
                                         </div>
@@ -324,7 +324,7 @@ export const DossierModal = ({
                                             }}
                                         >
                                             <Unlock size={14} />
-                                            <span>Authorize Access</span>
+                                            <span>Unlock Document</span>
                                         </button>
                                     </form>
 
@@ -334,7 +334,7 @@ export const DossierModal = ({
                                         style={{ borderColor: isLight ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.06)" }}
                                     >
                                         <p className="text-[10px] text-white/40">
-                                             Do not have clearance credentials?
+                                             Don't have the password?
                                         </p>
                                         <button
                                             type="button"
@@ -343,7 +343,7 @@ export const DossierModal = ({
                                             style={{ color: theme.primary }}
                                         >
                                             <Send size={10} />
-                                            <span>Request Access Clearance</span>
+                                            <span>Request Access</span>
                                         </button>
                                     </div>
                                 </div>
