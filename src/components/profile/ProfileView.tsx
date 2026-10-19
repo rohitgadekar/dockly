@@ -920,7 +920,7 @@ export const ProfileView = ({ user, onLinkClick, isPreview = false }: ProfileVie
                                             style={{
                                                 borderColor: cardBorder,
                                                 backgroundColor: isLight ? 'rgba(0,0,0,0.02)' : 'rgba(255,255,255,0.02)',
-                                                color: theme.primary
+                                                // color: theme.
                                             }}
                                         >
                                             <Icon size={28} />
