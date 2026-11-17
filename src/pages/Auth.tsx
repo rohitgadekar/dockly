@@ -65,7 +65,7 @@ const Auth = () => {
                 <div className="text-center mb-8">
                     <div className="relative inline-block mb-4">
                         <img
-                            src="/dp.png"
+                            src="/apple-touch-icon.png"
                             alt="Dockly Logo"
                             className="w-16 h-16 rounded-2xl object-contain shadow-2xl p-1 bg-zinc-950/90 border border-zinc-800 mx-auto"
                         />

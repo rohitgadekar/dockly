@@ -57,7 +57,7 @@ export const DashboardSidebar = () => {
             {/* Brand Header with /dp.png */}
             <div className="mb-7 flex items-center gap-3 px-2 relative z-10">
                 <img
-                    src="/dp.png"
+                    src="/apple-touch-icon.png"
                     alt="Dockly Logo"
                     className="w-9 h-9 rounded-xl object-contain shadow-md border border-zinc-800 p-0.5 bg-zinc-900 shrink-0"
                 />

@@ -100,7 +100,7 @@ export default function Landing() {
                         className="group flex items-center gap-2.5 text-left focus:outline-none"
                     >
                         <img
-                            src="/dp.png"
+                            src="/apple-touch-icon.png"
                             alt="Dockly Logo"
                             className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl object-contain shadow-md transition-transform group-hover:scale-105"
                         />
@@ -838,7 +838,7 @@ export default function Landing() {
                                 className="font-outfit font-extrabold text-xl tracking-tight mb-2 cursor-pointer text-white flex items-center justify-center sm:justify-start gap-2.5"
                                 onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                             >
-                                <img src="/dp.png" alt="Dockly" className="w-6 h-6 rounded-lg object-contain shadow-sm" />
+                                <img src="/apple-touch-icon.png" alt="Dockly" className="w-6 h-6 rounded-lg object-contain shadow-sm" />
                                 <span>dockly<span className="text-[#3ECF8E]">.pro</span></span>
                             </div>
                             <p className="text-xs text-zinc-400 font-jetbrains">Your personal link-in-bio</p>
